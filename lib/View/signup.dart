@@ -80,7 +80,7 @@ class _SignUpState extends State<SignUp> {
           if (widget.user != null && !widget.user.isFirstLogin) {
             Get.back(result: true);
           } else {
-            Get.offAllNamed(RouteHandler.NAV);
+            Get.offAllNamed(RouteHandler.ORDER_HISTORY);
           }
         } else {}
       }

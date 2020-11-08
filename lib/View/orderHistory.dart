@@ -7,6 +7,7 @@ import 'package:uni_express/Model/DTO/index.dart';
 import 'package:uni_express/ViewModel/index.dart';
 import 'package:uni_express/acessories/appbar.dart';
 import 'package:uni_express/acessories/dash_border.dart';
+import 'package:uni_express/acessories/drawer.dart';
 import 'package:uni_express/acessories/loading.dart';
 import 'package:uni_express/enums/view_status.dart';
 import 'package:uni_express/utils/index.dart';
@@ -51,12 +52,11 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return ScopedModel<OrderHistoryViewModel>(
-      model: model,
+    return ScopedModel<RootViewModel>(
+      model: RootViewModel.getInstance(),
       child: Scaffold(
-        appBar: DefaultAppBar(
-          title: "Lịch sử",
-        ),
+        drawer: DrawerMenu(),
+        appBar: DefaultAppBar(title: "Giao hàng",),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -110,9 +110,12 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
             ),
             SizedBox(height: 16),
             Expanded(
-              child: Container(
-                child: _buildOrders(),
-                color: Color(0xffefefef),
+              child: ScopedModel<OrderHistoryViewModel>(
+                model: model,
+                child: Container(
+                  child: _buildOrders(),
+                  color: Color(0xffefefef),
+                ),
               ),
             ),
           ],

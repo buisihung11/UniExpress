@@ -5,7 +5,6 @@ import 'package:uni_express/utils/shared_pref.dart';
 import '../route_constraint.dart';
 import 'base_model.dart';
 
-
 class StartUpViewModel extends BaseModel {
   static StartUpViewModel _instance;
 
@@ -30,11 +29,7 @@ class StartUpViewModel extends BaseModel {
     // await _pushNotificationService.initialise();
     await Future.delayed(Duration(seconds: 5));
     var hasLoggedInUser = await _accountDAO.isUserLoggedIn();
-    bool isFirstOnBoard = await getIsFirstOnboard() ?? true;
-
-    if (isFirstOnBoard) {
-      Get.offAndToNamed(RouteHandler.ONBOARD);
-    } else if (hasLoggedInUser) {
+    if (hasLoggedInUser) {
       Get.offAndToNamed(RouteHandler.NAV);
     } else {
       Get.offAndToNamed(RouteHandler.LOGIN);

@@ -1,6 +1,33 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
 
-void main() {
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:get/get.dart';
+import 'package:uni_express/route_constraint.dart';
+import 'package:uni_express/setup.dart';
+import 'package:uni_express/utils/pageNavigation.dart';
+import 'package:uni_express/utils/request.dart';
+
+import 'View/LoginScreen/LoginByPhone.dart';
+import 'View/LoginScreen/LoginPhoneOTP.dart';
+import 'View/gift.dart';
+import 'View/home.dart';
+import 'View/login.dart';
+import 'View/nav_screen.dart';
+import 'View/notFoundScreen.dart';
+import 'View/orderHistory.dart';
+import 'View/product_detail.dart';
+import 'View/profile.dart';
+import 'View/signup.dart';
+import 'View/start_up.dart';
+import 'constraints.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  HttpOverrides.global = new MyHttpOverrides();
+
+  await setUp();
   runApp(MyApp());
 }
 
@@ -8,24 +35,82 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    return GetMaterialApp(
       title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
+      onGenerateRoute: (settings) {
+        switch (settings.name) {
+          case RouteHandler.LOGIN_PHONE:
+            return CupertinoPageRoute(
+                builder: (context) => LoginWithPhone(), settings: settings);
+          case RouteHandler.LOGIN_OTP:
+            Map map = settings.arguments;
+            return CupertinoPageRoute(
+                builder: (context) => LoginWithPhoneOTP(
+                  phoneNumber: map["phoneNumber"],
+                  verificationId: map["verId"],
+                ),
+                settings: settings);
+          case RouteHandler.LOGIN:
+            return ScaleRoute(page: LoginScreen());
+          case RouteHandler.GIFT:
+            return CupertinoPageRoute(
+                builder: (context) => GiftScreen(), settings: settings);
+          case RouteHandler.HOME:
+            return CupertinoPageRoute(
+                builder: (context) => HomeScreen(), settings: settings);
+          case RouteHandler.NAV:
+            return CupertinoPageRoute(
+                builder: (context) => RootScreen(
+                  initScreenIndex: settings.arguments ?? 0,
+                ),
+                settings: settings);
+        // case RouteHandler.ORDER_DETAIL:
+        //   return CupertinoPageRoute(
+        //       builder: (context) => OrderDetailScreen(), settings: settings);
+          case RouteHandler.ORDER_HISTORY:
+            return CupertinoPageRoute(
+                builder: (context) => OrderHistoryScreen(), settings: settings);
+          case RouteHandler.PRODUCT_DETAIL:
+            return CupertinoPageRoute<bool>(
+                builder: (context) => ProductDetailScreen(
+                  dto: settings.arguments,
+                ),
+                settings: settings);
+          case RouteHandler.PROFILE:
+            return CupertinoPageRoute(
+                builder: (context) => ProfileScreen(), settings: settings);
+          case RouteHandler.SIGN_UP:
+            return CupertinoPageRoute<bool>(
+                builder: (context) => SignUp(
+                  user: settings.arguments,
+                ),
+                settings: settings);
+          case RouteHandler.LOADING:
+            return CupertinoPageRoute<bool>(
+                builder: (context) => LoadingScreen(
+                  title: settings.arguments ?? "Đang xử lý...",
+                ),
+                settings: settings);
+          default:
+            return CupertinoPageRoute(
+                builder: (context) => NotFoundScreen(), settings: settings);
+        }
+      },
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-        // This makes the visual density adapt to the platform that you run
-        // the app on. For desktop platforms, the controls will be smaller and
-        // closer together (more dense) than on mobile platforms.
+        fontFamily: 'Gotham',
+        primarySwatch: Colors.green,
+        primaryColor: kPrimary,
+        scaffoldBackgroundColor: Color(0xFFF0F2F5),
+        toggleableActiveColor: kPrimary,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
+      home: StartUpView(),
+      // home: ProfileScreen(new AccountDTO(name: "Mít tơ Bin")),
     );
   }
 }

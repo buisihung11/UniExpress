@@ -6,11 +6,9 @@ import 'package:get/get.dart';
 import 'package:uni_express/ViewModel/index.dart';
 import 'package:uni_express/enums/view_status.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:uni_express/utils/index.dart';
 
 
 import '../constraints.dart';
-import '../route_constraint.dart';
 
 class DefaultAppBar extends StatefulWidget implements PreferredSizeWidget {
   final String title;
@@ -34,12 +32,6 @@ class _AppBarSate extends State<DefaultAppBar> {
     return AppBar(
       elevation: 5.0,
       centerTitle: true,
-      leading: IconButton(
-        icon: Icon(Icons.arrow_back_ios, color: Colors.white),
-        onPressed: () {
-          Get.back();
-        },
-      ),
       title: Text(
         widget.title,
         style: TextStyle(
@@ -145,46 +137,45 @@ class _HomeAppBarSate extends State<HomeAppBar> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Flexible(child: _buildWelcome()),
-                    SizedBox(height: 5),
-                    Row(
-                      children: [
-                        Image(
-                          image: AssetImage("assets/images/balance.png"),
-                          width: 18,
-                          height: 18,
-                        ),
-                        SizedBox(width: 10),
-                        Flexible(child: _buildBalance()),
-                      ],
-                    )
+                    // Row(
+                    //   children: [
+                    //     Image(
+                    //       image: AssetImage("assets/images/balance.png"),
+                    //       width: 18,
+                    //       height: 18,
+                    //     ),
+                    //     SizedBox(width: 10),
+                    //     Flexible(child: _buildBalance()),
+                    //   ],
+                    // )
                   ],
                 ),
               ),
             ],
           ),
-          Container(
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(25),
-                child: Container(
-                    padding: EdgeInsets.all(15),
-                    child: Image.asset(
-                      'assets/images/history.png',
-                      width: 24,
-                    )
-                    // Icon(
-                    //   Foundation.clipboard_notes,
-                    //   size: 30,
-                    //   color: Colors.white,
-                    // ),
-                    ),
-                onTap: () {
-                  Get.toNamed(RouteHandler.ORDER_HISTORY);
-                },
-              ),
-            ),
-          )
+          // Container(
+          //   child: Material(
+          //     color: Colors.transparent,
+          //     child: InkWell(
+          //       borderRadius: BorderRadius.circular(25),
+          //       child: Container(
+          //           padding: EdgeInsets.all(15),
+          //           child: Image.asset(
+          //             'assets/images/history.png',
+          //             width: 24,
+          //           )
+          //           // Icon(
+          //           //   Foundation.clipboard_notes,
+          //           //   size: 30,
+          //           //   color: Colors.white,
+          //           // ),
+          //           ),
+          //       onTap: () {
+          //         Get.toNamed(RouteHandler.ORDER_HISTORY);
+          //       },
+          //     ),
+          //   ),
+          // )
         ],
       ),
     );
@@ -225,58 +216,58 @@ class _HomeAppBarSate extends State<HomeAppBar> {
                     // color: Colors.white,
                   ),
                 ),
-                TextSpan(text: ", Đừng để bụng đói nha!"),
+                TextSpan(text: ", giao hàng lẹ nha bé!"),
               ]),
         );
       },
     );
   }
 
-  Widget _buildBalance() {
-    return ScopedModelDescendant<RootViewModel>(
-      builder: (context, child, model) {
-        final status = model.status;
-        final user = model.currentUser;
-        if (status == ViewStatus.Loading)
-          return Shimmer.fromColors(
-            baseColor: Colors.grey[300],
-            highlightColor: Colors.grey[100],
-            enabled: true,
-            child: Container(
-              width: MediaQuery.of(context).size.width * 0.3,
-              height: 20,
-              color: Colors.grey,
-            ),
-          );
-        else if (status == ViewStatus.Error) return Text("＞﹏＜");
-        return RichText(
-          text: TextSpan(
-              text: "Bạn có ",
-              style: TextStyle(
-                fontSize: 12,
-                // fontWeight: FontWeight.w100,
-                color: Colors.black45,
-              ),
-              children: <TextSpan>[
-                TextSpan(
-                  text: "${formatPrice(user.balance)}",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                    color: Colors.white,
-                  ),
-                ),
-                TextSpan(text: " và "),
-                TextSpan(
-                  text: "${user.point.round()} bean",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.deepOrangeAccent,
-                  ),
-                ),
-              ]),
-        );
-      },
-    );
-  }
+  // Widget _buildBalance() {
+  //   return ScopedModelDescendant<RootViewModel>(
+  //     builder: (context, child, model) {
+  //       final status = model.status;
+  //       final user = model.currentUser;
+  //       if (status == ViewStatus.Loading)
+  //         return Shimmer.fromColors(
+  //           baseColor: Colors.grey[300],
+  //           highlightColor: Colors.grey[100],
+  //           enabled: true,
+  //           child: Container(
+  //             width: MediaQuery.of(context).size.width * 0.3,
+  //             height: 20,
+  //             color: Colors.grey,
+  //           ),
+  //         );
+  //       else if (status == ViewStatus.Error) return Text("＞﹏＜");
+  //       return RichText(
+  //         text: TextSpan(
+  //             text: "Bạn có ",
+  //             style: TextStyle(
+  //               fontSize: 12,
+  //               // fontWeight: FontWeight.w100,
+  //               color: Colors.black45,
+  //             ),
+  //             children: <TextSpan>[
+  //               TextSpan(
+  //                 text: "${formatPrice(user.balance)}",
+  //                 style: TextStyle(
+  //                   fontWeight: FontWeight.bold,
+  //                   fontSize: 14,
+  //                   color: Colors.white,
+  //                 ),
+  //               ),
+  //               TextSpan(text: " và "),
+  //               TextSpan(
+  //                 text: "${user.point.round()} bean",
+  //                 style: TextStyle(
+  //                   fontWeight: FontWeight.bold,
+  //                   color: Colors.deepOrangeAccent,
+  //                 ),
+  //               ),
+  //             ]),
+  //       );
+  //     },
+  //   );
+  // }
 }

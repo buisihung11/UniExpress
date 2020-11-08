@@ -6,7 +6,6 @@ import 'package:uni_express/acessories/dialog.dart';
 import 'package:uni_express/enums/view_status.dart';
 import 'package:uni_express/services/analytic_service.dart';
 import 'package:uni_express/utils/shared_pref.dart';
-
 import '../route_constraint.dart';
 import 'base_model.dart';
 

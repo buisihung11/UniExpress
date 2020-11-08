@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:uni_express/View/index.dart';
 import 'package:uni_express/ViewModel/index.dart';
 import 'package:uni_express/acessories/bottomnavigator.dart';
 
@@ -20,12 +21,12 @@ class RootScreen extends StatefulWidget {
 
 class _RootScreenState extends State<RootScreen> {
   final List<Widget> _screens = [
-    HomeScreen(),
+    OrderHistoryScreen(),
     GiftScreen(),
     ProfileScreen(),
   ];
   final List<IconData> _icons = const [
-    MaterialCommunityIcons.food,
+    MaterialCommunityIcons.nature_people,
     Icons.card_giftcard,
     MaterialCommunityIcons.face_outline,
   ];
