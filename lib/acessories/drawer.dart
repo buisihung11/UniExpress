@@ -50,16 +50,17 @@ class _DrawState extends State<DrawerMenu>{
                           ),
                           child: ClipOval(
                             child: Image(
-                              image: NetworkImage(""),
+                              image: AssetImage("assets/images/avatar.png"),
                               height: 100,
                               width: 100,
                               fit: BoxFit.cover,
                             ),
                           )),
+                      SizedBox(height: 16,),
                       Text(user.name,
-                          style: TextStyle(fontSize: 18, color: Colors.orange)),
+                          style: TextStyle(fontSize: 18, color: Colors.orange, fontWeight: FontWeight.bold)),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           FlatButton(
                             color: Colors.white,
@@ -73,17 +74,10 @@ class _DrawState extends State<DrawerMenu>{
                             },
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(40)),
-                            child: Row(
-                              children: <Widget>[
-                                Text("Cập nhật ",
-                                    style: TextStyle(fontSize: 15)),
-                                Icon(Icons.edit),
-                              ],
-                            ),
+                            child: Text("Cập nhật ",
+                                style: TextStyle(fontSize: 15)),
                           ),
-                          SizedBox(
-                            width: 10,
-                          ),
+                         
                           FlatButton(
                             color: Colors.white,
                             splashColor: Colors.lightBlue,
@@ -100,7 +94,7 @@ class _DrawState extends State<DrawerMenu>{
                   ),
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                        image: AssetImage("image/background.jpg"),
+                        image: AssetImage("assets/images/background.jpg"),
                         fit: BoxFit.cover),
 //              gradient: LinearGradient(
 //                  colors: [Colors.deepOrange, Colors.orangeAccent]
@@ -127,7 +121,7 @@ class _DrawState extends State<DrawerMenu>{
         itemDrawer('Lấy hàng', Icons.art_track,
                 (){
                   Get.back();
-                  Get.toNamed(RouteHandler.LOADING);
+                  Get.toNamed(RouteHandler.STORE_ORDER);
             }),
 
       ],

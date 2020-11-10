@@ -4,6 +4,7 @@ const kPrimary = Color(0xFF4fba6f);
 final kSecondary = Color(0xFF438029);
 final kSuccess = Colors.green;
 final kFail = Colors.red;
+final kBean = Color(0xffffe844);
 final kBackgroundGrey = [
   Color(0xFFFFFFFF),
   Color(0xfffafafa),

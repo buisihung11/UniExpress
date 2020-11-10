@@ -54,5 +54,6 @@ class OrderHistoryViewModel extends BaseModel {
     } finally {}
   }
 
+
   void normalizeOrders(List<OrderDTO> orders) {}
 }

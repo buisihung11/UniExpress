@@ -8,7 +8,6 @@ import 'package:uni_express/ViewModel/index.dart';
 import 'package:uni_express/enums/view_status.dart';
 import 'package:uni_express/utils/regex.dart';
 
-
 import '../constraints.dart';
 import '../route_constraint.dart';
 
@@ -23,8 +22,6 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
-
-
   final form = FormGroup({
     'name': FormControl(validators: [
       Validators.required,
@@ -73,7 +70,6 @@ class _SignUpState extends State<SignUp> {
       } catch (e) {
         await _showMyDialog("Lỗi", e.toString());
       } finally {
-
         // Chuyen trang
         if (updateSucces) {
           print('Update Success');
@@ -266,7 +262,7 @@ class _SignUpState extends State<SignUp> {
                                     !widget.user.isFirstLogin) {
                                   Get.back();
                                 } else
-                                  Get.offAllNamed(RouteHandler.NAV);
+                                  Get.offAllNamed(RouteHandler.ORDER_HISTORY);
                               },
                               child: Text(
                                 "Bỏ qua",

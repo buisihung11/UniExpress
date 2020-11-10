@@ -4,6 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:uni_express/View/store_order.dart';
+import 'package:uni_express/View/store_order_detail.dart';
 import 'package:uni_express/route_constraint.dart';
 import 'package:uni_express/setup.dart';
 import 'package:uni_express/utils/pageNavigation.dart';
@@ -11,12 +13,11 @@ import 'package:uni_express/utils/request.dart';
 
 import 'View/LoginScreen/LoginByPhone.dart';
 import 'View/LoginScreen/LoginPhoneOTP.dart';
+import 'View/customer_order.dart';
 import 'View/gift.dart';
 import 'View/home.dart';
 import 'View/login.dart';
-import 'View/nav_screen.dart';
 import 'View/notFoundScreen.dart';
-import 'View/orderHistory.dart';
 import 'View/product_detail.dart';
 import 'View/profile.dart';
 import 'View/signup.dart';
@@ -63,12 +64,6 @@ class MyApp extends StatelessWidget {
           case RouteHandler.HOME:
             return CupertinoPageRoute(
                 builder: (context) => HomeScreen(), settings: settings);
-          case RouteHandler.NAV:
-            return CupertinoPageRoute(
-                builder: (context) => RootScreen(
-                  initScreenIndex: settings.arguments ?? 0,
-                ),
-                settings: settings);
         // case RouteHandler.ORDER_DETAIL:
         //   return CupertinoPageRoute(
         //       builder: (context) => OrderDetailScreen(), settings: settings);
@@ -94,6 +89,16 @@ class MyApp extends StatelessWidget {
             return CupertinoPageRoute<bool>(
                 builder: (context) => LoadingScreen(
                   title: settings.arguments ?? "Đang xử lý...",
+                ),
+                settings: settings);
+          case RouteHandler.STORE_ORDER:
+            return CupertinoPageRoute<bool>(
+                builder: (context) => StoreOrderScreen(
+                ),
+                settings: settings);
+          case RouteHandler.STORE_ORDER_DETAIL:
+            return CupertinoPageRoute<bool>(
+                builder: (context) => StoreOrderDetailScreen(
                 ),
                 settings: settings);
           default:

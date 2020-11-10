@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:uni_express/Model/DAO/StoreDAO.dart';
 import 'package:uni_express/Model/DAO/index.dart';
 import 'package:uni_express/Model/DTO/StoreDTO.dart';
 import 'package:uni_express/Model/DTO/index.dart';
@@ -27,9 +28,7 @@ class RootViewModel extends BaseModel {
     _instance = null;
   }
 
-  bool changeAddress = false;
 
-  StoreDTO dto, tmp;
 
   List<StoreDTO> list;
 
@@ -69,4 +68,10 @@ class RootViewModel extends BaseModel {
     destroyInstance();
   }
 
+  Future<void> getStore() async {
+    setState(ViewStatus.Loading);
+    StoreDAO dao = new StoreDAO();
+    list = await dao.getStores();
+    setState(ViewStatus.Completed);
+  }
 }
