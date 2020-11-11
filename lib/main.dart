@@ -15,10 +15,8 @@ import 'View/LoginScreen/LoginByPhone.dart';
 import 'View/LoginScreen/LoginPhoneOTP.dart';
 import 'View/customer_order.dart';
 import 'View/gift.dart';
-import 'View/home.dart';
 import 'View/login.dart';
 import 'View/notFoundScreen.dart';
-import 'View/product_detail.dart';
 import 'View/profile.dart';
 import 'View/signup.dart';
 import 'View/start_up.dart';
@@ -61,21 +59,12 @@ class MyApp extends StatelessWidget {
           case RouteHandler.GIFT:
             return CupertinoPageRoute(
                 builder: (context) => GiftScreen(), settings: settings);
-          case RouteHandler.HOME:
-            return CupertinoPageRoute(
-                builder: (context) => HomeScreen(), settings: settings);
         // case RouteHandler.ORDER_DETAIL:
         //   return CupertinoPageRoute(
         //       builder: (context) => OrderDetailScreen(), settings: settings);
           case RouteHandler.ORDER_HISTORY:
             return CupertinoPageRoute(
                 builder: (context) => OrderHistoryScreen(), settings: settings);
-          case RouteHandler.PRODUCT_DETAIL:
-            return CupertinoPageRoute<bool>(
-                builder: (context) => ProductDetailScreen(
-                  dto: settings.arguments,
-                ),
-                settings: settings);
           case RouteHandler.PROFILE:
             return CupertinoPageRoute(
                 builder: (context) => ProfileScreen(), settings: settings);
@@ -99,6 +88,7 @@ class MyApp extends StatelessWidget {
           case RouteHandler.STORE_ORDER_DETAIL:
             return CupertinoPageRoute<bool>(
                 builder: (context) => StoreOrderDetailScreen(
+                  store: settings.arguments,
                 ),
                 settings: settings);
           default:

@@ -38,11 +38,45 @@ class OrderHistoryViewModel extends BaseModel {
     } finally {}
   }
 
+  Future<void> getStoreOrders(int storeId) async {
+    try {
+      setState(ViewStatus.Loading);
+      final data = await _orderDAO.getStoreOrders(storeId);
+
+      orderThumbnail = data;
+
+      setState(ViewStatus.Completed);
+    } catch (e) {
+      bool result = await showErrorDialog();
+      print(e.toString());
+      if (result) {
+        await getStoreOrders(storeId);
+      } else
+        setState(ViewStatus.Error);
+    } finally {}
+  }
+
   Future<void> getOrderDetail(int orderId) async {
     // get order detail
     try {
       setState(ViewStatus.Loading);
       final data = await _orderDAO.getOrderDetail(orderId);
+      orderDetail = data;
+      setState(ViewStatus.Completed);
+    } catch (e) {
+      bool result = await showErrorDialog();
+      if (result) {
+        await getOrderDetail(orderId);
+      } else
+        setState(ViewStatus.Error);
+    } finally {}
+  }
+
+  Future<void> getStoreOrderDetail(int storeId, int orderId) async {
+    // get order detail
+    try {
+      setState(ViewStatus.Loading);
+      final data = await _orderDAO.getStoreOrderDetail(storeId, orderId);
       orderDetail = data;
       setState(ViewStatus.Completed);
     } catch (e) {

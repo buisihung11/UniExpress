@@ -77,7 +77,7 @@ class LoginViewModel extends BaseModel {
           // Navigate to sign up screen
           await Get.offAllNamed(RouteHandler.SIGN_UP, arguments: userInfo);
         } else {
-          await Get.offAllNamed(RouteHandler.ORDER_HISTORY);
+          await Get.offAllNamed(RouteHandler.STORE_ORDER);
           // chuyen sang trang home
         }
       } catch (e) {
@@ -125,7 +125,7 @@ class LoginViewModel extends BaseModel {
       if (authCredential == null) return;
 
       showLoadingDialog();
-      return Get.offAllNamed(RouteHandler.ORDER_HISTORY);
+      return Get.offAllNamed(RouteHandler.STORE_ORDER);
     } on FirebaseAuthException catch (e) {
       print("=====OTP Fail: ${e.message}  ");
       await await showStatusDialog(
@@ -155,7 +155,7 @@ class LoginViewModel extends BaseModel {
             snackPosition: SnackPosition.BOTTOM,
             margin: EdgeInsets.only(left: 8, right: 8, bottom: 32),
             borderRadius: 8);
-        await Get.offAllNamed(RouteHandler.ORDER_HISTORY);
+        await Get.offAllNamed(RouteHandler.STORE_ORDER);
       }
     } on FirebaseAuthException catch (e) {
       print("Error: " + e.toString());

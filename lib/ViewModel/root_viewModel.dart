@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:uni_express/Model/DAO/StoreDAO.dart';
+import 'package:uni_express/Model/DAO/SupplierDAO.dart';
 import 'package:uni_express/Model/DAO/index.dart';
 import 'package:uni_express/Model/DTO/StoreDTO.dart';
 import 'package:uni_express/Model/DTO/index.dart';
@@ -30,7 +31,8 @@ class RootViewModel extends BaseModel {
 
 
 
-  List<StoreDTO> list;
+  List<StoreDTO> listStore;
+  List<SupplierDTO> listSupplier;
 
   RootViewModel() {
     _dao = AccountDAO();
@@ -68,10 +70,17 @@ class RootViewModel extends BaseModel {
     destroyInstance();
   }
 
-  Future<void> getStore() async {
+  Future<void> getSuppliers() async {
+    setState(ViewStatus.Loading);
+    SupplierDAO dao = new SupplierDAO();
+    listSupplier = await dao.getSuppliers();
+    setState(ViewStatus.Completed);
+  }
+
+  Future<void> getStores(int supId) async {
     setState(ViewStatus.Loading);
     StoreDAO dao = new StoreDAO();
-    list = await dao.getStores();
+    listStore = await dao.getStores(supId);
     setState(ViewStatus.Completed);
   }
 }

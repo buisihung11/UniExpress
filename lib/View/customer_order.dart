@@ -182,18 +182,6 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 24, bottom: 16),
-          child: Text(
-            DateFormat('dd/MM/yyyy')
-                .format(DateTime.parse(orderSummary.checkInDate)),
-            style: TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-            ),
-          ),
-        ),
         ...orderSummary.orders.reversed
             .toList()
             .map((order) => _buildOrderItem(order, context))

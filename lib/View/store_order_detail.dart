@@ -17,14 +17,15 @@ import '../constraints.dart';
 
 
 class StoreOrderDetailScreen extends StatefulWidget {
-  StoreOrderDetailScreen({Key key}) : super(key: key);
+  StoreOrderDetailScreen({Key key, @required this.store}) : super(key: key);
+  StoreDTO store;
+
 
   @override
   _StoreOrderDetailScreenState createState() => _StoreOrderDetailScreenState();
 }
 
 class _StoreOrderDetailScreenState extends State<StoreOrderDetailScreen> {
-  List<bool> _selections = [true, false];
 
   OrderHistoryViewModel model = OrderHistoryViewModel();
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
@@ -37,17 +38,11 @@ class _StoreOrderDetailScreenState extends State<StoreOrderDetailScreen> {
   }
 
   Future<void> refreshFetchOrder() async {
-    OrderFilter filter =
-    _selections[0] ? OrderFilter.ORDERING : OrderFilter.DONE;
-    await model.getOrders(filter);
+    await model.getStoreOrders(widget.store.id);
   }
 
   Future<void> orderHandler() async {
-    OrderFilter filter =
-    _selections[0] ? OrderFilter.ORDERING : OrderFilter.DONE;
-    try {
-      await model.getOrders(filter);
-    } catch (e) {} finally {}
+    model.getStoreOrders(widget.store.id);
   }
 
   @override
@@ -56,58 +51,11 @@ class _StoreOrderDetailScreenState extends State<StoreOrderDetailScreen> {
       model: RootViewModel.getInstance(),
       child: Scaffold(
         drawer: DrawerMenu(),
-        appBar: DefaultAppBar(title: "Giao hàng",),
+        appBar: DefaultAppBar(title: "Đơn hàng",),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Center(
-              child: Container(
-                // color: Colors.amber,
-                padding: EdgeInsets.fromLTRB(0, 8, 0, 8),
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey,
-                      offset: Offset(0.0, 1.0), //(x,y)
-                      blurRadius: 6.0,
-                    ),
-                  ],
-                ),
-                child: Center(
-                  child: ToggleButtons(
-                    renderBorder: false,
-                    selectedColor: kPrimary,
-                    onPressed: (int index) async {
-                      setState(() {
-                        _selections = _selections.map((e) => false).toList();
-                        _selections[index] = true;
-                      });
-                      await orderHandler();
-                    },
-                    borderRadius: BorderRadius.circular(24),
-                    isSelected: _selections,
-                    children: [
-                      Container(
-                        width: MediaQuery.of(context).size.width / 3,
-                        child: Text(
-                          "Đang giao",
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                      Container(
-                        width: MediaQuery.of(context).size.width / 3,
-                        child: Text(
-                          "Hoàn thành",
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+
             SizedBox(height: 16),
             Expanded(
               child: ScopedModel<OrderHistoryViewModel>(
@@ -182,18 +130,18 @@ class _StoreOrderDetailScreenState extends State<StoreOrderDetailScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 24, bottom: 16),
-          child: Text(
-            DateFormat('dd/MM/yyyy')
-                .format(DateTime.parse(orderSummary.checkInDate)),
-            style: TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-            ),
-          ),
-        ),
+        // Padding(
+        //   padding: const EdgeInsets.only(left: 24, bottom: 16),
+        //   child: Text(
+        //     DateFormat('dd/MM/yyyy')
+        //         .format(DateTime.parse(orderSummary.checkInDate)),
+        //     style: TextStyle(
+        //       color: Colors.black,
+        //       fontWeight: FontWeight.bold,
+        //       fontSize: 18,
+        //     ),
+        //   ),
+        // ),
         ...orderSummary.orders.reversed
             .toList()
             .map((order) => _buildOrderItem(order, context))
@@ -271,6 +219,7 @@ class _StoreOrderDetailScreenState extends State<StoreOrderDetailScreen> {
     Get.bottomSheet(
       OrderDetailBottomSheet(
         orderId: orderId,
+        storeId: widget.store.id,
       ),
       isScrollControlled: true,
       shape: RoundedRectangleBorder(
@@ -286,10 +235,11 @@ class _StoreOrderDetailScreenState extends State<StoreOrderDetailScreen> {
 }
 
 class OrderDetailBottomSheet extends StatefulWidget {
-  final int orderId;
+  final int orderId, storeId;
   const OrderDetailBottomSheet({
     Key key,
     this.orderId,
+    this.storeId
   }) : super(key: key);
 
   @override
@@ -302,7 +252,7 @@ class _OrderDetailBottomSheetState extends State<OrderDetailBottomSheet> {
   @override
   void initState() {
     super.initState();
-    orderDetailModel.getOrderDetail(widget.orderId);
+    orderDetailModel.getStoreOrderDetail(widget.storeId, widget.orderId);
   }
 
   @override

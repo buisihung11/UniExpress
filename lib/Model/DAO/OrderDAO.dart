@@ -32,32 +32,23 @@ class OrderDAO {
     return orderDetail;
   }
 
-  // TODO: nen dep cart ra ngoai truyen vao parameter
-  Future<OrderStatus> createOrders(
-      String note, int store_id, int payment) async {
-    try {
-      Cart cart = await getCart();
-      if (cart != null) {
-        // print("Request Note: " + note);
-        cart.orderNote = note;
-        cart.payment = payment;
-        print(cart.toJsonAPi());
-        final res = await request.post('/orders',
-            queryParameters: {"brand-id": UNIBEAN_BRAND, "store-id": store_id},
-            data: cart.toJsonAPi());
-        if (res.statusCode == 200) {
-          return OrderStatus.Success;
-        }
-      }
-    } on DioError catch (e) {
-      if (e.response.statusCode == 400) {
-        print("Code: " + e.response.data['code'].toString());
-        if (e.response.data['code'] == 'ERR_BALANCE')
-          return OrderStatus.NoMoney;
-        return OrderStatus.Timeout;
-      }
-      return OrderStatus.Fail;
+  Future<List<OrderListDTO>> getStoreOrders(int storeId) async {
+    final res = await request.get('/stores/${storeId}/orders');
+    List<OrderListDTO> orderSummaryList;
+    if (res.statusCode == 200) {
+      orderSummaryList = OrderListDTO.fromList(res.data['data']);
     }
-    return OrderStatus.Fail;
+    return orderSummaryList;
+  }
+
+  Future<OrderDTO> getStoreOrderDetail(int storeId, int orderId) async {
+    final res = await request.get(
+      'stores/$storeId/orders/$orderId',
+    );
+    OrderDTO orderDetail;
+    if (res.statusCode == 200) {
+      orderDetail = OrderDTO.fromJSON(res.data['data']);
+    }
+    return orderDetail;
   }
 }

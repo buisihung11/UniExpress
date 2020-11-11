@@ -9,7 +9,7 @@ class OrderListDTO {
 
   factory OrderListDTO.fromJSON(Map<String, dynamic> map) => OrderListDTO(
         map["check_in_date"],
-        OrderDTO.fromList(map["list_of_orders"]),
+        OrderDTO.fromList(map["data"]),
       );
 
   static List<OrderListDTO> fromList(List list) =>
@@ -40,7 +40,7 @@ class OrderDTO {
     this.status,
     this.orderItems,
     this.paymentType,
-    this.invoiceId = "INVOICE-ID-123",
+    this.invoiceId,
   });
 
   factory OrderDTO.fromJSON(Map<String, dynamic> map) => OrderDTO(
