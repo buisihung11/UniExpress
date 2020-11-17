@@ -29,8 +29,6 @@ class RootViewModel extends BaseModel {
     _instance = null;
   }
 
-
-
   List<StoreDTO> listStore;
   List<SupplierDTO> listSupplier;
 
@@ -71,16 +69,51 @@ class RootViewModel extends BaseModel {
   }
 
   Future<void> getSuppliers() async {
-    setState(ViewStatus.Loading);
-    SupplierDAO dao = new SupplierDAO();
-    listSupplier = await dao.getSuppliers();
-    setState(ViewStatus.Completed);
+    try{
+      setState(ViewStatus.Loading);
+      SupplierDAO dao = new SupplierDAO();
+      listSupplier = await dao.getSuppliers();
+      setState(ViewStatus.Completed);
+    }catch (e) {
+      bool result = await showErrorDialog();
+      if (result) {
+        await getSuppliers();
+      } else
+        setState(ViewStatus.Error);
+    }
+
   }
 
   Future<void> getStores(int supId) async {
-    setState(ViewStatus.Loading);
-    StoreDAO dao = new StoreDAO();
-    listStore = await dao.getStores(supId);
-    setState(ViewStatus.Completed);
+    try{
+      setState(ViewStatus.Loading);
+      StoreDAO dao = new StoreDAO();
+      listStore = await dao.getStores(supId);
+      setState(ViewStatus.Completed);
+    }catch(e){
+      bool result = await showErrorDialog();
+      if (result) {
+        await getStores(supId);
+      } else
+        setState(ViewStatus.Error);
+    }
   }
+
+  Future<void> getVirtualStores() async {
+    try{
+      setState(ViewStatus.Loading);
+      StoreDAO dao = new StoreDAO();
+      listStore = await dao.getVirtualStores();
+      setState(ViewStatus.Completed);
+    }catch(e){
+      bool result = await showErrorDialog();
+      if (result) {
+        await getVirtualStores();
+      } else
+        setState(ViewStatus.Error);
+    }
+
+  }
+  
 }
+

@@ -1,4 +1,3 @@
-import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -50,8 +49,7 @@ class _StoreOrderDetailScreenState extends State<StoreOrderDetailScreen> {
     return ScopedModel<RootViewModel>(
       model: RootViewModel.getInstance(),
       child: Scaffold(
-        drawer: DrawerMenu(),
-        appBar: DefaultAppBar(title: "Đơn hàng",),
+        appBar: DefaultAppBar(title: widget.store.name,),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -127,21 +125,39 @@ class _StoreOrderDetailScreenState extends State<StoreOrderDetailScreen> {
   }
 
   Widget _buildOrderSummary(OrderListDTO orderSummary) {
+    DateTime orderDate = DateTime.parse(orderSummary.checkInDate);
+    DateTime today = DateTime.now();
+    bool isToday = false;
+
+    if(orderDate.year == today.year && orderDate.month == today.month && orderDate.day == today.day){
+      isToday = true;
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Padding(
-        //   padding: const EdgeInsets.only(left: 24, bottom: 16),
-        //   child: Text(
-        //     DateFormat('dd/MM/yyyy')
-        //         .format(DateTime.parse(orderSummary.checkInDate)),
-        //     style: TextStyle(
-        //       color: Colors.black,
-        //       fontWeight: FontWeight.bold,
-        //       fontSize: 18,
-        //     ),
-        //   ),
-        // ),
+        isToday ?
+        Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: Text("Tổng số đơn hôm nay: " + orderSummary.orders.length.toString(),
+            style: TextStyle(
+              color: Colors.red,
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
+          ),
+        ) : Container(),
+        Padding(
+          padding: const EdgeInsets.only(left: 24, bottom: 16),
+          child: Text(
+            DateFormat('dd/MM/yyyy')
+                .format(orderDate),
+            style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
+          ),
+        ),
         ...orderSummary.orders.reversed
             .toList()
             .map((order) => _buildOrderItem(order, context))
@@ -181,13 +197,6 @@ class _StoreOrderDetailScreenState extends State<StoreOrderDetailScreen> {
                       fontSize: 16,
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    "FPT University",
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey[600],
                     ),
                   ),
                 ],
@@ -287,29 +296,29 @@ class _OrderDetailBottomSheetState extends State<OrderDetailBottomSheet> {
                     width: Get.width,
                     child: Row(
                       children: [
-                        Container(
-                          width: 85,
-                          child: orderDetail.status == OrderFilter.ORDERING
-                              ? TyperAnimatedTextKit(
-                              speed: Duration(milliseconds: 100),
-                              onTap: () {
-                                print("Tap Event");
-                              },
-                              text: ['Đang giao...'],
-                              textStyle: TextStyle(
-                                  fontFamily: "Bobbers",
-                                  color: Colors.amber),
-                              textAlign: TextAlign.start,
-                              alignment: AlignmentDirectional
-                                  .topStart // or Alignment.topLeft
-                          )
-                              : Text(
-                            'Đã nhận hàng',
-                            style: TextStyle(
-                              color: kPrimary,
-                            ),
-                          ),
-                        ),
+                        // Container(
+                        //   width: 85,
+                        //   child: orderDetail.status == OrderFilter.ORDERING
+                        //       ? TyperAnimatedTextKit(
+                        //       speed: Duration(milliseconds: 100),
+                        //       onTap: () {
+                        //         print("Tap Event");
+                        //       },
+                        //       text: ['Đang giao...'],
+                        //       textStyle: TextStyle(
+                        //           fontFamily: "Bobbers",
+                        //           color: Colors.amber),
+                        //       textAlign: TextAlign.start,
+                        //       alignment: AlignmentDirectional
+                        //           .topStart // or Alignment.topLeft
+                        //   )
+                        //       : Text(
+                        //     'Đã nhận hàng',
+                        //     style: TextStyle(
+                        //       color: kPrimary,
+                        //     ),
+                        //   ),
+                        // ),
                         Expanded(
                           child: Padding(
                             padding: EdgeInsets.only(left: 8, right: 8),
@@ -453,23 +462,23 @@ class _OrderDetailBottomSheetState extends State<OrderDetailBottomSheet> {
               ),
             ],
           ),
-          RichText(
-            text: TextSpan(
-                text: "P.Thức: ",
-                style: TextStyle(fontSize: 12, color: Colors.black),
-                children: <TextSpan>[
-                  TextSpan(
-                    text:
-                    "${PaymentType.getPaymentName(orderDetail.paymentType)}",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontStyle: FontStyle.italic,
-                      fontSize: 12,
-                      color: kPrimary,
-                    ),
-                  ),
-                ]),
-          ),
+          // RichText(
+          //   text: TextSpan(
+          //       text: "P.Thức: ",
+          //       style: TextStyle(fontSize: 12, color: Colors.black),
+          //       children: <TextSpan>[
+          //         TextSpan(
+          //           text:
+          //           "${PaymentType.getPaymentName(orderDetail.paymentType)}",
+          //           style: TextStyle(
+          //             fontWeight: FontWeight.bold,
+          //             fontStyle: FontStyle.italic,
+          //             fontSize: 12,
+          //             color: kPrimary,
+          //           ),
+          //         ),
+          //       ]),
+          // ),
           Container(
             margin: EdgeInsets.only(top: 15),
             padding: const EdgeInsets.all(10),

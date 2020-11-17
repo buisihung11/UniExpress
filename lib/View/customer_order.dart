@@ -1,4 +1,3 @@
-import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -6,29 +5,28 @@ import 'package:scoped_model/scoped_model.dart';
 import 'package:uni_express/Model/DTO/index.dart';
 import 'package:uni_express/ViewModel/index.dart';
 import 'package:uni_express/acessories/appbar.dart';
-import 'package:uni_express/acessories/dash_border.dart';
-import 'package:uni_express/acessories/drawer.dart';
 import 'package:uni_express/acessories/loading.dart';
 import 'package:uni_express/enums/view_status.dart';
+import 'package:uni_express/route_constraint.dart';
 import 'package:uni_express/utils/index.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../constraints.dart';
 
-
-class OrderHistoryScreen extends StatefulWidget {
-  OrderHistoryScreen({Key key}) : super(key: key);
+class CustomerOrderDetailScreen extends StatefulWidget {
+  CustomerOrderDetailScreen({Key key, @required this.store}) : super(key: key);
+  StoreDTO store;
 
   @override
-  _OrderHistoryScreenState createState() => _OrderHistoryScreenState();
+  _CustomerOrderDetailScreenState createState() =>
+      _CustomerOrderDetailScreenState();
 }
 
-class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
-  List<bool> _selections = [true, false];
-
+class _CustomerOrderDetailScreenState extends State<CustomerOrderDetailScreen> {
   OrderHistoryViewModel model = OrderHistoryViewModel();
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       new GlobalKey<RefreshIndicatorState>();
+  TextEditingController _editingController = new TextEditingController();
 
   @override
   void initState() {
@@ -37,17 +35,13 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
   }
 
   Future<void> refreshFetchOrder() async {
-    OrderFilter filter =
-        _selections[0] ? OrderFilter.ORDERING : OrderFilter.DONE;
-    await model.getOrders(filter);
+    _editingController.clear();
+    await model.getCustomerOrders(widget.store.id);
   }
 
   Future<void> orderHandler() async {
-    OrderFilter filter =
-        _selections[0] ? OrderFilter.ORDERING : OrderFilter.DONE;
-    try {
-      await model.getOrders(filter);
-    } catch (e) {} finally {}
+    _editingController.clear();
+    model.getCustomerOrders(widget.store.id);
   }
 
   @override
@@ -55,73 +49,57 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
     return ScopedModel<RootViewModel>(
       model: RootViewModel.getInstance(),
       child: Scaffold(
-        drawer: DrawerMenu(),
-        appBar: DefaultAppBar(title: "Giao hàng",),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Center(
-              child: Container(
-                // color: Colors.amber,
-                padding: EdgeInsets.fromLTRB(0, 8, 0, 8),
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey,
-                      offset: Offset(0.0, 1.0), //(x,y)
-                      blurRadius: 6.0,
-                    ),
-                  ],
-                ),
-                child: Center(
-                  child: ToggleButtons(
-                    renderBorder: false,
-                    selectedColor: kPrimary,
-                    onPressed: (int index) async {
-                      setState(() {
-                        _selections = _selections.map((e) => false).toList();
-                        _selections[index] = true;
-                      });
-                      await orderHandler();
-                    },
-                    borderRadius: BorderRadius.circular(24),
-                    isSelected: _selections,
-                    children: [
-                      Container(
-                        width: MediaQuery.of(context).size.width / 3,
-                        child: Text(
-                          "Đang giao",
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                      Container(
-                        width: MediaQuery.of(context).size.width / 3,
-                        child: Text(
-                          "Hoàn thành",
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(height: 16),
-            Expanded(
-              child: ScopedModel<OrderHistoryViewModel>(
-                model: model,
+        appBar: DefaultAppBar(
+          title: widget.store.name,
+        ),
+        body: ScopedModel<OrderHistoryViewModel>(
+          model: model,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _searchBar(),
+              selectSearchType(),
+              Expanded(
                 child: Container(
                   child: _buildOrders(),
                   color: Color(0xffefefef),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  Widget _searchBar() {
+    return ScopedModelDescendant<OrderHistoryViewModel>(builder:
+        (BuildContext context, Widget child, OrderHistoryViewModel model) {
+      return TextFormField(
+        controller: _editingController,
+        decoration: InputDecoration(
+            prefixIcon: Icon(
+              Icons.search,
+              color: Colors.black,
+            ),
+            suffixIcon: IconButton(
+              icon: Icon(Icons.clear, color: Colors.black),
+              onPressed: () {
+                _editingController.clear();
+                model.showAll();
+              },
+            ),
+            contentPadding: EdgeInsets.only(left: 15.0, top: 15.0),
+            hintText: 'Nhập vào đây để tìm',
+            hintStyle: TextStyle(color: Colors.orange)),
+        onFieldSubmitted: (String input) {
+          if (input.trim().isNotEmpty) {
+            model.searchOrderByPhone(input);
+            // model.getEventResult(input);
+          }
+        },
+      );
+    });
   }
 
   Widget _buildOrders() {
@@ -179,9 +157,43 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
   }
 
   Widget _buildOrderSummary(OrderListDTO orderSummary) {
+    DateTime orderDate = DateTime.parse(orderSummary.checkInDate);
+    DateTime today = DateTime.now();
+    bool isToday = false;
+
+    if (orderDate.year == today.year &&
+        orderDate.month == today.month &&
+        orderDate.day == today.day) {
+      isToday = true;
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        isToday
+            ? Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Text(
+                  "Tổng số đơn hôm nay: " +
+                      orderSummary.orders.length.toString(),
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+              )
+            : Container(),
+        Padding(
+          padding: const EdgeInsets.only(left: 24, bottom: 16),
+          child: Text(
+            DateFormat('dd/MM/yyyy').format(orderDate),
+            style: TextStyle(
+              color: kSecondary,
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
+          ),
+        ),
         ...orderSummary.orders.reversed
             .toList()
             .map((order) => _buildOrderItem(order, context))
@@ -207,8 +219,8 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
         child: Column(
           children: [
             ListTile(
-              onTap: () {
-                _settingModalBottomSheet(order.id);
+              onTap: () async {
+                await _settingModalBottomSheet(order);
               },
               contentPadding: EdgeInsets.fromLTRB(16, 8, 16, 8),
               title: Column(
@@ -216,17 +228,29 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "${order.itemQuantity} món",
+                    "${order.invoiceId}",
                     style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                    ),
+                        fontSize: 16,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(
+                    height: 8,
                   ),
                   Text(
-                    "FPT University",
+                    "KH: " + order.customer.name,
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 4,
+                  ),
+                  Text(
+                    order.customer.phone,
+                    style: TextStyle(
+                      fontSize: 14,
                       color: Colors.grey[600],
                     ),
                   ),
@@ -241,7 +265,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                     style: TextStyle(
                       color: kPrimary,
                       fontWeight: FontWeight.bold,
-                      fontSize: 20,
+                      fontSize: 16,
                     ),
                   ),
                 ],
@@ -254,322 +278,51 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
     );
   }
 
-  void _settingModalBottomSheet(orderId) {
+  Future<void> _settingModalBottomSheet(order) async {
     // get orderDetail
-    Get.bottomSheet(
-      OrderDetailBottomSheet(
-        orderId: orderId,
-      ),
-      isScrollControlled: true,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(16),
-          topRight: Radius.circular(16),
-        ),
-        // side: BorderSide(color: Colors.orange),
-      ),
-      backgroundColor: kBackgroundGrey[2],
-    );
-  }
-}
-
-class OrderDetailBottomSheet extends StatefulWidget {
-  final int orderId;
-  const OrderDetailBottomSheet({
-    Key key,
-    this.orderId,
-  }) : super(key: key);
-
-  @override
-  _OrderDetailBottomSheetState createState() => _OrderDetailBottomSheetState();
-}
-
-class _OrderDetailBottomSheetState extends State<OrderDetailBottomSheet> {
-  final orderDetailModel = OrderHistoryViewModel();
-
-  @override
-  void initState() {
-    super.initState();
-    orderDetailModel.getOrderDetail(widget.orderId);
+    bool result = await Get.toNamed(RouteHandler.CUSTOMER_ORDER_DETAIL_SHEET,
+        arguments: order);
+    if (result != null && result) {
+      await refreshFetchOrder();
+    }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: Get.width,
-      padding: EdgeInsets.fromLTRB(16, 8, 16, 0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(16),
-          topRight: Radius.circular(16),
-        ),
-        // color: Colors.grey,
-      ),
-      height: 500,
-      child: ScopedModel<OrderHistoryViewModel>(
-        model: orderDetailModel,
-        child: ScopedModelDescendant<OrderHistoryViewModel>(
-          builder: (context, child, model) {
-            final status = model.status;
-            if (status == ViewStatus.Loading)
-              return AspectRatio(
-                aspectRatio: 1,
-                child: Center(child: CircularProgressIndicator()),
-              );
-
-            final orderDetail = model.orderDetail;
-            return Container(
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    width: Get.width,
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 85,
-                          child: orderDetail.status == OrderFilter.ORDERING
-                              ? TyperAnimatedTextKit(
-                                  speed: Duration(milliseconds: 100),
-                                  onTap: () {
-                                    print("Tap Event");
-                                  },
-                                  text: ['Đang giao...'],
-                                  textStyle: TextStyle(
-                                      fontFamily: "Bobbers",
-                                      color: Colors.amber),
-                                  textAlign: TextAlign.start,
-                                  alignment: AlignmentDirectional
-                                      .topStart // or Alignment.topLeft
-                                  )
-                              : Text(
-                                  'Đã nhận hàng',
-                                  style: TextStyle(
-                                    color: kPrimary,
-                                  ),
-                                ),
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding: EdgeInsets.only(left: 8, right: 8),
-                            child: Divider(),
-                          ),
-                        ),
-                        Container(
-                          width: Get.width * 0.4,
-                          child: Column(
-                            children: [
-                              Text(
-                                '${orderDetail.invoiceId}',
-                                style: TextStyle(color: Colors.black45),
-                                overflow: TextOverflow.ellipsis,
-                                textAlign: TextAlign.center,
-                                maxLines: 2,
-                              ),
-                            ],
-                          ),
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding: EdgeInsets.only(left: 8, right: 8),
-                            child: Divider(),
-                          ),
-                        ),
-                        Text(
-                          DateFormat('HH:mm dd/MM')
-                              .format(DateTime.parse(orderDetail.orderTime)),
-                          style: TextStyle(color: Colors.black45),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  SizedBox(height: 8),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: buildOrderSummaryList(orderDetail),
-                    ),
-                  ),
-                  layoutSubtotal(orderDetail),
-                ],
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-
-  ListView buildOrderSummaryList(OrderDTO orderDetail) {
-    return ListView.separated(
-      itemBuilder: (context, index) {
-        final orderMaster = orderDetail.orderItems[index];
-        final orderChilds = orderMaster.productChilds;
-
-        double orderItemPrice = orderMaster.amount;
-        orderChilds?.forEach((element) {
-          orderItemPrice += element.amount;
-        });
-        // orderItemPrice *= orderMaster.quantity;
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
+  Widget selectSearchType() {
+    return ScopedModelDescendant<OrderHistoryViewModel>(
+      builder:
+          (BuildContext context, Widget child, OrderHistoryViewModel model) {
+        if (model.list != null && model.list.isNotEmpty) {
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
                 Text(
-                  "${orderMaster.quantity}x",
-                  style: TextStyle(color: Colors.grey),
+                  "Tìm kiếm theo:",
+                  style: TextStyle(fontWeight: FontWeight.bold),
                 ),
-                SizedBox(width: 4),
-                Expanded(
-                  child: Container(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          orderMaster.masterProductName.contains("Extra")
-                              ? orderMaster.masterProductName
-                                  .replaceAll("Extra", "+")
-                              : orderMaster.masterProductName,
-                          textAlign: TextAlign.start,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        ...orderChilds
-                            .map(
-                              (child) => Text(
-                                child.masterProductName.contains("Extra")
-                                    ? child.masterProductName
-                                        .replaceAll("Extra", "+")
-                                    : child.masterProductName,
-                                style: TextStyle(fontSize: 12),
-                              ),
-                            )
-                            .toList(),
-                      ],
-                    ),
-                  ),
+                SizedBox(
+                  width: 10,
                 ),
-                Text("${formatPrice(orderItemPrice)}"),
+                DropdownButton(
+                  hint: new Text("Select a cast"),
+                  value: model.selectedFilter,
+                  items: model.list
+                      .map((e) =>
+                          DropdownMenuItem(value: e.filter, child: Text(e.name)))
+                      .toList(),
+                  onChanged: (value) {
+                    _editingController.clear();
+                    model.showAll();
+                    model.changeSearchFilter(value);
+                  },
+                ),
               ],
             ),
-          ],
-        );
+          );
+        }
+        return Container();
       },
-      separatorBuilder: (context, index) => Divider(),
-      itemCount: orderDetail.orderItems.length,
     );
-  }
-
-  Widget layoutSubtotal(OrderDTO orderDetail) {
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      padding: const EdgeInsets.all(8),
-      // margin: const EdgeInsets.only(bottom: 8),
-      decoration: BoxDecoration(
-        color: kBackgroundGrey[0],
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "Tổng tiền",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Text(
-                "${orderDetail.itemQuantity} món",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-          RichText(
-            text: TextSpan(
-                text: "P.Thức: ",
-                style: TextStyle(fontSize: 12, color: Colors.black),
-                children: <TextSpan>[
-                  TextSpan(
-                    text:
-                        "${PaymentType.getPaymentName(orderDetail.paymentType)}",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontStyle: FontStyle.italic,
-                      fontSize: 12,
-                      color: kPrimary,
-                    ),
-                  ),
-                ]),
-          ),
-          Container(
-            margin: EdgeInsets.only(top: 15),
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-                border: Border.all(color: kBackgroundGrey[4]),
-                borderRadius: BorderRadius.all(Radius.circular(10))),
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 5, bottom: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Tạm tính",
-                        style: TextStyle(),
-                      ),
-                      Text("${formatPrice(orderDetail.total)}"),
-                    ],
-                  ),
-                ),
-                MySeparator(),
-                // OTHER AMOUNTS GO HERE
-                ..._buildOtherAmount(orderDetail.otherAmounts),
-                Divider(color: Colors.black),
-                Padding(
-                  padding: const EdgeInsets.only(top: 5, bottom: 5),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Tổng cộng",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        "${formatPrice(orderDetail.finalAmount)}",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                )
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  List<Widget> _buildOtherAmount(List<OtherAmount> otherAmounts) {
-    if (otherAmounts == null) return [SizedBox.shrink()];
-    return otherAmounts
-        .map((amountObj) => Padding(
-              padding: const EdgeInsets.only(top: 5, bottom: 5),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text("${amountObj.name}", style: TextStyle()),
-                  Text("${formatPrice(amountObj.amount)}", style: TextStyle()),
-                ],
-              ),
-            ))
-        .toList();
   }
 }

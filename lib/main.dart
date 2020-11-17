@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:uni_express/View/customer_order_detail.dart';
 import 'package:uni_express/View/store_order.dart';
 import 'package:uni_express/View/store_order_detail.dart';
 import 'package:uni_express/route_constraint.dart';
@@ -14,9 +15,8 @@ import 'package:uni_express/utils/request.dart';
 import 'View/LoginScreen/LoginByPhone.dart';
 import 'View/LoginScreen/LoginPhoneOTP.dart';
 import 'View/customer_order.dart';
-import 'View/gift.dart';
+import 'View/index.dart';
 import 'View/login.dart';
-import 'View/notFoundScreen.dart';
 import 'View/profile.dart';
 import 'View/signup.dart';
 import 'View/start_up.dart';
@@ -56,15 +56,15 @@ class MyApp extends StatelessWidget {
                 settings: settings);
           case RouteHandler.LOGIN:
             return ScaleRoute(page: LoginScreen());
-          case RouteHandler.GIFT:
+          case RouteHandler.CUSTOMER_ORDER:
             return CupertinoPageRoute(
-                builder: (context) => GiftScreen(), settings: settings);
-        // case RouteHandler.ORDER_DETAIL:
-        //   return CupertinoPageRoute(
-        //       builder: (context) => OrderDetailScreen(), settings: settings);
-          case RouteHandler.ORDER_HISTORY:
-            return CupertinoPageRoute(
-                builder: (context) => OrderHistoryScreen(), settings: settings);
+                builder: (context) => CustomerOrderScreen(), settings: settings);
+          case RouteHandler.CUSTOMER_ORDER_DETAIL:
+            return CupertinoPageRoute<bool>(
+                builder: (context) => CustomerOrderDetailScreen(store: settings.arguments), settings: settings);
+          case RouteHandler.CUSTOMER_ORDER_DETAIL_SHEET:
+            return CupertinoPageRoute<bool>(
+                builder: (context) => CustomerOrderDetailBottomSheet(order: settings.arguments,), settings: settings);
           case RouteHandler.PROFILE:
             return CupertinoPageRoute(
                 builder: (context) => ProfileScreen(), settings: settings);

@@ -66,8 +66,8 @@ class CustomInterceptors extends InterceptorsWrapper {
 
 class MyRequest {
   static BaseOptions options = new BaseOptions(
-      baseUrl: 'http://api.dominos.reso.vn/api/v2',
-      // baseUrl: 'https://192.168.1.199:45455/api/v2',
+      baseUrl: 'http://13.250.232.85/api/v2',
+      //baseUrl: 'https://118.71.16.121:80/api/v2',
       headers: {
         Headers.contentTypeHeader: "application/json",
       },
@@ -82,6 +82,7 @@ class MyRequest {
         return response; // continue
       },
       onError: (DioError e) async {
+        print(e.request.baseUrl + e.request.path);
         // Do something with response error
         if (e.response.statusCode == 401) {
           await showStatusDialog("assets/images/global_error.png", "Lỗi",

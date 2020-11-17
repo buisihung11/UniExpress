@@ -82,7 +82,7 @@ class _DrawState extends State<DrawerMenu>{
                             color: Colors.white,
                             splashColor: Colors.lightBlue,
                             onPressed: () async {
-                              await model.signOut();
+                              await model.processSignout();
                             },
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(40)),
@@ -116,7 +116,7 @@ class _DrawState extends State<DrawerMenu>{
         itemDrawer(
             'Giao hàng', Icons.person, (){
           Get.back();
-          Get.toNamed(RouteHandler.ORDER_HISTORY);
+          Get.toNamed(RouteHandler.CUSTOMER_ORDER);
         }),
         itemDrawer('Lấy hàng', Icons.art_track,
                 (){

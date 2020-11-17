@@ -14,10 +14,13 @@ class AccountDAO {
       String fcmToken =
           await PushNotificationService.getInstance().getFcmToken();
       print("FCM_token: " + fcmToken);
+      print('idToken $idToken');
 
       Response response = await request
           .post("/login", data: {"id_token": idToken, "fcm_token": fcmToken});
-      print('idToken $idToken');
+
+
+
       // set access token
       final user = response.data["data"];
       final userDTO = AccountDTO.fromJson(user);

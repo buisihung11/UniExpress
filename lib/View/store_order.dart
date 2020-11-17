@@ -18,6 +18,9 @@ class StoreOrderScreen extends StatefulWidget {
 
 class _StoreOrderScreenState extends State<StoreOrderScreen> {
 
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+  new GlobalKey<RefreshIndicatorState>();
+
   @override
   void initState() {
     super.initState();
@@ -69,107 +72,100 @@ class _StoreOrderScreenState extends State<StoreOrderScreen> {
             aspectRatio: 1,
             child: Center(child: CircularProgressIndicator()),
           );
-
-        List<Widget> list = List();
-        model.listSupplier.forEach((element) {
-          list.add(Container(
-            margin: EdgeInsets.only(top: 16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.all(Radius.circular(8)),
-            ),
-            child: ListTile(
-              onTap: () {
-                _settingModalBottomSheet(element.id);
-              },
-              contentPadding: EdgeInsets.fromLTRB(16, 8, 16, 8),
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "ID: " + element.id.toString(),
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.black,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  Text(
-                    "Tên: " + element.name,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.black,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  Text(
-                    "Địa chỉ: " + element.location,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.black,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  Text(
-                    "Brand ID: " + element.brand_id.toString(),
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.black,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  Text(
-                    "Brand name: " + element.brand_name,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.black,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  Text(
-                    "Liên hệ: " + element.contact_name,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.black,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  Row(
-                    children: [
-                      Icon(Icons.phone),
-                      SizedBox(width: 8,),
-                      Text(
-                        element.phone_number,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+        else if(status == ViewStatus.Error){
+          return AspectRatio(
+            aspectRatio: 1,
+            child: Center(child: Text("Đã có sự cố xảy ra :)"),)
+          );
+        }
+        if(model.listSupplier != null){
+          List<Widget> list = List();
+          model.listSupplier.forEach((element) {
+            list.add(Container(
+              margin: EdgeInsets.only(top: 16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.all(Radius.circular(8)),
               ),
+              child: ListTile(
+                onTap: () {
+                  _settingModalBottomSheet(element.id);
+                },
+                contentPadding: EdgeInsets.fromLTRB(16, 8, 16, 8),
+                title: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Brand ID: " + element.brand_id.toString(),
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.black,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    Text(
+                      "Brand name: " + element.brand_name,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.black,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    Text(
+                      "Địa chỉ: " + element.location,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.black,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    Text(
+                      "Liên hệ: " + element.contact_name,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.black,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    Row(
+                      children: [
+                        Icon(Icons.phone),
+                        SizedBox(width: 8,),
+                        Text(
+                          element.phone_number,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ));
+          });
+          return RefreshIndicator(
+            key: _refreshIndicatorKey,
+            onRefresh: refreshFetchOrder,
+            child: Column(
+              children: [
+                ...list
+              ],
             ),
-          ));
-        });
-        return Column(
-          children: [
-            ...list
-          ],
-        );
+          );
+        }
+        return Container();
+
       },
     );
   }
@@ -232,6 +228,12 @@ class _OrderDetailBottomSheetState extends State<OrderDetailBottomSheet> {
                 aspectRatio: 1,
                 child: Center(child: CircularProgressIndicator()),
               );
+            else if(status == ViewStatus.Error){
+              return AspectRatio(
+                  aspectRatio: 1,
+                  child: Center(child: Text("Đã có sự cố xảy ra :)"),)
+              );
+            }
 
             List<Widget> list = new List();
             model.listStore.forEach((element) {
