@@ -116,183 +116,181 @@ class _SignUpState extends State<SignUp> {
     final screenHeight = MediaQuery.of(context).size.height;
     return ScopedModel(
       model: SignUpViewModel(),
-      child: SafeArea(
-        child: Scaffold(
-          body: ReactiveForm(
-            formGroup: this.form,
-            child: Stack(
-              children: [
-                // BACKGROUND
-                Container(
-                  color: Color(0xFFddf1ed),
-                ),
-                Positioned(
-                  right: 0,
-                  bottom: 0,
-                  child: Container(
-                    height: screenHeight * 0.35,
-                    // width: 250,
-                    child: Image.asset(
-                      'assets/images/sign_up_character.png',
-                    ),
+      child: Scaffold(
+        resizeToAvoidBottomPadding: false,
+        body: ReactiveForm(
+          formGroup: this.form,
+          child: Stack(
+            children: [
+              // BACKGROUND
+              Container(
+                color: Color(0xFFddf1ed),
+              ),
+              Positioned(
+                right: 0,
+                bottom: 0,
+                child: Container(
+                  height: screenHeight * 0.35,
+                  // width: 250,
+                  child: Image.asset(
+                    'assets/images/sign_up_character.png',
                   ),
                 ),
-                // SIGN-UP FORM
-                Stack(
-                  overflow: Overflow.visible,
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadiusDirectional.circular(25),
-                        color: Colors.white,
-                      ),
-                      margin: EdgeInsets.fromLTRB(15, 15, 15, 0),
-                      padding: EdgeInsets.fromLTRB(15, 30, 15, 0),
-                      width: screenWidth,
-                      height: screenHeight * 0.65,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // HELLO SECTION
-                          Text(
-                            "Vài bước nữa là xong rồi nè!",
-                            style: TextStyle(
-                              color: Color(0xFF00d286),
-                              fontSize: 25,
-                              fontWeight: FontWeight.bold,
-                            ),
+              ),
+              // SIGN-UP FORM
+              Stack(
+                overflow: Overflow.visible,
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadiusDirectional.circular(16),
+                      color: Colors.white,
+                    ),
+                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                    padding: EdgeInsets.fromLTRB(8, 16, 8, 0),
+                    width: screenWidth,
+                    height: screenHeight * 0.75,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // HELLO SECTION
+                        Text(
+                          "Vài bước nữa là xong rồi nè!",
+                          style: TextStyle(
+                            color: Color(0xFF00d286),
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
                           ),
-                          SizedBox(height: 15),
-                          Text(
-                            "Giúp mình điền vài thông tin dưới đây nhé.",
-                            style: TextStyle(
-                              color: Color(0xFF00d286),
-                              fontSize: 18,
-                              fontWeight: FontWeight.w500,
-                            ),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          "Giúp mình điền vài thông tin dưới đây nhé.",
+                          style: TextStyle(
+                            color: Color(0xFF00d286),
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
                           ),
-                          SizedBox(height: 30),
-                          // FORM ITEM
-                          Expanded(
-                            child: ListView(
-                              shrinkWrap: true,
-                              children: [
-                                FormItem("Họ Tên", "Nguyễn Văn A", "name"),
-                                FormItem(
-                                  "Số Điện Thoại",
-                                  "012345678",
-                                  "phone",
-                                  isReadOnly: true,
-                                ),
-                                FormItem("Email", "abc@gmail.com", "email"),
-                                FormItem(
-                                  "Ngày sinh",
-                                  "01/01/2020",
-                                  "birthdate",
-                                  keyboardType: "datetime",
-                                ),
-                                FormItem(
-                                  "Giới tính",
-                                  null,
-                                  "gender",
-                                  keyboardType: "radio",
-                                  radioGroup: [
-                                    {
-                                      "title": "Nam",
-                                      "value": "nam",
-                                    },
-                                    {
-                                      "title": "Nữ",
-                                      "value": "nữ",
-                                    }
-                                  ],
-                                ),
-                              ],
-                            ),
+                        ),
+                        SizedBox(height: 16),
+                        // FORM ITEM
+                        Expanded(
+                          child: ListView(
+                            shrinkWrap: true,
+                            children: [
+                              FormItem("Họ Tên", "Nguyễn Văn A", "name"),
+                              FormItem(
+                                "Số Điện Thoại",
+                                "012345678",
+                                "phone",
+                                isReadOnly: true,
+                              ),
+                              FormItem("Email", "abc@gmail.com", "email"),
+                              FormItem(
+                                "Ngày sinh",
+                                "01/01/2020",
+                                "birthdate",
+                                keyboardType: "datetime",
+                              ),
+                              FormItem(
+                                "Giới tính",
+                                null,
+                                "gender",
+                                keyboardType: "radio",
+                                radioGroup: [
+                                  {
+                                    "title": "Nam",
+                                    "value": "nam",
+                                  },
+                                  {
+                                    "title": "Nữ",
+                                    "value": "nữ",
+                                  }
+                                ],
+                              ),
+                            ],
                           ),
-
-                          //SIGN UP BUTTON
-                          ReactiveFormConsumer(builder: (context, form, child) {
-                            return AnimatedContainer(
-                              duration: Duration(milliseconds: 2000),
-                              curve: Curves.easeInOut,
-                              margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                              child: Center(
-                                child: ScopedModelDescendant<SignUpViewModel>(
-                                  builder: (context, child, model) =>
-                                      RaisedButton(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(18.0),
-                                      // side: BorderSide(color: Colors.red),
-                                    ),
-                                    color: form.valid
-                                        ? Color(0xFF00d286)
-                                        : Colors.grey,
-                                    onPressed: () async {
-                                      if (model.status == ViewStatus.Completed)
-                                        await _onUpdateUser(model);
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: model.status == ViewStatus.Loading
-                                          ? CircularProgressIndicator(
-                                              backgroundColor:
-                                                  Color(0xFFFFFFFF))
-                                          : Text(
-                                              form.valid
-                                                  ? "Hoàn thành"
-                                                  : "Bạn chưa điền xong",
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.bold,
-                                              ),
+                        ),
+                        //SIGN UP BUTTON
+                        ReactiveFormConsumer(builder: (context, form, child) {
+                          return AnimatedContainer(
+                            duration: Duration(milliseconds: 2000),
+                            curve: Curves.easeInOut,
+                            margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                            child: Center(
+                              child: ScopedModelDescendant<SignUpViewModel>(
+                                builder: (context, child, model) =>
+                                    RaisedButton(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(18.0),
+                                    // side: BorderSide(color: Colors.red),
+                                  ),
+                                  color: form.valid
+                                      ? Color(0xFF00d286)
+                                      : Colors.grey,
+                                  onPressed: () async {
+                                    if (model.status == ViewStatus.Completed)
+                                      await _onUpdateUser(model);
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: model.status == ViewStatus.Loading
+                                        ? CircularProgressIndicator(
+                                            backgroundColor:
+                                                Color(0xFFFFFFFF))
+                                        : Text(
+                                            form.valid
+                                                ? "Hoàn thành"
+                                                : "Bạn chưa điền xong",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
                                             ),
-                                    ),
+                                          ),
                                   ),
                                 ),
                               ),
-                            );
-                          }),
-                          // BACK TO NAV SCREEN
-                          Center(
-                            child: GestureDetector(
-                              onTap: () async {
-                                if (widget.user != null &&
-                                    !widget.user.isFirstLogin) {
-                                  Get.back();
-                                } else
-                                  Get.offAllNamed(RouteHandler.STORE_ORDER);
-                              },
-                              child: Text(
-                                "Bỏ qua",
-                                style: TextStyle(
-                                  color: Colors.grey[400],
-                                  fontWeight: FontWeight.bold,
-                                ),
+                            ),
+                          );
+                        }),
+                        // BACK TO NAV SCREEN
+                        Center(
+                          child: GestureDetector(
+                            onTap: () async {
+                              if (widget.user != null &&
+                                  !widget.user.isFirstLogin) {
+                                Get.back();
+                              } else
+                                Get.offAllNamed(RouteHandler.STORE_ORDER);
+                            },
+                            child: Text(
+                              "Bỏ qua",
+                              style: TextStyle(
+                                color: Colors.grey[400],
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
-                          SizedBox(height: 10),
-                        ],
-                      ),
-                    ),
-                    Positioned(
-                      bottom: -50,
-                      left: screenWidth * 0.55,
-                      child: ClipPath(
-                        clipper: TriangleClipPath(),
-                        child: Container(
-                          width: 50,
-                          height: 50,
-                          color: Colors.white,
                         ),
+                        SizedBox(height: 10),
+                      ],
+                    ),
+                  ),
+                  Positioned(
+                    bottom: -50,
+                    left: screenWidth * 0.55,
+                    child: ClipPath(
+                      clipper: TriangleClipPath(),
+                      child: Container(
+                        width: 50,
+                        height: 50,
+                        color: Colors.white,
                       ),
                     ),
-                  ],
-                ),
-              ],
-            ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
@@ -390,6 +388,7 @@ class FormItem extends StatelessWidget {
           formControlName: formName,
           textCapitalization: TextCapitalization.words,
           textAlignVertical: TextAlignVertical.center,
+          textInputAction: this.label == "Email" ? TextInputAction.done : TextInputAction.next,
           decoration: InputDecoration(
             filled: true,
             fillColor: Color(0xFFf4f4f6),

@@ -245,6 +245,7 @@ class _OrderDetailBottomSheetState extends State<OrderDetailBottomSheet> {
                       color: kPrimary),
                   child: ListTile(
                       onTap: () {
+                        Get.back();
                         Get.toNamed(RouteHandler.STORE_ORDER_DETAIL, arguments: element);
                       },
                       contentPadding: EdgeInsets.all(8),
