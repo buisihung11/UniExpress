@@ -8,19 +8,20 @@ class SupplierDTO {
   String contact_name;
   String phone_number;
 
-  SupplierDTO(
-      {this.id,
-      this.name,
-      this.location,
-      this.createDate,
-      this.brand_id,
-      this.brand_name,
-      this.contact_name,
-      this.phone_number});
+  SupplierDTO({
+    this.id,
+    this.name,
+    this.location,
+    this.createDate,
+    this.brand_id,
+    this.brand_name,
+    this.contact_name,
+    this.phone_number,
+  });
 
   factory SupplierDTO.fromJson(dynamic json) {
     return SupplierDTO(
-        id: json['supplier_id'],
+        id: json['id'],
         name: json['name'],
         location: json['address'],
         createDate: DateTime.parse(json['create_date']),
@@ -32,7 +33,7 @@ class SupplierDTO {
 
   Map<String, dynamic> toJson() {
     return {
-      "supplier_id": id,
+      "id": id,
       "name": name,
       "address": location,
       "create_date": createDate.toIso8601String(),

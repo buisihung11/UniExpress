@@ -6,7 +6,6 @@ import 'package:uni_express/Model/DTO/index.dart';
 import 'package:uni_express/ViewModel/index.dart';
 import 'package:uni_express/acessories/appbar.dart';
 import 'package:uni_express/acessories/dash_border.dart';
-import 'package:uni_express/acessories/drawer.dart';
 import 'package:uni_express/acessories/loading.dart';
 import 'package:uni_express/enums/view_status.dart';
 import 'package:uni_express/utils/index.dart';
@@ -16,8 +15,9 @@ import '../constraints.dart';
 
 
 class StoreOrderDetailScreen extends StatefulWidget {
-  StoreOrderDetailScreen({Key key, @required this.store}) : super(key: key);
-  StoreDTO store;
+  StoreOrderDetailScreen({Key key, @required this.supplier, this.storeId}) : super(key: key);
+  SupplierDTO supplier;
+  final int storeId;
 
 
   @override
@@ -37,11 +37,11 @@ class _StoreOrderDetailScreenState extends State<StoreOrderDetailScreen> {
   }
 
   Future<void> refreshFetchOrder() async {
-    await model.getStoreOrders(widget.store.id);
+    await model.getStoreOrders(widget.storeId, widget.supplier.id);
   }
 
   Future<void> orderHandler() async {
-    model.getStoreOrders(widget.store.id);
+    model.getStoreOrders(widget.storeId, widget.supplier.id);
   }
 
   @override
@@ -49,7 +49,7 @@ class _StoreOrderDetailScreenState extends State<StoreOrderDetailScreen> {
     return ScopedModel<RootViewModel>(
       model: RootViewModel.getInstance(),
       child: Scaffold(
-        appBar: DefaultAppBar(title: widget.store.name,),
+        appBar: DefaultAppBar(title: widget.supplier.name,),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -228,7 +228,8 @@ class _StoreOrderDetailScreenState extends State<StoreOrderDetailScreen> {
     Get.bottomSheet(
       OrderDetailBottomSheet(
         orderId: orderId,
-        storeId: widget.store.id,
+        storeId: widget.storeId,
+        supplierId: widget.supplier.id,
       ),
       isScrollControlled: true,
       shape: RoundedRectangleBorder(
@@ -244,11 +245,12 @@ class _StoreOrderDetailScreenState extends State<StoreOrderDetailScreen> {
 }
 
 class OrderDetailBottomSheet extends StatefulWidget {
-  final int orderId, storeId;
+  final int orderId, storeId, supplierId;
   const OrderDetailBottomSheet({
     Key key,
     this.orderId,
-    this.storeId
+    this.storeId,
+    this.supplierId
   }) : super(key: key);
 
   @override
@@ -261,7 +263,7 @@ class _OrderDetailBottomSheetState extends State<OrderDetailBottomSheet> {
   @override
   void initState() {
     super.initState();
-    orderDetailModel.getStoreOrderDetail(widget.storeId, widget.orderId);
+    orderDetailModel.getStoreOrderDetail(widget.storeId, widget.supplierId, widget.orderId);
   }
 
   @override
@@ -462,23 +464,6 @@ class _OrderDetailBottomSheetState extends State<OrderDetailBottomSheet> {
               ),
             ],
           ),
-          // RichText(
-          //   text: TextSpan(
-          //       text: "P.Thức: ",
-          //       style: TextStyle(fontSize: 12, color: Colors.black),
-          //       children: <TextSpan>[
-          //         TextSpan(
-          //           text:
-          //           "${PaymentType.getPaymentName(orderDetail.paymentType)}",
-          //           style: TextStyle(
-          //             fontWeight: FontWeight.bold,
-          //             fontStyle: FontStyle.italic,
-          //             fontSize: 12,
-          //             color: kPrimary,
-          //           ),
-          //         ),
-          //       ]),
-          // ),
           Container(
             margin: EdgeInsets.only(top: 15),
             padding: const EdgeInsets.all(10),
@@ -487,20 +472,6 @@ class _OrderDetailBottomSheetState extends State<OrderDetailBottomSheet> {
                 borderRadius: BorderRadius.all(Radius.circular(10))),
             child: Column(
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 5, bottom: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Tạm tính",
-                        style: TextStyle(),
-                      ),
-                      Text("${formatPrice(orderDetail.total)}"),
-                    ],
-                  ),
-                ),
-                MySeparator(),
                 // OTHER AMOUNTS GO HERE
                 ..._buildOtherAmount(orderDetail.otherAmounts),
                 Divider(color: Colors.black),

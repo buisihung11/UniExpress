@@ -50,45 +50,66 @@ class MyApp extends StatelessWidget {
             Map map = settings.arguments;
             return CupertinoPageRoute(
                 builder: (context) => LoginWithPhoneOTP(
-                  phoneNumber: map["phoneNumber"],
-                  verificationId: map["verId"],
-                ),
+                      phoneNumber: map["phoneNumber"],
+                      verificationId: map["verId"],
+                    ),
                 settings: settings);
           case RouteHandler.LOGIN:
             return ScaleRoute(page: LoginScreen());
-          case RouteHandler.CUSTOMER_ORDER:
-            return CupertinoPageRoute(
-                builder: (context) => CustomerOrderScreen(), settings: settings);
-          case RouteHandler.CUSTOMER_ORDER_DETAIL:
-            return CupertinoPageRoute<bool>(
-                builder: (context) => CustomerOrderDetailScreen(store: settings.arguments), settings: settings);
-          case RouteHandler.CUSTOMER_ORDER_DETAIL_SHEET:
-            return CupertinoPageRoute<bool>(
-                builder: (context) => CustomerOrderDetailBottomSheet(order: settings.arguments,), settings: settings);
           case RouteHandler.PROFILE:
             return CupertinoPageRoute(
                 builder: (context) => ProfileScreen(), settings: settings);
           case RouteHandler.SIGN_UP:
             return CupertinoPageRoute<bool>(
                 builder: (context) => SignUp(
-                  user: settings.arguments,
-                ),
+                      user: settings.arguments,
+                    ),
                 settings: settings);
           case RouteHandler.LOADING:
             return CupertinoPageRoute<bool>(
                 builder: (context) => LoadingScreen(
-                  title: settings.arguments ?? "Đang xử lý...",
-                ),
+                      title: settings.arguments ?? "Đang xử lý...",
+                    ),
                 settings: settings);
           case RouteHandler.STORE_ORDER:
             return CupertinoPageRoute<bool>(
                 builder: (context) => StoreOrderScreen(
-                ),
+                      store: settings.arguments,
+                    ),
+                settings: settings);
+          case RouteHandler.STORE_ORDER_PRE:
+            return CupertinoPageRoute<bool>(
+                builder: (context) => CampusScreen(
+                    navigationPath: RouteHandler.STORE_ORDER,
+                    title: "Lấy hàng"),
                 settings: settings);
           case RouteHandler.STORE_ORDER_DETAIL:
+            StoreOrderDetailScreen storeOrderDetailScreen = settings.arguments;
             return CupertinoPageRoute<bool>(
                 builder: (context) => StoreOrderDetailScreen(
-                  store: settings.arguments,
+                      supplier: storeOrderDetailScreen.supplier,
+                  storeId: storeOrderDetailScreen.storeId,
+                    ),
+                settings: settings);
+          case RouteHandler.CUSTOMER_ORDER_PRE: // List store screen
+            return CupertinoPageRoute(
+                builder: (context) => CampusScreen(
+                  navigationPath: RouteHandler.CUSTOMER_ORDER,
+                  title: "Giao hàng",
+                ),
+                settings: settings);
+          case RouteHandler.CUSTOMER_ORDER:
+            return CupertinoPageRoute<bool>(
+                builder: (context) =>
+                    CustomerOrderScreen(store: settings.arguments),
+                settings: settings);
+          case RouteHandler.CUSTOMER_ORDER_DETAIL:
+            CustomerOrderDetailArguments customerOrderDetailAgrs =
+                settings.arguments;
+            return CupertinoPageRoute<bool>(
+                builder: (context) => CustomerOrderDetail(
+                  order: customerOrderDetailAgrs.order,
+                  storeId: customerOrderDetailAgrs.storeId,
                 ),
                 settings: settings);
           default:
@@ -109,4 +130,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-

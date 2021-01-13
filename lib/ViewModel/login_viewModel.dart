@@ -77,7 +77,7 @@ class LoginViewModel extends BaseModel {
           // Navigate to sign up screen
           await Get.offAllNamed(RouteHandler.SIGN_UP, arguments: userInfo);
         } else {
-          await Get.offAllNamed(RouteHandler.STORE_ORDER);
+          await Get.offAllNamed(RouteHandler.STORE_ORDER_PRE);
           // chuyen sang trang home
         }
       } catch (e) {
@@ -155,7 +155,7 @@ class LoginViewModel extends BaseModel {
             snackPosition: SnackPosition.BOTTOM,
             margin: EdgeInsets.only(left: 8, right: 8, bottom: 32),
             borderRadius: 8);
-        await Get.offAllNamed(RouteHandler.STORE_ORDER);
+        await Get.offAllNamed(RouteHandler.STORE_ORDER_PRE);
       }
     } on FirebaseAuthException catch (e) {
       print("Error: " + e.toString());

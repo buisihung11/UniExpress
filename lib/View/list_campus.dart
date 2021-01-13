@@ -5,21 +5,25 @@ import 'package:uni_express/ViewModel/index.dart';
 import 'package:uni_express/acessories/appbar.dart';
 import 'package:uni_express/acessories/drawer.dart';
 import 'package:uni_express/enums/view_status.dart';
-import 'package:uni_express/route_constraint.dart';
 
 import '../constraints.dart';
 
-class CustomerOrderScreen extends StatefulWidget {
-  CustomerOrderScreen({Key key}) : super(key: key);
+class CampusScreen extends StatefulWidget {
+  final String navigationPath;
+  final String title;
+  CampusScreen(
+      {Key key,
+      this.navigationPath,
+      this.title})
+      : super(key: key);
 
   @override
-  _CustomerOrderScreenState createState() => _CustomerOrderScreenState();
+  _CampusScreenState createState() => _CampusScreenState();
 }
 
-class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
-
+class _CampusScreenState extends State<CampusScreen> {
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
-  new GlobalKey<RefreshIndicatorState>();
+      new GlobalKey<RefreshIndicatorState>();
 
   @override
   void initState() {
@@ -33,12 +37,13 @@ class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.navigationPath);
     return ScopedModel<RootViewModel>(
       model: RootViewModel.getInstance(),
       child: Scaffold(
         drawer: DrawerMenu(),
         appBar: DefaultAppBar(
-          title: "Giao hàng",
+          title: widget.title,
         ),
         body: Container(
           margin: EdgeInsets.only(left: 16, right: 16),
@@ -72,13 +77,14 @@ class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
             aspectRatio: 1,
             child: Center(child: CircularProgressIndicator()),
           );
-        else if(status == ViewStatus.Error){
+        else if (status == ViewStatus.Error) {
           return AspectRatio(
               aspectRatio: 1,
-              child: Center(child: Text("Đã có sự cố xảy ra :)"),)
-          );
+              child: Center(
+                child: Text("Đã có sự cố xảy ra :)"),
+              ));
         }
-        if(model.listStore != null){
+        if (model.listStore != null) {
           List<Widget> list = List();
           model.listStore.forEach((element) {
             list.add(Container(
@@ -89,7 +95,9 @@ class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
               ),
               child: ListTile(
                 onTap: () {
-                  Get.toNamed(RouteHandler.CUSTOMER_ORDER_DETAIL, arguments: element);
+                  Get.toNamed(
+                      widget.navigationPath,
+                      arguments: element);
                 },
                 contentPadding: EdgeInsets.fromLTRB(16, 8, 16, 8),
                 title: Column(
@@ -99,10 +107,9 @@ class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
                     Text(
                       element.id.toString() + " - " + element.name,
                       style: TextStyle(
-                        fontSize: 16,
-                        color: kPrimary,
-                        fontWeight: FontWeight.bold
-                      ),
+                          fontSize: 16,
+                          color: kPrimary,
+                          fontWeight: FontWeight.bold),
                       textAlign: TextAlign.center,
                     ),
                     SizedBox(
@@ -124,16 +131,12 @@ class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
             key: _refreshIndicatorKey,
             onRefresh: refreshFetchOrder,
             child: Column(
-              children: [
-                ...list
-              ],
+              children: [...list],
             ),
           );
         }
         return Container();
-
       },
     );
   }
-
 }

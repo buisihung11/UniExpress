@@ -1,4 +1,3 @@
-
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -7,18 +6,15 @@ import 'package:uni_express/acessories/list_item.dart';
 import 'package:uni_express/enums/view_status.dart';
 import 'package:uni_express/route_constraint.dart';
 
-
-
-class DrawerMenu extends StatefulWidget{
+class DrawerMenu extends StatefulWidget {
   @override
   _DrawState createState() {
     // TODO: implement createState
     return new _DrawState();
   }
-
 }
 
-class _DrawState extends State<DrawerMenu>{
+class _DrawState extends State<DrawerMenu> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -56,9 +52,14 @@ class _DrawState extends State<DrawerMenu>{
                               fit: BoxFit.cover,
                             ),
                           )),
-                      SizedBox(height: 16,),
+                      SizedBox(
+                        height: 16,
+                      ),
                       Text(user.name,
-                          style: TextStyle(fontSize: 18, color: Colors.orange, fontWeight: FontWeight.bold)),
+                          style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.orange,
+                              fontWeight: FontWeight.bold)),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
@@ -67,8 +68,9 @@ class _DrawState extends State<DrawerMenu>{
                             splashColor: Colors.lightBlue,
                             onPressed: () async {
                               Get.back();
-                              bool result = await Get.toNamed(RouteHandler.SIGN_UP);
-                              if(result != null && result){
+                              bool result =
+                                  await Get.toNamed(RouteHandler.SIGN_UP, arguments: model.currentUser);
+                              if (result != null && result) {
                                 model.fetchUser();
                               }
                             },
@@ -77,7 +79,6 @@ class _DrawState extends State<DrawerMenu>{
                             child: Text("Cập nhật ",
                                 style: TextStyle(fontSize: 15)),
                           ),
-                         
                           FlatButton(
                             color: Colors.white,
                             splashColor: Colors.lightBlue,
@@ -86,7 +87,8 @@ class _DrawState extends State<DrawerMenu>{
                             },
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(40)),
-                            child: Text("Đăng xuất", style: TextStyle(fontSize: 15)),
+                            child: Text("Đăng xuất",
+                                style: TextStyle(fontSize: 15)),
                           ),
                         ],
                       )
@@ -113,21 +115,17 @@ class _DrawState extends State<DrawerMenu>{
   Widget listItem() {
     return Column(
       children: <Widget>[
-        itemDrawer(
-            'Giao hàng', Icons.person, (){
+        itemDrawer('Lấy hàng', Icons.art_track, () {
           Get.back();
-          Get.toNamed(RouteHandler.CUSTOMER_ORDER);
+          Get.toNamed(
+            RouteHandler.STORE_ORDER_PRE,
+          );
         }),
-        itemDrawer('Lấy hàng', Icons.art_track,
-                (){
-                  Get.back();
-                  Get.toNamed(RouteHandler.STORE_ORDER);
-            }),
-
+        itemDrawer('Giao hàng', Icons.person, () {
+          Get.back();
+          Get.toNamed(RouteHandler.CUSTOMER_ORDER_PRE);
+        }),
       ],
     );
   }
-
 }
-
-

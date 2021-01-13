@@ -40,7 +40,8 @@ Widget itemMenu(
     margin: const EdgeInsets.all(10.0),
     decoration: BoxDecoration(
         border: Border.all(color: Colors.grey, width: 2),
-        borderRadius: BorderRadius.all(Radius.circular(10)), color: color),
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+        color: color),
     child: InkWell(
         child: Padding(
           padding: const EdgeInsets.all(5.0),
@@ -68,7 +69,6 @@ Widget itemMenu(
   );
 }
 
-
 Widget itemMenuForCast(
     String text, IconData iconData, List<Color> colors, Function function) {
   return Container(
@@ -76,12 +76,11 @@ Widget itemMenuForCast(
     width: 160,
     margin: const EdgeInsets.all(10.0),
     decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey, width: 2),
-        borderRadius: BorderRadius.all(Radius.circular(10)),
-        gradient: LinearGradient(
-          colors: colors
-        )
-
+      border: Border.all(color: Colors.grey, width: 2),
+      borderRadius: BorderRadius.all(Radius.circular(10)),
+      // gradient: LinearGradient(
+      //   colors: colors
+      // )
     ),
     child: InkWell(
         child: Padding(

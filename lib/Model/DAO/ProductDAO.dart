@@ -8,7 +8,7 @@ import '../../constraints.dart';
 class ProductDAO {
   // 1. Get Product List from API
   Future<List<ProductDTO>> getProducts(int store_id) async {
-    final res = await request.get('/products', queryParameters: {
+    final res = await request.get('products', queryParameters: {
       "brand-id": UNIBEAN_BRAND,
       "store-id": store_id,
       "fields": "ChildProducts",

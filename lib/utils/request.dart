@@ -7,7 +7,6 @@ import 'package:uni_express/acessories/dialog.dart';
 
 import '../route_constraint.dart';
 
-
 class AppException implements Exception {
   final _message;
   final _prefix;
@@ -66,7 +65,7 @@ class CustomInterceptors extends InterceptorsWrapper {
 
 class MyRequest {
   static BaseOptions options = new BaseOptions(
-      baseUrl: 'http://13.250.232.85/api/v2',
+      baseUrl: 'http://13.212.101.182/api/',
       //baseUrl: 'https://118.71.16.121:80/api/v2',
       headers: {
         Headers.contentTypeHeader: "application/json",

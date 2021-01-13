@@ -31,8 +31,8 @@ const String defaultImage =
 const String TIME = "12:10";
 const String VERSION = "0.0.1";
 const TEST_STORE = 69;
-const int ORDER_NEW_STATUS = 0;
-const int ORDER_DONE_STATUS = 4;
+const int ORDER_NEW_STATUS = 1;
+const int ORDER_DONE_STATUS = 3;
 const int VIRTUAL_STORE_TYPE = 8;
 
 class ProductType {

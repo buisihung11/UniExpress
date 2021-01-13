@@ -67,7 +67,7 @@ class OrderDTO {
           stores: map["store_orders"] != null
           ? StoreDTO.fromList(map["store_orders"])
       : null,
-        paymentType: map["payment_type"][0] ?? 0,
+        paymentType: map["payment_type"] != null ? map["payment_type"][0] : 0,
       );
 
   static List<OrderDTO> fromList(List list) =>
@@ -80,6 +80,7 @@ class OrderItemDTO {
   final double amount;
   final int quantity;
   final List<OrderItemDTO> productChilds;
+  final String supplier_store_name;
 
   OrderItemDTO({
     this.masterProductName,
@@ -87,13 +88,15 @@ class OrderItemDTO {
     this.amount,
     this.productChilds,
     this.quantity,
+    this.supplier_store_name
   });
 
   factory OrderItemDTO.fromJSON(Map<String, dynamic> map) => OrderItemDTO(
         masterProductName: map["product_name"],
         quantity: map["quantity"],
-        amount: map["final_amount"],
+        amount: map["final_amount"]??map['unit_cost'],
         productChilds: OrderItemDTO.fromList(map["list_of_childs"]),
+    supplier_store_name: map["supplier_store_name"]
       );
 
   static List<OrderItemDTO> fromList(List list) =>

@@ -11,25 +11,34 @@ import 'package:uni_express/utils/index.dart';
 
 import '../constraints.dart';
 
-class CustomerOrderDetailBottomSheet extends StatefulWidget {
+class CustomerOrderDetailArguments {
   final OrderDTO order;
-  const CustomerOrderDetailBottomSheet({
+  final int storeId;
+
+  CustomerOrderDetailArguments(this.order, this.storeId);
+}
+
+class CustomerOrderDetail extends StatefulWidget {
+  final OrderDTO order;
+  final int storeId;
+  const CustomerOrderDetail({
     Key key,
     this.order,
+    this.storeId,
   }) : super(key: key);
 
   @override
-  _OrderDetailBottomSheetState createState() => _OrderDetailBottomSheetState();
+  _OrderDetailState createState() => _OrderDetailState();
 }
 
-class _OrderDetailBottomSheetState
-    extends State<CustomerOrderDetailBottomSheet> {
+class _OrderDetailState
+    extends State<CustomerOrderDetail> {
   final orderDetailModel = OrderHistoryViewModel();
 
   @override
   void initState() {
     super.initState();
-    orderDetailModel.getCustomerOrderDetail(widget.order.id);
+    orderDetailModel.getCustomerOrderDetail(widget.storeId, widget.order.id);
   }
 
   @override
@@ -59,8 +68,10 @@ class _OrderDetailBottomSheetState
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        DateFormat('dd/MM/yyy hh:mm')
-                            .format(DateTime.parse(orderDetail.orderTime)),
+                        orderDetail.orderTime != null
+                            ? DateFormat('dd/MM/yyy hh:mm')
+                                .format(DateTime.parse(orderDetail.orderTime))
+                            : '-',
                         style: TextStyle(
                             color: Colors.black45,
                             fontSize: 18,
@@ -69,7 +80,7 @@ class _OrderDetailBottomSheetState
                     ),
                   ),
                   SizedBox(height: 8),
-                  listStore(orderDetail),
+                  listStore(model.listSuppliers),
                   SizedBox(height: 8),
                   buildOrderSummaryList(orderDetail),
                   layoutSubtotal(orderDetail),
@@ -82,60 +93,15 @@ class _OrderDetailBottomSheetState
     );
   }
 
-  Widget listStore(OrderDTO orderDetail) {
+  Widget listStore(List<String> suppliers) {
     List<Widget> listStores = List();
-    orderDetail.stores.forEach((element) {
+    suppliers.forEach((element) {
       listStores.add(Container(
         width: Get.width,
-        margin: EdgeInsets.only(top: 8, bottom: 8),
+        //margin: EdgeInsets.only(top: 8, bottom: 8),
         padding: EdgeInsets.all(8),
-        decoration: BoxDecoration(
-            border: Border.all(),
-            borderRadius: BorderRadius.all(Radius.circular(8))),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              element.invoice_id,
-              style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold),
-            ),
-            SizedBox(
-              height: 8,
-            ),
-            Text(
-              "Nhà hàng: " + element.name,
-              style: TextStyle(color: Colors.black45),
-            ),
-            SizedBox(
-              height: 8,
-            ),
-            Text(
-              "Địa chỉ: " + element.location,
-              style: TextStyle(color: Colors.black45),
-            ),
-            SizedBox(
-              height: 8,
-            ),
-            Text(
-              "Liên hệ: " + element.phone,
-              style: TextStyle(color: Colors.black45),
-            ),
-            SizedBox(
-              height: 8,
-            ),
-            element.notes != null
-                ? Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
-                    child: Text(
-                      "Notes: " + element.notes,
-                      style: TextStyle(color: Colors.red),
-                    ),
-                  )
-                : SizedBox.shrink(),
-          ],
+        child: Text(element,
+          style: TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.bold),
         ),
       ));
     });
@@ -148,6 +114,7 @@ class _OrderDetailBottomSheetState
             "Đơn từ nhà hàng:",
             style: TextStyle(color: Colors.deepOrange, fontSize: 17),
           ),
+          SizedBox(height: 8,),
           ...listStores
         ],
       ),
@@ -169,8 +136,9 @@ class _OrderDetailBottomSheetState
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(top:8.0),
+            padding: const EdgeInsets.only(top: 8.0),
             child: ListView.separated(
+              physics: NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               itemBuilder: (context, index) {
                 final orderMaster = orderDetail.orderItems[index];
@@ -198,7 +166,8 @@ class _OrderDetailBottomSheetState
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  orderMaster.masterProductName.contains("Extra")
+                                  orderMaster.masterProductName
+                                          .contains("Extra")
                                       ? orderMaster.masterProductName
                                           .replaceAll("Extra", "+")
                                       : orderMaster.masterProductName,
@@ -267,10 +236,11 @@ class _OrderDetailBottomSheetState
               ),
             ],
           ),
+          SizedBox(height: 8,),
           RichText(
             text: TextSpan(
                 text: "P.Thức: ",
-                style: TextStyle(fontSize: 12, color: Colors.black),
+                style: TextStyle(fontSize: 14, color: Colors.black),
                 children: <TextSpan>[
                   TextSpan(
                     text:
@@ -278,7 +248,7 @@ class _OrderDetailBottomSheetState
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontStyle: FontStyle.italic,
-                      fontSize: 12,
+                      fontSize: 14,
                       color: kPrimary,
                     ),
                   ),
@@ -372,7 +342,7 @@ class _OrderDetailBottomSheetState
               ),
               FlatButton(
                 onPressed: () async {
-                  await model.putOrder();
+                  await model.putOrder(widget.storeId);
                 },
                 padding: EdgeInsets.only(left: 8.0, right: 8.0),
                 textColor: Colors.white,
