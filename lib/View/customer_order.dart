@@ -19,8 +19,7 @@ class CustomerOrderScreen extends StatefulWidget {
   StoreDTO store;
 
   @override
-  _CustomerOrderScreenState createState() =>
-      _CustomerOrderScreenState();
+  _CustomerOrderScreenState createState() => _CustomerOrderScreenState();
 }
 
 class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
@@ -174,7 +173,7 @@ class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
             ? Padding(
                 padding: const EdgeInsets.only(bottom: 16),
                 child: Text(
-                  "Tổng số đơn hôm nay: " +
+                  "${model.isFilterDone ? 'Số đơn hoàn thành' : 'Số đơn còn lại'}: " +
                       orderSummary.orders.length.toString(),
                   style: TextStyle(
                     color: Colors.red,
@@ -297,29 +296,42 @@ class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
         if (model.list != null && model.list.isNotEmpty) {
           return Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  "Tìm kiếm theo:",
-                  style: TextStyle(fontWeight: FontWeight.bold),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      "Tìm kiếm theo:",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    DropdownButton(
+                      hint: new Text("Select a cast"),
+                      value: model.selectedFilter,
+                      items: model.list
+                          .map((e) => DropdownMenuItem(
+                              value: e.filter, child: Text(e.name)))
+                          .toList(),
+                      onChanged: (value) {
+                        _editingController.clear();
+                        model.showAll();
+                        model.changeSearchFilter(value);
+                      },
+                    ),
+                  ],
                 ),
-                SizedBox(
-                  width: 10,
-                ),
-                DropdownButton(
-                  hint: new Text("Select a cast"),
-                  value: model.selectedFilter,
-                  items: model.list
-                      .map((e) => DropdownMenuItem(
-                          value: e.filter, child: Text(e.name)))
-                      .toList(),
-                  onChanged: (value) {
-                    _editingController.clear();
-                    model.showAll();
-                    model.changeSearchFilter(value);
+                CheckboxListTile(
+                  value: model.isFilterDone,
+                  onChanged: (isFilterDone) {
+                    model.changeOrderStatusFilter(
+                        isFilterDone, widget.store.id);
                   },
-                ),
+                  title: Text('Đã hoàn thành'),
+                  controlAffinity: ListTileControlAffinity.leading,
+                )
               ],
             ),
           );

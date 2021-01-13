@@ -3,9 +3,9 @@ import 'package:uni_express/utils/request.dart';
 import '../../constraints.dart';
 
 class OrderDAO {
-
   Future<List<OrderListDTO>> getStoreOrders(int storeId, int supplierId) async {
-    final res = await request.get('stores/${storeId}/suppliers/$supplierId/orders',
+    final res = await request.get(
+        'stores/${storeId}/suppliers/$supplierId/orders',
         queryParameters: {"order-status": ORDER_NEW_STATUS});
     List<OrderListDTO> orderSummaryList;
     if (res.statusCode == 200) {
@@ -15,7 +15,8 @@ class OrderDAO {
     return orderSummaryList;
   }
 
-  Future<OrderDTO> getStoreOrderDetail(int storeId, int supplierId, int orderId) async {
+  Future<OrderDTO> getStoreOrderDetail(
+      int storeId, int supplierId, int orderId) async {
     final res = await request.get(
       'stores/$storeId/suppliers/$supplierId/orders/$orderId',
     );
@@ -26,11 +27,12 @@ class OrderDAO {
     return orderDetail;
   }
 
-  Future<List<OrderListDTO>> getCustomerOrders(int storeId) async {
+  Future<List<OrderListDTO>> getCustomerOrders(int storeId,
+      [int orderStatus = ORDER_NEW_STATUS]) async {
     final res = await request.get('stores/$storeId/orders', queryParameters: {
       "from-date": "2020-11-02",
       // "to-date": "2020-12-12",
-      "order-status": ORDER_NEW_STATUS
+      "order-status": orderStatus
     });
     List<OrderListDTO> orderSummaryList;
     if (res.statusCode == 200) {
@@ -52,8 +54,6 @@ class OrderDAO {
   }
 
   Future<void> putOrder(int storeId, int orderId, int status) async {
-    await request
-        .put('stores/$storeId/orders/${orderId}', data: status);
-
+    await request.put('stores/$storeId/orders/${orderId}', data: status);
   }
 }

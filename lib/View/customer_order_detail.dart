@@ -8,6 +8,7 @@ import 'package:uni_express/enums/view_status.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:uni_express/utils/index.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../constraints.dart';
 
@@ -31,8 +32,7 @@ class CustomerOrderDetail extends StatefulWidget {
   _OrderDetailState createState() => _OrderDetailState();
 }
 
-class _OrderDetailState
-    extends State<CustomerOrderDetail> {
+class _OrderDetailState extends State<CustomerOrderDetail> {
   final orderDetailModel = OrderHistoryViewModel();
 
   @override
@@ -80,6 +80,8 @@ class _OrderDetailState
                     ),
                   ),
                   SizedBox(height: 8),
+                  customerInfo(widget.order.customer),
+                  SizedBox(height: 8),
                   listStore(model.listSuppliers),
                   SizedBox(height: 8),
                   buildOrderSummaryList(orderDetail),
@@ -100,8 +102,10 @@ class _OrderDetailState
         width: Get.width,
         //margin: EdgeInsets.only(top: 8, bottom: 8),
         padding: EdgeInsets.all(8),
-        child: Text(element,
-          style: TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.bold),
+        child: Text(
+          element,
+          style: TextStyle(
+              color: Colors.black, fontSize: 15, fontWeight: FontWeight.bold),
         ),
       ));
     });
@@ -114,7 +118,9 @@ class _OrderDetailState
             "Đơn từ nhà hàng:",
             style: TextStyle(color: Colors.deepOrange, fontSize: 17),
           ),
-          SizedBox(height: 8,),
+          SizedBox(
+            height: 8,
+          ),
           ...listStores
         ],
       ),
@@ -135,6 +141,15 @@ class _OrderDetailState
               style: TextStyle(color: Colors.deepOrange, fontSize: 17),
             ),
           ),
+          orderDetail.paymentType == PaymentType.WALLET
+              ? Text(
+                  'KHÁCH HÀNG ĐÃ THANH TOÁN',
+                  style: TextStyle(
+                    color: Colors.lightBlue,
+                    fontSize: 14,
+                  ),
+                )
+              : SizedBox.shrink(),
           Padding(
             padding: const EdgeInsets.only(top: 8.0),
             child: ListView.separated(
@@ -236,7 +251,9 @@ class _OrderDetailState
               ),
             ],
           ),
-          SizedBox(height: 8,),
+          SizedBox(
+            height: 8,
+          ),
           RichText(
             text: TextSpan(
                 text: "P.Thức: ",
@@ -248,8 +265,10 @@ class _OrderDetailState
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontStyle: FontStyle.italic,
-                      fontSize: 14,
-                      color: kPrimary,
+                      fontSize: 16,
+                      color: orderDetail.paymentType == PaymentType.CASH
+                          ? kPrimary
+                          : Colors.deepOrange,
                     ),
                   ),
                 ]),
@@ -322,6 +341,8 @@ class _OrderDetailState
   Widget bottomBar() {
     return ScopedModelDescendant<OrderHistoryViewModel>(
       builder: (context, child, model) {
+        final status = widget.order.status;
+        bool isOrderDone = status != OrderFilter.ORDERING;
         return Container(
           padding: const EdgeInsets.only(left: 8, right: 8),
           decoration: BoxDecoration(
@@ -342,11 +363,11 @@ class _OrderDetailState
               ),
               FlatButton(
                 onPressed: () async {
-                  await model.putOrder(widget.storeId);
+                  if (!isOrderDone) await model.putOrder(widget.storeId);
                 },
                 padding: EdgeInsets.only(left: 8.0, right: 8.0),
                 textColor: Colors.white,
-                color: kPrimary,
+                color: !isOrderDone ? kPrimary : Colors.grey,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(8))),
                 child: Column(
@@ -354,7 +375,8 @@ class _OrderDetailState
                     SizedBox(
                       height: 16,
                     ),
-                    Text("Đã giao",
+                    Text(
+                        "${!isOrderDone ? 'Hoàn tất đơn hàng' : 'Đã hoàn thành'}",
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 15)),
                     SizedBox(
@@ -370,6 +392,70 @@ class _OrderDetailState
           ),
         );
       },
+    );
+  }
+
+  Widget customerInfo(CustomerInfoDTO customer) {
+    return Container(
+      color: kBackgroundGrey[0],
+      width: Get.width,
+      padding: const EdgeInsets.all(8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Align(
+            alignment: Alignment.center,
+            child: Text(
+              "Thông tin khách hàng:",
+              style: TextStyle(color: Colors.deepOrange, fontSize: 17),
+            ),
+          ),
+          SizedBox(
+            height: 8,
+          ),
+          RichText(
+            text: TextSpan(
+              text: 'Tên khách hàng: ',
+              style: TextStyle(color: Colors.grey, fontSize: 14),
+              children: <TextSpan>[
+                TextSpan(
+                    text: '${customer.name}',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    )),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 8,
+          ),
+          Row(
+            children: [
+              Text(
+                "SDT: ",
+                style: TextStyle(color: Colors.grey, fontSize: 14),
+              ),
+              FlatButton(
+                onPressed: () async {
+                  final url = 'tel:${customer.phone}';
+                  if (await canLaunch(url) && customer.phone != null) {
+                    await launch(url);
+                  } else {
+                    throw 'Could not launch $url';
+                  }
+                },
+                child: new Text("${customer.phone}",
+                    style: TextStyle(
+                      color: Colors.blue,
+                      fontWeight: FontWeight.bold,
+                    )),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

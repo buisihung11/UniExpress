@@ -43,11 +43,11 @@ class ProductType {
 
 class PaymentType {
   static const int CASH = 1;
-  static const int BEAN = 3;
+  static const int WALLET = 3;
 
   static Map<int, String> options = {
     PaymentType.CASH: "Tiền mặt",
-    PaymentType.BEAN: "Tiền trong ví"
+    PaymentType.WALLET: "Tiền trong ví"
   };
 
   static String getPaymentName(int type) {

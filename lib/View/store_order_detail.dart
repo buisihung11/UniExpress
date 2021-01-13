@@ -13,22 +13,20 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../constraints.dart';
 
-
 class StoreOrderDetailScreen extends StatefulWidget {
-  StoreOrderDetailScreen({Key key, @required this.supplier, this.storeId}) : super(key: key);
+  StoreOrderDetailScreen({Key key, @required this.supplier, this.storeId})
+      : super(key: key);
   SupplierDTO supplier;
   final int storeId;
-
 
   @override
   _StoreOrderDetailScreenState createState() => _StoreOrderDetailScreenState();
 }
 
 class _StoreOrderDetailScreenState extends State<StoreOrderDetailScreen> {
-
   OrderHistoryViewModel model = OrderHistoryViewModel();
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
-  new GlobalKey<RefreshIndicatorState>();
+      new GlobalKey<RefreshIndicatorState>();
 
   @override
   void initState() {
@@ -49,11 +47,12 @@ class _StoreOrderDetailScreenState extends State<StoreOrderDetailScreen> {
     return ScopedModel<RootViewModel>(
       model: RootViewModel.getInstance(),
       child: Scaffold(
-        appBar: DefaultAppBar(title: widget.supplier.name,),
+        appBar: DefaultAppBar(
+          title: widget.supplier.name,
+        ),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-
             SizedBox(height: 16),
             Expanded(
               child: ScopedModel<OrderHistoryViewModel>(
@@ -73,55 +72,55 @@ class _StoreOrderDetailScreenState extends State<StoreOrderDetailScreen> {
   Widget _buildOrders() {
     return ScopedModelDescendant<OrderHistoryViewModel>(
         builder: (context, child, model) {
-          final status = model.status;
-          final orderSummaryList = model.orderThumbnail;
-          if (status == ViewStatus.Loading)
-            return Center(
-              child: LoadingBean(),
-            );
-          else if (status == ViewStatus.Empty || orderSummaryList == null)
-            return Container(
-              child: SvgPicture.asset(
-                'assets/images/order_history.svg',
-                semanticsLabel: 'Acme Logo',
-                fit: BoxFit.cover,
-              ),
-            );
-          if (status == ViewStatus.Error)
-            return Center(
-              child: AspectRatio(
-                aspectRatio: 1 / 4,
-                child: Image.asset(
-                  'assets/images/error.png',
-                  width: 24,
+      final status = model.status;
+      final orderSummaryList = model.orderThumbnail;
+      if (status == ViewStatus.Loading)
+        return Center(
+          child: LoadingBean(),
+        );
+      else if (status == ViewStatus.Empty || orderSummaryList == null)
+        return Container(
+          child: SvgPicture.asset(
+            'assets/images/order_history.svg',
+            semanticsLabel: 'Acme Logo',
+            fit: BoxFit.cover,
+          ),
+        );
+      if (status == ViewStatus.Error)
+        return Center(
+          child: AspectRatio(
+            aspectRatio: 1 / 4,
+            child: Image.asset(
+              'assets/images/error.png',
+              width: 24,
+            ),
+          ),
+        );
+
+      return RefreshIndicator(
+        key: _refreshIndicatorKey,
+        onRefresh: refreshFetchOrder,
+        child: Container(
+          child: ListView(
+            padding: EdgeInsets.all(8),
+            children: [
+              ...orderSummaryList
+                  .map((orderSummary) => _buildOrderSummary(orderSummary))
+                  .toList(),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Center(
+                  child: Text(
+                    "Bạn đã xem hết rồi đây :)",
+                    style: TextStyle(color: Colors.grey),
+                  ),
                 ),
               ),
-            );
-
-          return RefreshIndicator(
-            key: _refreshIndicatorKey,
-            onRefresh: refreshFetchOrder,
-            child: Container(
-              child: ListView(
-                padding: EdgeInsets.all(8),
-                children: [
-                  ...orderSummaryList
-                      .map((orderSummary) => _buildOrderSummary(orderSummary))
-                      .toList(),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Center(
-                      child: Text(
-                        "Bạn đã xem hết rồi đây :)",
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        });
+            ],
+          ),
+        ),
+      );
+    });
   }
 
   Widget _buildOrderSummary(OrderListDTO orderSummary) {
@@ -129,28 +128,32 @@ class _StoreOrderDetailScreenState extends State<StoreOrderDetailScreen> {
     DateTime today = DateTime.now();
     bool isToday = false;
 
-    if(orderDate.year == today.year && orderDate.month == today.month && orderDate.day == today.day){
+    if (orderDate.year == today.year &&
+        orderDate.month == today.month &&
+        orderDate.day == today.day) {
       isToday = true;
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        isToday ?
-        Padding(
-          padding: const EdgeInsets.only(bottom: 16),
-          child: Text("Tổng số đơn hôm nay: " + orderSummary.orders.length.toString(),
-            style: TextStyle(
-              color: Colors.red,
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-            ),
-          ),
-        ) : Container(),
+        isToday
+            ? Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Text(
+                  "Tổng số đơn hôm nay: " +
+                      orderSummary.orders.length.toString(),
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+              )
+            : Container(),
         Padding(
           padding: const EdgeInsets.only(left: 24, bottom: 16),
           child: Text(
-            DateFormat('dd/MM/yyyy')
-                .format(orderDate),
+            DateFormat('dd/MM/yyyy').format(orderDate),
             style: TextStyle(
               color: Colors.black,
               fontWeight: FontWeight.bold,
@@ -246,12 +249,9 @@ class _StoreOrderDetailScreenState extends State<StoreOrderDetailScreen> {
 
 class OrderDetailBottomSheet extends StatefulWidget {
   final int orderId, storeId, supplierId;
-  const OrderDetailBottomSheet({
-    Key key,
-    this.orderId,
-    this.storeId,
-    this.supplierId
-  }) : super(key: key);
+  const OrderDetailBottomSheet(
+      {Key key, this.orderId, this.storeId, this.supplierId})
+      : super(key: key);
 
   @override
   _OrderDetailBottomSheetState createState() => _OrderDetailBottomSheetState();
@@ -263,7 +263,8 @@ class _OrderDetailBottomSheetState extends State<OrderDetailBottomSheet> {
   @override
   void initState() {
     super.initState();
-    orderDetailModel.getStoreOrderDetail(widget.storeId, widget.supplierId, widget.orderId);
+    orderDetailModel.getStoreOrderDetail(
+        widget.storeId, widget.supplierId, widget.orderId);
   }
 
   @override
@@ -405,7 +406,7 @@ class _OrderDetailBottomSheetState extends State<OrderDetailBottomSheet> {
                         Text(
                           orderMaster.masterProductName.contains("Extra")
                               ? orderMaster.masterProductName
-                              .replaceAll("Extra", "+")
+                                  .replaceAll("Extra", "+")
                               : orderMaster.masterProductName,
                           textAlign: TextAlign.start,
                           style: TextStyle(
@@ -416,13 +417,13 @@ class _OrderDetailBottomSheetState extends State<OrderDetailBottomSheet> {
                         ...orderChilds
                             .map(
                               (child) => Text(
-                            child.masterProductName.contains("Extra")
-                                ? child.masterProductName
-                                .replaceAll("Extra", "+")
-                                : child.masterProductName,
-                            style: TextStyle(fontSize: 12),
-                          ),
-                        )
+                                child.masterProductName.contains("Extra")
+                                    ? child.masterProductName
+                                        .replaceAll("Extra", "+")
+                                    : child.masterProductName,
+                                style: TextStyle(fontSize: 12),
+                              ),
+                            )
                             .toList(),
                       ],
                     ),
@@ -503,15 +504,15 @@ class _OrderDetailBottomSheetState extends State<OrderDetailBottomSheet> {
     if (otherAmounts == null) return [SizedBox.shrink()];
     return otherAmounts
         .map((amountObj) => Padding(
-      padding: const EdgeInsets.only(top: 5, bottom: 5),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text("${amountObj.name}", style: TextStyle()),
-          Text("${formatPrice(amountObj.amount)}", style: TextStyle()),
-        ],
-      ),
-    ))
+              padding: const EdgeInsets.only(top: 5, bottom: 5),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("${amountObj.name}", style: TextStyle()),
+                  Text("${formatPrice(amountObj.amount)}", style: TextStyle()),
+                ],
+              ),
+            ))
         .toList();
   }
 }

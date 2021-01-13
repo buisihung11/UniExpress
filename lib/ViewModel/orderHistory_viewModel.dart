@@ -28,6 +28,7 @@ class OrderHistoryViewModel extends BaseModel {
     SearchType(filter: SearchFilter.PHONE, name: "Số điện thoại"),
   ];
   SearchFilter selectedFilter = SearchFilter.ID;
+  bool isFilterDone = false;
   List<String> listSuppliers = new List();
 
   OrderHistoryViewModel() {
@@ -51,12 +52,13 @@ class OrderHistoryViewModel extends BaseModel {
     } finally {}
   }
 
-  Future<void> getStoreOrderDetail(int storeId, int supplierId, int orderId) async {
+  Future<void> getStoreOrderDetail(
+      int storeId, int supplierId, int orderId) async {
     // get order detail
     try {
       setState(ViewStatus.Loading);
-      orderDetail = await _orderDAO.getStoreOrderDetail(storeId, supplierId, orderId);
-
+      orderDetail =
+          await _orderDAO.getStoreOrderDetail(storeId, supplierId, orderId);
 
       setState(ViewStatus.Completed);
     } catch (e, stacktre) {
@@ -127,7 +129,10 @@ class OrderHistoryViewModel extends BaseModel {
   Future<void> getCustomerOrders(int storeId) async {
     try {
       setState(ViewStatus.Loading);
-      final data = await _orderDAO.getCustomerOrders(storeId);
+      final data = await _orderDAO.getCustomerOrders(
+        storeId,
+        isFilterDone ? ORDER_DONE_STATUS : ORDER_NEW_STATUS,
+      );
       orderThumbnail = data;
       cacheOrderThumbnail = orderThumbnail;
       setState(ViewStatus.Completed);
@@ -182,6 +187,12 @@ class OrderHistoryViewModel extends BaseModel {
 
   void changeSearchFilter(SearchFilter filter) {
     selectedFilter = filter;
+    notifyListeners();
+  }
+
+  Future<void> changeOrderStatusFilter(bool isFilterDone, int storeID) async {
+    this.isFilterDone = isFilterDone;
+    await getCustomerOrders(storeID);
     notifyListeners();
   }
 }
