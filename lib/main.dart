@@ -50,46 +50,64 @@ class MyApp extends StatelessWidget {
             Map map = settings.arguments;
             return CupertinoPageRoute(
                 builder: (context) => LoginWithPhoneOTP(
-                  phoneNumber: map["phoneNumber"],
-                  verificationId: map["verId"],
-                ),
+                      phoneNumber: map["phoneNumber"],
+                      verificationId: map["verId"],
+                    ),
                 settings: settings);
           case RouteHandler.LOGIN:
             return ScaleRoute(page: LoginScreen());
-          case RouteHandler.CUSTOMER_ORDER:
+          case RouteHandler.CUSTOMER_ORDER: // List store screen
             return CupertinoPageRoute(
-                builder: (context) => CustomerOrderScreen(), settings: settings);
+                builder: (context) => CustomerOrderScreen(
+                      navigationPath: settings.arguments,
+                    ),
+                settings: settings);
           case RouteHandler.CUSTOMER_ORDER_DETAIL:
             return CupertinoPageRoute<bool>(
-                builder: (context) => CustomerOrderDetailScreen(store: settings.arguments), settings: settings);
+                builder: (context) =>
+                    CustomerOrderDetailScreen(store: settings.arguments),
+                settings: settings);
           case RouteHandler.CUSTOMER_ORDER_DETAIL_SHEET:
+            CustomerOrderDetailArguments customerOrderDetailAgrs =
+                settings.arguments;
             return CupertinoPageRoute<bool>(
-                builder: (context) => CustomerOrderDetailBottomSheet(order: settings.arguments,), settings: settings);
+                builder: (context) => CustomerOrderDetailBottomSheet(
+                      order: customerOrderDetailAgrs.order,
+                      storeId: customerOrderDetailAgrs.storeId,
+                    ),
+                settings: settings);
           case RouteHandler.PROFILE:
             return CupertinoPageRoute(
                 builder: (context) => ProfileScreen(), settings: settings);
           case RouteHandler.SIGN_UP:
             return CupertinoPageRoute<bool>(
                 builder: (context) => SignUp(
-                  user: settings.arguments,
-                ),
+                      user: settings.arguments,
+                    ),
                 settings: settings);
           case RouteHandler.LOADING:
             return CupertinoPageRoute<bool>(
                 builder: (context) => LoadingScreen(
-                  title: settings.arguments ?? "Đang xử lý...",
-                ),
+                      title: settings.arguments ?? "Đang xử lý...",
+                    ),
                 settings: settings);
           case RouteHandler.STORE_ORDER:
             return CupertinoPageRoute<bool>(
                 builder: (context) => StoreOrderScreen(
-                ),
+                      store: settings.arguments,
+                    ),
+                settings: settings);
+          case RouteHandler.STORE_ORDER_PRE:
+            return CupertinoPageRoute<bool>(
+                builder: (context) => CustomerOrderScreen(
+                    navigationPath: RouteHandler.STORE_ORDER,
+                    title: "Lấy hàng"),
                 settings: settings);
           case RouteHandler.STORE_ORDER_DETAIL:
             return CupertinoPageRoute<bool>(
                 builder: (context) => StoreOrderDetailScreen(
-                  store: settings.arguments,
-                ),
+                      store: settings.arguments,
+                    ),
                 settings: settings);
           default:
             return CupertinoPageRoute(
@@ -109,4 +127,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-

@@ -8,15 +8,16 @@ class SupplierDTO {
   String contact_name;
   String phone_number;
 
-  SupplierDTO(
-      {this.id,
-      this.name,
-      this.location,
-      this.createDate,
-      this.brand_id,
-      this.brand_name,
-      this.contact_name,
-      this.phone_number});
+  SupplierDTO({
+    this.id,
+    this.name,
+    this.location,
+    this.createDate,
+    this.brand_id,
+    this.brand_name,
+    this.contact_name,
+    this.phone_number,
+  });
 
   factory SupplierDTO.fromJson(dynamic json) {
     return SupplierDTO(

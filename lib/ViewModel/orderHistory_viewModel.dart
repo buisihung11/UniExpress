@@ -173,17 +173,17 @@ class OrderHistoryViewModel extends BaseModel {
     } finally {}
   }
 
-  Future<void> getCustomerOrderDetail(int orderId) async {
+  Future<void> getCustomerOrderDetail(int storeId, int orderId) async {
     // get order detail
     try {
       setState(ViewStatus.Loading);
-      final data = await _orderDAO.getCustomerOrderDetail(orderId);
+      final data = await _orderDAO.getCustomerOrderDetail(storeId, orderId);
       orderDetail = data;
       setState(ViewStatus.Completed);
     } catch (e, stacktre) {
       bool result = await showErrorDialog();
       if (result) {
-        await getCustomerOrderDetail(orderId);
+        await getCustomerOrderDetail(storeId, orderId);
       } else {
         setState(ViewStatus.Error);
         print(stacktre);

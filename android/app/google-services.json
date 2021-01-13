@@ -1,0 +1,183 @@
+{
+  "project_info": {
+    "project_number": "868742887756",
+    "firebase_url": "https://unidelivery-fad6f.firebaseio.com",
+    "project_id": "unidelivery-fad6f",
+    "storage_bucket": "unidelivery-fad6f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:868742887756:android:42268a10dd6ae61c14b7e9",
+        "android_client_info": {
+          "package_name": "com.example.uni_express"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "868742887756-afgf3qgdagdt6iek1b4rhcgf8p1alugf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.uni_express",
+            "certificate_hash": "fd0ca9a465e03d08ad20ea8b130e65f5b1500772"
+          }
+        },
+        {
+          "client_id": "868742887756-7puthu01nsp8vr1qc0knonbeeb0ie95j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDJ3B-0xSAFDxYRVQdcuqhcnQaWN9dk7P0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "868742887756-7puthu01nsp8vr1qc0knonbeeb0ie95j.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "868742887756-41av2lb069rcupfpabn7j32nd9509i7l.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.unidelivery"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:868742887756:android:e80dac6a916ffd1e14b7e9",
+        "android_client_info": {
+          "package_name": "com.unibean.merchant"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "868742887756-3e6q8v3rsjm8mn840fqscdmajdir5lqh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.unibean.merchant",
+            "certificate_hash": "52e74c3efb89a23a0a57c7391e671c898d48b4c2"
+          }
+        },
+        {
+          "client_id": "868742887756-73gi3tncfvomcsoprjj332k6gb4sv3pa.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.unibean.merchant",
+            "certificate_hash": "fd0ca9a465e03d08ad20ea8b130e65f5b1500772"
+          }
+        },
+        {
+          "client_id": "868742887756-7puthu01nsp8vr1qc0knonbeeb0ie95j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDJ3B-0xSAFDxYRVQdcuqhcnQaWN9dk7P0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "868742887756-7puthu01nsp8vr1qc0knonbeeb0ie95j.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "868742887756-41av2lb069rcupfpabn7j32nd9509i7l.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.unidelivery"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:868742887756:android:38fde96f04a99efe14b7e9",
+        "android_client_info": {
+          "package_name": "com.unibean.unidelivery"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "868742887756-1nsimestsfd27apeqobr0i0e9srr2bm9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.unibean.unidelivery",
+            "certificate_hash": "7822e8ba4157c8cf6c5292587b5d2f6237823e0d"
+          }
+        },
+        {
+          "client_id": "868742887756-csg4fth8m056a11o35e2600euasomgrp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.unibean.unidelivery",
+            "certificate_hash": "511585961aade4e7b7e08c27fcbe02fb18da4759"
+          }
+        },
+        {
+          "client_id": "868742887756-g24h8en5p8k5p73ap164pjlh2duojtqj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.unibean.unidelivery",
+            "certificate_hash": "fd0ca9a465e03d08ad20ea8b130e65f5b1500772"
+          }
+        },
+        {
+          "client_id": "868742887756-lirt3ffkvm9phaoktb9ek9n19u3b2ops.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.unibean.unidelivery",
+            "certificate_hash": "9780ab8abd5ef43dc54fc0a1d2224c7b8a39ab07"
+          }
+        },
+        {
+          "client_id": "868742887756-p4dkc9p7j470m3r1dv2i18lv2dth9o87.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.unibean.unidelivery",
+            "certificate_hash": "52e74c3efb89a23a0a57c7391e671c898d48b4c2"
+          }
+        },
+        {
+          "client_id": "868742887756-7puthu01nsp8vr1qc0knonbeeb0ie95j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDJ3B-0xSAFDxYRVQdcuqhcnQaWN9dk7P0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "868742887756-7puthu01nsp8vr1qc0knonbeeb0ie95j.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "868742887756-41av2lb069rcupfpabn7j32nd9509i7l.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.unidelivery"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

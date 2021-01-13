@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:uni_express/Model/DTO/index.dart';
 import 'package:uni_express/ViewModel/index.dart';
 import 'package:uni_express/acessories/appbar.dart';
 import 'package:uni_express/acessories/drawer.dart';
@@ -9,26 +10,27 @@ import 'package:uni_express/route_constraint.dart';
 
 import '../constraints.dart';
 
+// STORE = SUPPLIER
 class StoreOrderScreen extends StatefulWidget {
-  StoreOrderScreen({Key key}) : super(key: key);
+  final StoreDTO store;
+  StoreOrderScreen({Key key, this.store}) : super(key: key);
 
   @override
   _StoreOrderScreenState createState() => _StoreOrderScreenState();
 }
 
 class _StoreOrderScreenState extends State<StoreOrderScreen> {
-
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
-  new GlobalKey<RefreshIndicatorState>();
+      new GlobalKey<RefreshIndicatorState>();
 
   @override
   void initState() {
     super.initState();
-    RootViewModel.getInstance().getSuppliers();
+    RootViewModel.getInstance().getSuppliersFromStore(widget.store.id);
   }
 
   Future<void> refreshFetchOrder() async {
-    await RootViewModel.getInstance().getSuppliers();
+    await RootViewModel.getInstance().getSuppliersFromStore(widget.store.id);
   }
 
   @override
@@ -72,13 +74,14 @@ class _StoreOrderScreenState extends State<StoreOrderScreen> {
             aspectRatio: 1,
             child: Center(child: CircularProgressIndicator()),
           );
-        else if(status == ViewStatus.Error){
+        else if (status == ViewStatus.Error) {
           return AspectRatio(
-            aspectRatio: 1,
-            child: Center(child: Text("Đã có sự cố xảy ra :)"),)
-          );
+              aspectRatio: 1,
+              child: Center(
+                child: Text("Đã có sự cố xảy ra :)"),
+              ));
         }
-        if(model.listSupplier != null){
+        if (model.listSupplier != null) {
           List<Widget> list = List();
           model.listSupplier.forEach((element) {
             list.add(Container(
@@ -96,8 +99,11 @@ class _StoreOrderScreenState extends State<StoreOrderScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    SizedBox(
+                      height: 8,
+                    ),
                     Text(
-                      "Brand ID: " + element.brand_id.toString(),
+                      "Name: ${element.name}",
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.black,
@@ -107,7 +113,7 @@ class _StoreOrderScreenState extends State<StoreOrderScreen> {
                       height: 8,
                     ),
                     Text(
-                      "Brand name: " + element.brand_name,
+                      "Địa chỉ: ${element.location}",
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.black,
@@ -117,17 +123,7 @@ class _StoreOrderScreenState extends State<StoreOrderScreen> {
                       height: 8,
                     ),
                     Text(
-                      "Địa chỉ: " + element.location,
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.black,
-                      ),
-                    ),
-                    SizedBox(
-                      height: 8,
-                    ),
-                    Text(
-                      "Liên hệ: " + element.contact_name,
+                      "Liên hệ: ${element.contact_name}",
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.black,
@@ -139,9 +135,11 @@ class _StoreOrderScreenState extends State<StoreOrderScreen> {
                     Row(
                       children: [
                         Icon(Icons.phone),
-                        SizedBox(width: 8,),
+                        SizedBox(
+                          width: 8,
+                        ),
                         Text(
-                          element.phone_number,
+                          "${element.phone_number}",
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.grey[600],
@@ -158,14 +156,11 @@ class _StoreOrderScreenState extends State<StoreOrderScreen> {
             key: _refreshIndicatorKey,
             onRefresh: refreshFetchOrder,
             child: Column(
-              children: [
-                ...list
-              ],
+              children: [...list],
             ),
           );
         }
         return Container();
-
       },
     );
   }
@@ -228,11 +223,12 @@ class _OrderDetailBottomSheetState extends State<OrderDetailBottomSheet> {
                 aspectRatio: 1,
                 child: Center(child: CircularProgressIndicator()),
               );
-            else if(status == ViewStatus.Error){
+            else if (status == ViewStatus.Error) {
               return AspectRatio(
                   aspectRatio: 1,
-                  child: Center(child: Text("Đã có sự cố xảy ra :)"),)
-              );
+                  child: Center(
+                    child: Text("Đã có sự cố xảy ra :)"),
+                  ));
             }
 
             List<Widget> list = new List();
@@ -246,7 +242,8 @@ class _OrderDetailBottomSheetState extends State<OrderDetailBottomSheet> {
                   child: ListTile(
                       onTap: () {
                         Get.back();
-                        Get.toNamed(RouteHandler.STORE_ORDER_DETAIL, arguments: element);
+                        Get.toNamed(RouteHandler.STORE_ORDER_DETAIL,
+                            arguments: element);
                       },
                       contentPadding: EdgeInsets.all(8),
                       title: Column(

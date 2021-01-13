@@ -11,11 +11,20 @@ import 'package:uni_express/utils/index.dart';
 
 import '../constraints.dart';
 
+class CustomerOrderDetailArguments {
+  final OrderDTO order;
+  final int storeId;
+
+  CustomerOrderDetailArguments(this.order, this.storeId);
+}
+
 class CustomerOrderDetailBottomSheet extends StatefulWidget {
   final OrderDTO order;
+  final int storeId;
   const CustomerOrderDetailBottomSheet({
     Key key,
     this.order,
+    this.storeId,
   }) : super(key: key);
 
   @override
@@ -29,7 +38,7 @@ class _OrderDetailBottomSheetState
   @override
   void initState() {
     super.initState();
-    orderDetailModel.getCustomerOrderDetail(widget.order.id);
+    orderDetailModel.getCustomerOrderDetail(widget.storeId, widget.order.id);
   }
 
   @override
@@ -59,8 +68,10 @@ class _OrderDetailBottomSheetState
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        DateFormat('dd/MM/yyy hh:mm')
-                            .format(DateTime.parse(orderDetail.orderTime)),
+                        orderDetail.orderTime != null
+                            ? DateFormat('dd/MM/yyy hh:mm')
+                                .format(DateTime.parse(orderDetail.orderTime))
+                            : '-',
                         style: TextStyle(
                             color: Colors.black45,
                             fontSize: 18,
@@ -84,7 +95,7 @@ class _OrderDetailBottomSheetState
 
   Widget listStore(OrderDTO orderDetail) {
     List<Widget> listStores = List();
-    orderDetail.stores.forEach((element) {
+    orderDetail.stores?.forEach((element) {
       listStores.add(Container(
         width: Get.width,
         margin: EdgeInsets.only(top: 8, bottom: 8),
@@ -169,7 +180,7 @@ class _OrderDetailBottomSheetState
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(top:8.0),
+            padding: const EdgeInsets.only(top: 8.0),
             child: ListView.separated(
               shrinkWrap: true,
               itemBuilder: (context, index) {
@@ -198,7 +209,8 @@ class _OrderDetailBottomSheetState
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  orderMaster.masterProductName.contains("Extra")
+                                  orderMaster.masterProductName
+                                          .contains("Extra")
                                       ? orderMaster.masterProductName
                                           .replaceAll("Extra", "+")
                                       : orderMaster.masterProductName,

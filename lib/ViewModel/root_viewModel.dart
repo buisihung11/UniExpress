@@ -68,29 +68,28 @@ class RootViewModel extends BaseModel {
     destroyInstance();
   }
 
-  Future<void> getSuppliers() async {
-    try{
+  Future<void> getSuppliersFromStore(int storeId) async {
+    try {
       setState(ViewStatus.Loading);
       SupplierDAO dao = new SupplierDAO();
-      listSupplier = await dao.getSuppliers();
+      listSupplier = await dao.getSuppliersFromStore(storeId);
       setState(ViewStatus.Completed);
-    }catch (e) {
+    } catch (e) {
       bool result = await showErrorDialog();
       if (result) {
-        await getSuppliers();
+        await getSuppliersFromStore(storeId);
       } else
         setState(ViewStatus.Error);
     }
-
   }
 
   Future<void> getStores(int supId) async {
-    try{
+    try {
       setState(ViewStatus.Loading);
       StoreDAO dao = new StoreDAO();
       listStore = await dao.getStores(supId);
       setState(ViewStatus.Completed);
-    }catch(e){
+    } catch (e) {
       bool result = await showErrorDialog();
       if (result) {
         await getStores(supId);
@@ -100,20 +99,17 @@ class RootViewModel extends BaseModel {
   }
 
   Future<void> getVirtualStores() async {
-    try{
+    try {
       setState(ViewStatus.Loading);
       StoreDAO dao = new StoreDAO();
       listStore = await dao.getVirtualStores();
       setState(ViewStatus.Completed);
-    }catch(e){
+    } catch (e) {
       bool result = await showErrorDialog();
       if (result) {
         await getVirtualStores();
       } else
         setState(ViewStatus.Error);
     }
-
   }
-  
 }
-

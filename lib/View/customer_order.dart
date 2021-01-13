@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:uni_express/Model/DTO/index.dart';
+import 'package:uni_express/View/customer_order_detail.dart';
 import 'package:uni_express/ViewModel/index.dart';
 import 'package:uni_express/acessories/appbar.dart';
 import 'package:uni_express/acessories/loading.dart';
@@ -220,7 +221,7 @@ class _CustomerOrderDetailScreenState extends State<CustomerOrderDetailScreen> {
           children: [
             ListTile(
               onTap: () async {
-                await _settingModalBottomSheet(order);
+                await _settingModalBottomSheet(widget.store.id, order);
               },
               contentPadding: EdgeInsets.fromLTRB(16, 8, 16, 8),
               title: Column(
@@ -278,10 +279,12 @@ class _CustomerOrderDetailScreenState extends State<CustomerOrderDetailScreen> {
     );
   }
 
-  Future<void> _settingModalBottomSheet(order) async {
+  Future<void> _settingModalBottomSheet(int storeId, order) async {
     // get orderDetail
-    bool result = await Get.toNamed(RouteHandler.CUSTOMER_ORDER_DETAIL_SHEET,
-        arguments: order);
+    bool result = await Get.toNamed(
+      RouteHandler.CUSTOMER_ORDER_DETAIL_SHEET,
+      arguments: CustomerOrderDetailArguments(order, storeId),
+    );
     if (result != null && result) {
       await refreshFetchOrder();
     }
@@ -308,8 +311,8 @@ class _CustomerOrderDetailScreenState extends State<CustomerOrderDetailScreen> {
                   hint: new Text("Select a cast"),
                   value: model.selectedFilter,
                   items: model.list
-                      .map((e) =>
-                          DropdownMenuItem(value: e.filter, child: Text(e.name)))
+                      .map((e) => DropdownMenuItem(
+                          value: e.filter, child: Text(e.name)))
                       .toList(),
                   onChanged: (value) {
                     _editingController.clear();

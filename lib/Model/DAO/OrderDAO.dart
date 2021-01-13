@@ -50,9 +50,9 @@ class OrderDAO {
   }
 
   Future<List<OrderListDTO>> getCustomerOrders(int storeId) async {
-    final res = await request.get('/orders', queryParameters: {
+    final res = await request.get('/stores/$storeId/orders', queryParameters: {
       "from-date": "2020-11-02",
-      "to-date": "2020-12-12",
+      // "to-date": "2020-12-12",
       "delivery-status": ORDER_NEW_STATUS
     });
     List<OrderListDTO> orderSummaryList;
@@ -63,9 +63,9 @@ class OrderDAO {
     return orderSummaryList;
   }
 
-  Future<OrderDTO> getCustomerOrderDetail(int orderId) async {
+  Future<OrderDTO> getCustomerOrderDetail(int storeId, int orderId) async {
     final res = await request.get(
-      '/orders/$orderId',
+      '/stores/$storeId/orders/$orderId',
     );
     OrderDTO orderDetail;
     if (res.statusCode == 200) {
