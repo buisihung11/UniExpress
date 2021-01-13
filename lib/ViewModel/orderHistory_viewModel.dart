@@ -28,73 +28,41 @@ class OrderHistoryViewModel extends BaseModel {
     SearchType(filter: SearchFilter.PHONE, name: "Số điện thoại"),
   ];
   SearchFilter selectedFilter = SearchFilter.ID;
+  List<String> listSuppliers = new List();
 
   OrderHistoryViewModel() {
     setState(ViewStatus.Loading);
     _orderDAO = OrderDAO();
   }
 
-  Future<void> getOrders(OrderFilter filter) async {
+  Future<void> getStoreOrders(int storeId, int supplierId) async {
     try {
       setState(ViewStatus.Loading);
-      final data = await _orderDAO.getOrders(filter);
-
+      final data = await _orderDAO.getStoreOrders(storeId, supplierId);
       orderThumbnail = data;
-
       setState(ViewStatus.Completed);
-    } catch (e) {
+    } catch (e, stracktrace) {
       bool result = await showErrorDialog();
-      print(e.toString());
+      print(stracktrace);
       if (result) {
-        await getOrders(filter);
+        await getStoreOrders(storeId, supplierId);
       } else
         setState(ViewStatus.Error);
     } finally {}
   }
 
-  Future<void> getStoreOrders(int storeId) async {
-    try {
-      setState(ViewStatus.Loading);
-      final data = await _orderDAO.getStoreOrders(storeId);
-      orderThumbnail = data;
-      setState(ViewStatus.Completed);
-    } catch (e) {
-      bool result = await showErrorDialog();
-      print(e.toString());
-      if (result) {
-        await getStoreOrders(storeId);
-      } else
-        setState(ViewStatus.Error);
-    } finally {}
-  }
-
-  Future<void> getOrderDetail(int orderId) async {
+  Future<void> getStoreOrderDetail(int storeId, int supplierId, int orderId) async {
     // get order detail
     try {
       setState(ViewStatus.Loading);
-      final data = await _orderDAO.getOrderDetail(orderId);
-      orderDetail = data;
-      setState(ViewStatus.Completed);
-    } catch (e) {
-      bool result = await showErrorDialog();
-      if (result) {
-        await getOrderDetail(orderId);
-      } else
-        setState(ViewStatus.Error);
-    } finally {}
-  }
+      orderDetail = await _orderDAO.getStoreOrderDetail(storeId, supplierId, orderId);
 
-  Future<void> getStoreOrderDetail(int storeId, int orderId) async {
-    // get order detail
-    try {
-      setState(ViewStatus.Loading);
-      final data = await _orderDAO.getStoreOrderDetail(storeId, orderId);
-      orderDetail = data;
+
       setState(ViewStatus.Completed);
     } catch (e, stacktre) {
       bool result = await showErrorDialog();
       if (result) {
-        await getOrderDetail(orderId);
+        await getStoreOrderDetail(storeId, supplierId, orderId);
       } else {
         setState(ViewStatus.Error);
         print(stacktre);
@@ -177,8 +145,13 @@ class OrderHistoryViewModel extends BaseModel {
     // get order detail
     try {
       setState(ViewStatus.Loading);
-      final data = await _orderDAO.getCustomerOrderDetail(storeId, orderId);
-      orderDetail = data;
+      orderDetail = await _orderDAO.getCustomerOrderDetail(storeId, orderId);
+      listSuppliers = new List();
+      orderDetail.orderItems.forEach((element) {
+        listSuppliers.add(element.supplier_store_name);
+      });
+      //bỏ supplier bị trùng
+      listSuppliers = listSuppliers.toSet().toList();
       setState(ViewStatus.Completed);
     } catch (e, stacktre) {
       bool result = await showErrorDialog();
@@ -191,17 +164,17 @@ class OrderHistoryViewModel extends BaseModel {
     } finally {}
   }
 
-  Future<void> putOrder() async {
+  Future<void> putOrder(int storeId) async {
     try {
       showLoadingDialog();
-      await _orderDAO.putOrder(orderDetail.id, ORDER_DONE_STATUS);
+      await _orderDAO.putOrder(storeId, orderDetail.id, ORDER_DONE_STATUS);
       await showStatusDialog(
           "assets/images/global_sucsess.png", "Xác nhận thành công", "");
       Get.back(result: true);
     } catch (e) {
       bool result = await showErrorDialog();
       if (result) {
-        await putOrder();
+        await putOrder(storeId);
       } else
         setState(ViewStatus.Error);
     }

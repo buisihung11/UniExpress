@@ -69,7 +69,7 @@ class _DrawState extends State<DrawerMenu> {
                             onPressed: () async {
                               Get.back();
                               bool result =
-                                  await Get.toNamed(RouteHandler.SIGN_UP);
+                                  await Get.toNamed(RouteHandler.SIGN_UP, arguments: model.currentUser);
                               if (result != null && result) {
                                 model.fetchUser();
                               }
@@ -115,15 +115,15 @@ class _DrawState extends State<DrawerMenu> {
   Widget listItem() {
     return Column(
       children: <Widget>[
-        itemDrawer('Giao hàng', Icons.person, () {
-          Get.back();
-          Get.toNamed(RouteHandler.CUSTOMER_ORDER);
-        }),
         itemDrawer('Lấy hàng', Icons.art_track, () {
           Get.back();
           Get.toNamed(
             RouteHandler.STORE_ORDER_PRE,
           );
+        }),
+        itemDrawer('Giao hàng', Icons.person, () {
+          Get.back();
+          Get.toNamed(RouteHandler.CUSTOMER_ORDER_PRE);
         }),
       ],
     );

@@ -6,7 +6,6 @@ import 'package:uni_express/Model/DTO/StoreDTO.dart';
 import 'package:uni_express/Model/DTO/index.dart';
 import 'package:uni_express/acessories/dialog.dart';
 import 'package:uni_express/enums/view_status.dart';
-import 'package:uni_express/services/analytic_service.dart';
 import 'package:uni_express/utils/shared_pref.dart';
 import '../route_constraint.dart';
 import 'base_model.dart';
@@ -16,7 +15,7 @@ class RootViewModel extends BaseModel {
   AccountDTO currentUser;
   String error;
   static RootViewModel _instance;
-  AnalyticsService _analyticsService;
+
 
   static RootViewModel getInstance() {
     if (_instance == null) {
@@ -34,7 +33,6 @@ class RootViewModel extends BaseModel {
 
   RootViewModel() {
     _dao = AccountDAO();
-    _analyticsService = AnalyticsService.getInstance();
     setState(ViewStatus.Loading);
     fetchUser();
   }
@@ -78,21 +76,6 @@ class RootViewModel extends BaseModel {
       bool result = await showErrorDialog();
       if (result) {
         await getSuppliersFromStore(storeId);
-      } else
-        setState(ViewStatus.Error);
-    }
-  }
-
-  Future<void> getStores(int supId) async {
-    try {
-      setState(ViewStatus.Loading);
-      StoreDAO dao = new StoreDAO();
-      listStore = await dao.getStores(supId);
-      setState(ViewStatus.Completed);
-    } catch (e) {
-      bool result = await showErrorDialog();
-      if (result) {
-        await getStores(supId);
       } else
         setState(ViewStatus.Error);
     }

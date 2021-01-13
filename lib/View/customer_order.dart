@@ -14,16 +14,16 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../constraints.dart';
 
-class CustomerOrderDetailScreen extends StatefulWidget {
-  CustomerOrderDetailScreen({Key key, @required this.store}) : super(key: key);
+class CustomerOrderScreen extends StatefulWidget {
+  CustomerOrderScreen({Key key, @required this.store}) : super(key: key);
   StoreDTO store;
 
   @override
-  _CustomerOrderDetailScreenState createState() =>
-      _CustomerOrderDetailScreenState();
+  _CustomerOrderScreenState createState() =>
+      _CustomerOrderScreenState();
 }
 
-class _CustomerOrderDetailScreenState extends State<CustomerOrderDetailScreen> {
+class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
   OrderHistoryViewModel model = OrderHistoryViewModel();
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       new GlobalKey<RefreshIndicatorState>();
@@ -282,7 +282,7 @@ class _CustomerOrderDetailScreenState extends State<CustomerOrderDetailScreen> {
   Future<void> _settingModalBottomSheet(int storeId, order) async {
     // get orderDetail
     bool result = await Get.toNamed(
-      RouteHandler.CUSTOMER_ORDER_DETAIL_SHEET,
+      RouteHandler.CUSTOMER_ORDER_DETAIL,
       arguments: CustomerOrderDetailArguments(order, storeId),
     );
     if (result != null && result) {

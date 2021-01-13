@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:uni_express/Model/DTO/index.dart';
+import 'package:uni_express/View/store_order_detail.dart';
 import 'package:uni_express/ViewModel/index.dart';
 import 'package:uni_express/acessories/appbar.dart';
 import 'package:uni_express/acessories/drawer.dart';
@@ -92,7 +93,7 @@ class _StoreOrderScreenState extends State<StoreOrderScreen> {
               ),
               child: ListTile(
                 onTap: () {
-                  _settingModalBottomSheet(element.id);
+                  _settingModalBottomSheet(element);
                 },
                 contentPadding: EdgeInsets.fromLTRB(16, 8, 16, 8),
                 title: Column(
@@ -165,144 +166,15 @@ class _StoreOrderScreenState extends State<StoreOrderScreen> {
     );
   }
 
-  void _settingModalBottomSheet(int id) {
+  Future<void> _settingModalBottomSheet(SupplierDTO supplierDTO) async {
     // get orderDetail
-    RootViewModel.getInstance().getStores(id);
-    Get.bottomSheet(
-      OrderDetailBottomSheet(),
-      isScrollControlled: true,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(16),
-          topRight: Radius.circular(16),
-        ),
-        // side: BorderSide(color: Colors.orange),
-      ),
-      backgroundColor: kBackgroundGrey[2],
+
+    bool result = await Get.toNamed(
+      RouteHandler.STORE_ORDER_DETAIL,
+      arguments: StoreOrderDetailScreen(supplier: supplierDTO, storeId: widget.store.id,)
     );
-  }
-}
-
-class OrderDetailBottomSheet extends StatefulWidget {
-  final int orderId;
-  const OrderDetailBottomSheet({
-    Key key,
-    this.orderId,
-  }) : super(key: key);
-
-  @override
-  _OrderDetailBottomSheetState createState() => _OrderDetailBottomSheetState();
-}
-
-class _OrderDetailBottomSheetState extends State<OrderDetailBottomSheet> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: Get.width,
-      padding: EdgeInsets.fromLTRB(16, 8, 16, 0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(16),
-          topRight: Radius.circular(16),
-        ),
-        // color: Colors.grey,
-      ),
-      height: 500,
-      child: ScopedModel<RootViewModel>(
-        model: RootViewModel.getInstance(),
-        child: ScopedModelDescendant<RootViewModel>(
-          builder: (context, child, model) {
-            final status = model.status;
-            if (status == ViewStatus.Loading)
-              return AspectRatio(
-                aspectRatio: 1,
-                child: Center(child: CircularProgressIndicator()),
-              );
-            else if (status == ViewStatus.Error) {
-              return AspectRatio(
-                  aspectRatio: 1,
-                  child: Center(
-                    child: Text("Đã có sự cố xảy ra :)"),
-                  ));
-            }
-
-            List<Widget> list = new List();
-            model.listStore.forEach((element) {
-              list.add(
-                Container(
-                  margin: EdgeInsets.only(top: 8),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(8)),
-                      color: kPrimary),
-                  child: ListTile(
-                      onTap: () {
-                        Get.back();
-                        Get.toNamed(RouteHandler.STORE_ORDER_DETAIL,
-                            arguments: element);
-                      },
-                      contentPadding: EdgeInsets.all(8),
-                      title: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "ID: " + element.id.toString(),
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.white,
-                            ),
-                          ),
-                          SizedBox(
-                            height: 4,
-                          ),
-                          Text(
-                            "Tên: " + element.name,
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.white,
-                            ),
-                          ),
-                          SizedBox(
-                            height: 4,
-                          ),
-                          Text(
-                            "Địa chỉ: " + element.location,
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      )),
-                ),
-              );
-            });
-
-            return Container(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  SizedBox(height: 8),
-                  Text(
-                    "Danh sách cửa hàng",
-                    style: TextStyle(
-                        color: Colors.orange,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 8),
-                  ...list
-                ],
-              ),
-            );
-          },
-        ),
-      ),
-    );
+    if (result != null && result) {
+      await refreshFetchOrder();
+    }
   }
 }

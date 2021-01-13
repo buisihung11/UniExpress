@@ -17,7 +17,7 @@ class AccountDAO {
       print('idToken $idToken');
 
       Response response = await request
-          .post("/login", data: {"id_token": idToken, "fcm_token": fcmToken});
+          .post("login", data: {"id_token": idToken, "fcm_token": fcmToken});
 
 
 
@@ -43,7 +43,7 @@ class AccountDAO {
   }
 
   Future<AccountDTO> getUser() async {
-    Response response = await request.get("/me");
+    Response response = await request.get("me");
     // set access token
     final user = response.data["data"];
 
@@ -59,7 +59,7 @@ class AccountDAO {
     final updateJSON = updateUser.toJson();
     print('updateUser');
     print(updateJSON.toString());
-    Response res = await request.put("/me", data: updateUser.toJson());
+    Response res = await request.put("me", data: updateUser.toJson());
     return AccountDTO.fromJson(res.data["data"]);
   }
 }

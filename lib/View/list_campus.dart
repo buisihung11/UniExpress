@@ -5,24 +5,23 @@ import 'package:uni_express/ViewModel/index.dart';
 import 'package:uni_express/acessories/appbar.dart';
 import 'package:uni_express/acessories/drawer.dart';
 import 'package:uni_express/enums/view_status.dart';
-import 'package:uni_express/route_constraint.dart';
 
 import '../constraints.dart';
 
-class CustomerOrderScreen extends StatefulWidget {
+class CampusScreen extends StatefulWidget {
   final String navigationPath;
   final String title;
-  CustomerOrderScreen(
+  CampusScreen(
       {Key key,
-      this.navigationPath = RouteHandler.CUSTOMER_ORDER_DETAIL,
-      this.title = "Giao hàng"})
+      this.navigationPath,
+      this.title})
       : super(key: key);
 
   @override
-  _CustomerOrderScreenState createState() => _CustomerOrderScreenState();
+  _CampusScreenState createState() => _CampusScreenState();
 }
 
-class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
+class _CampusScreenState extends State<CampusScreen> {
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       new GlobalKey<RefreshIndicatorState>();
 
@@ -97,8 +96,7 @@ class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
               child: ListTile(
                 onTap: () {
                   Get.toNamed(
-                      widget.navigationPath ??
-                          RouteHandler.CUSTOMER_ORDER_DETAIL,
+                      widget.navigationPath,
                       arguments: element);
                 },
                 contentPadding: EdgeInsets.fromLTRB(16, 8, 16, 8),

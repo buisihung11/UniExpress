@@ -56,26 +56,6 @@ class MyApp extends StatelessWidget {
                 settings: settings);
           case RouteHandler.LOGIN:
             return ScaleRoute(page: LoginScreen());
-          case RouteHandler.CUSTOMER_ORDER: // List store screen
-            return CupertinoPageRoute(
-                builder: (context) => CustomerOrderScreen(
-                      navigationPath: settings.arguments,
-                    ),
-                settings: settings);
-          case RouteHandler.CUSTOMER_ORDER_DETAIL:
-            return CupertinoPageRoute<bool>(
-                builder: (context) =>
-                    CustomerOrderDetailScreen(store: settings.arguments),
-                settings: settings);
-          case RouteHandler.CUSTOMER_ORDER_DETAIL_SHEET:
-            CustomerOrderDetailArguments customerOrderDetailAgrs =
-                settings.arguments;
-            return CupertinoPageRoute<bool>(
-                builder: (context) => CustomerOrderDetailBottomSheet(
-                      order: customerOrderDetailAgrs.order,
-                      storeId: customerOrderDetailAgrs.storeId,
-                    ),
-                settings: settings);
           case RouteHandler.PROFILE:
             return CupertinoPageRoute(
                 builder: (context) => ProfileScreen(), settings: settings);
@@ -99,15 +79,38 @@ class MyApp extends StatelessWidget {
                 settings: settings);
           case RouteHandler.STORE_ORDER_PRE:
             return CupertinoPageRoute<bool>(
-                builder: (context) => CustomerOrderScreen(
+                builder: (context) => CampusScreen(
                     navigationPath: RouteHandler.STORE_ORDER,
                     title: "Lấy hàng"),
                 settings: settings);
           case RouteHandler.STORE_ORDER_DETAIL:
+            StoreOrderDetailScreen storeOrderDetailScreen = settings.arguments;
             return CupertinoPageRoute<bool>(
                 builder: (context) => StoreOrderDetailScreen(
-                      store: settings.arguments,
+                      supplier: storeOrderDetailScreen.supplier,
+                  storeId: storeOrderDetailScreen.storeId,
                     ),
+                settings: settings);
+          case RouteHandler.CUSTOMER_ORDER_PRE: // List store screen
+            return CupertinoPageRoute(
+                builder: (context) => CampusScreen(
+                  navigationPath: RouteHandler.CUSTOMER_ORDER,
+                  title: "Giao hàng",
+                ),
+                settings: settings);
+          case RouteHandler.CUSTOMER_ORDER:
+            return CupertinoPageRoute<bool>(
+                builder: (context) =>
+                    CustomerOrderScreen(store: settings.arguments),
+                settings: settings);
+          case RouteHandler.CUSTOMER_ORDER_DETAIL:
+            CustomerOrderDetailArguments customerOrderDetailAgrs =
+                settings.arguments;
+            return CupertinoPageRoute<bool>(
+                builder: (context) => CustomerOrderDetail(
+                  order: customerOrderDetailAgrs.order,
+                  storeId: customerOrderDetailAgrs.storeId,
+                ),
                 settings: settings);
           default:
             return CupertinoPageRoute(
