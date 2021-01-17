@@ -10,6 +10,7 @@ import 'package:uni_express/acessories/loading.dart';
 import 'package:uni_express/enums/view_status.dart';
 import 'package:uni_express/utils/index.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../constraints.dart';
 
@@ -128,6 +129,10 @@ class _StoreOrderDetailScreenState extends State<StoreOrderDetailScreen> {
     DateTime today = DateTime.now();
     bool isToday = false;
 
+    var f = new NumberFormat("###.0#", "vi_VN");
+    final totalSellAmount = orderSummary.orders.fold(
+        0, (previousValue, element) => previousValue + element.finalAmount);
+
     if (orderDate.year == today.year &&
         orderDate.month == today.month &&
         orderDate.day == today.day) {
@@ -136,22 +141,87 @@ class _StoreOrderDetailScreenState extends State<StoreOrderDetailScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        isToday
-            ? Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: Text(
-                  "Tổng số đơn hôm nay: " +
-                      orderSummary.orders.length.toString(),
-                  style: TextStyle(
-                    color: Colors.red,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
+        // isToday
+        //     ? Padding(
+        //         padding: const EdgeInsets.only(bottom: 16),
+        //         child: Text(
+        //           "Tổng số đơn hôm nay: " +
+        //               orderSummary.orders.length.toString(),
+        //           style: TextStyle(
+        //             color: Colors.red,
+        //             fontWeight: FontWeight.bold,
+        //             fontSize: 18,
+        //           ),
+        //         ),
+        //       )
+        //     : Container(),
+        Container(
+          padding: EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: kPrimary,
+            gradient: LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [
+                  Color(0xff0BAB64),
+                  Color(0xff3BB78F),
+                ]),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          width: Get.width,
+          child: Row(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    "Số tiền bán được hôm nay:",
+                    style: TextStyle(
+                      color: Colors.grey[300],
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
+                  Container(
+                    child: Text(
+                      "${f.format(totalSellAmount)} VND",
+                      textAlign: TextAlign.right,
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(width: 8),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      "Số đơn:",
+                      style: TextStyle(
+                        color: Colors.grey[300],
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      orderSummary.orders.length.toString(),
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
               )
-            : Container(),
+            ],
+          ),
+        ),
         Padding(
-          padding: const EdgeInsets.only(left: 24, bottom: 16),
+          padding: const EdgeInsets.only(left: 24, bottom: 16, top: 8),
           child: Text(
             DateFormat('dd/MM/yyyy').format(orderDate),
             style: TextStyle(
@@ -161,6 +231,7 @@ class _StoreOrderDetailScreenState extends State<StoreOrderDetailScreen> {
             ),
           ),
         ),
+        SizedBox(height: 8),
         ...orderSummary.orders.reversed
             .toList()
             .map((order) => _buildOrderItem(order, context))
@@ -195,10 +266,18 @@ class _StoreOrderDetailScreenState extends State<StoreOrderDetailScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "${order.itemQuantity} món",
+                    "${order.invoiceId}",
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    "${order.itemQuantity} món",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -453,15 +532,29 @@ class _OrderDetailBottomSheetState extends State<OrderDetailBottomSheet> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                "Tổng tiền",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Text(
-                "${orderDetail.itemQuantity} món",
-                style: TextStyle(fontWeight: FontWeight.bold),
+              Text("Tên K/H: ${orderDetail.customer.name}"),
+            ],
+          ),
+          Row(
+            children: [
+              Text("SDT:"),
+              FlatButton(
+                height: 12,
+                onPressed: () async {
+                  final url = 'tel:${orderDetail.customer.phone}';
+                  if (await canLaunch(url) &&
+                      orderDetail.customer.phone != null) {
+                    await launch(url);
+                  } else {
+                    throw 'Could not launch $url';
+                  }
+                },
+                child: new Text("${orderDetail.customer.phone}",
+                    style: TextStyle(
+                      color: Colors.blue,
+                      fontWeight: FontWeight.bold,
+                    )),
               ),
             ],
           ),

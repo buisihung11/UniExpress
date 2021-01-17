@@ -1,5 +1,6 @@
 import 'package:uni_express/Model/DTO/index.dart';
 import 'package:uni_express/ViewModel/index.dart';
+import 'package:uni_express/constraints.dart';
 
 class OrderListDTO {
   final checkInDate;
@@ -45,29 +46,32 @@ class OrderDTO {
       this.customer,
       this.stores});
 
-  factory OrderDTO.fromJSON(Map<String, dynamic> map) =>
-      OrderDTO(map["order_id"],
-          total: map["total_amount"] ?? 0,
-          invoiceId: map["invoice_id"],
-          finalAmount: map["final_amount"],
-          orderTime: map["check_in_date"],
-          itemQuantity: map["master_product_quantity"],
-          status: (map["delivery_status"]) == 0
-              ? OrderFilter.ORDERING
-              : OrderFilter.DONE,
-          orderItems: map["list_order_details"] != null
-              ? OrderItemDTO.fromList(map["list_order_details"])
-              : null,
-          otherAmounts: (map["other_amounts"] as List)
-              ?.map((otherAmountJSON) => OtherAmount.fromJSON(otherAmountJSON))
-              ?.toList(),
-          customer: map["customer"] != null
-              ? CustomerInfoDTO.fromJSON(map["customer"])
-              : null,
-          stores: map["store_orders"] != null
-          ? StoreDTO.fromList(map["store_orders"])
-      : null,
-        paymentType: map["payment_type"] != null ? map["payment_type"][0] : 0,
+  factory OrderDTO.fromJSON(Map<String, dynamic> map) => OrderDTO(
+        map["order_id"],
+        total: map["total_amount"] ?? 0,
+        invoiceId: map["invoice_id"],
+        finalAmount: map["final_amount"],
+        orderTime: map["check_in_date"],
+        itemQuantity: map["master_product_quantity"],
+        status: (map["order_status"]) == ORDER_NEW_STATUS
+            ? OrderFilter.ORDERING
+            : OrderFilter.DONE,
+        orderItems: map["list_order_details"] != null
+            ? OrderItemDTO.fromList(map["list_order_details"])
+            : null,
+        otherAmounts: (map["other_amounts"] as List)
+            ?.map((otherAmountJSON) => OtherAmount.fromJSON(otherAmountJSON))
+            ?.toList(),
+        customer: map["customer"] != null
+            ? CustomerInfoDTO.fromJSON(map["customer"])
+            : null,
+        stores: map["store_orders"] != null
+            ? StoreDTO.fromList(map["store_orders"])
+            : null,
+        paymentType: map["payment_type"] != null &&
+                (map["payment_type"] as List).length > 0
+            ? map["payment_type"][0]
+            : 0,
       );
 
   static List<OrderDTO> fromList(List list) =>
@@ -82,22 +86,20 @@ class OrderItemDTO {
   final List<OrderItemDTO> productChilds;
   final String supplier_store_name;
 
-  OrderItemDTO({
-    this.masterProductName,
-    this.masterProductId,
-    this.amount,
-    this.productChilds,
-    this.quantity,
-    this.supplier_store_name
-  });
+  OrderItemDTO(
+      {this.masterProductName,
+      this.masterProductId,
+      this.amount,
+      this.productChilds,
+      this.quantity,
+      this.supplier_store_name});
 
   factory OrderItemDTO.fromJSON(Map<String, dynamic> map) => OrderItemDTO(
-        masterProductName: map["product_name"],
-        quantity: map["quantity"],
-        amount: map["final_amount"]??map['unit_cost'],
-        productChilds: OrderItemDTO.fromList(map["list_of_childs"]),
-    supplier_store_name: map["supplier_store_name"]
-      );
+      masterProductName: map["product_name"],
+      quantity: map["quantity"],
+      amount: map["final_amount"] ?? map['unit_cost'],
+      productChilds: OrderItemDTO.fromList(map["list_of_childs"]),
+      supplier_store_name: map["supplier_store_name"]);
 
   static List<OrderItemDTO> fromList(List list) =>
       list?.map((e) => OrderItemDTO.fromJSON(e))?.toList() ?? [];
@@ -118,7 +120,7 @@ class OtherAmount {
   }
 }
 
-class CustomerInfoDTO{
+class CustomerInfoDTO {
   int customer_id;
   String name;
   String phone;
@@ -129,15 +131,10 @@ class CustomerInfoDTO{
     return CustomerInfoDTO(
         customer_id: map["customer_id"],
         name: map["name"],
-        phone: map["phone_number"]
-    );
+        phone: map["phone_number"]);
   }
 
-  Map<String, dynamic> toJson(){
-    return {
-      "customer_id" : customer_id,
-      "name" : name,
-      "phone_number": phone
-    };
+  Map<String, dynamic> toJson() {
+    return {"customer_id": customer_id, "name": name, "phone_number": phone};
   }
 }

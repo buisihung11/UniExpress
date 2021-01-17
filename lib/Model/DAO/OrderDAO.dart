@@ -30,7 +30,7 @@ class OrderDAO {
   Future<List<OrderListDTO>> getCustomerOrders(int storeId,
       [int orderStatus = ORDER_NEW_STATUS]) async {
     final res = await request.get('stores/$storeId/orders', queryParameters: {
-      "from-date": "2020-11-02",
+      // "from-date": "2020-11-02",
       // "to-date": "2020-12-12",
       "order-status": orderStatus
     });
