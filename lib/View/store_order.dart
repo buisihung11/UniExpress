@@ -114,7 +114,7 @@ class _StoreOrderScreenState extends State<StoreOrderScreen> {
                       height: 8,
                     ),
                     Text(
-                      "Địa chỉ: ${element.location}",
+                      "Địa chỉ: ${element.location ?? '...'}",
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.black,
@@ -124,7 +124,7 @@ class _StoreOrderScreenState extends State<StoreOrderScreen> {
                       height: 8,
                     ),
                     Text(
-                      "Liên hệ: ${element.contact_name}",
+                      "Liên hệ: ${element.contact_name ?? '...'}",
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.black,
@@ -169,10 +169,11 @@ class _StoreOrderScreenState extends State<StoreOrderScreen> {
   Future<void> _settingModalBottomSheet(SupplierDTO supplierDTO) async {
     // get orderDetail
 
-    bool result = await Get.toNamed(
-      RouteHandler.STORE_ORDER_DETAIL,
-      arguments: StoreOrderDetailScreen(supplier: supplierDTO, storeId: widget.store.id,)
-    );
+    bool result = await Get.toNamed(RouteHandler.STORE_ORDER_DETAIL,
+        arguments: StoreOrderDetailScreen(
+          supplier: supplierDTO,
+          storeId: widget.store.id,
+        ));
     if (result != null && result) {
       await refreshFetchOrder();
     }

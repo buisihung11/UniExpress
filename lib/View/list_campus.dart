@@ -11,11 +11,7 @@ import '../constraints.dart';
 class CampusScreen extends StatefulWidget {
   final String navigationPath;
   final String title;
-  CampusScreen(
-      {Key key,
-      this.navigationPath,
-      this.title})
-      : super(key: key);
+  CampusScreen({Key key, this.navigationPath, this.title}) : super(key: key);
 
   @override
   _CampusScreenState createState() => _CampusScreenState();
@@ -95,9 +91,7 @@ class _CampusScreenState extends State<CampusScreen> {
               ),
               child: ListTile(
                 onTap: () {
-                  Get.toNamed(
-                      widget.navigationPath,
-                      arguments: element);
+                  Get.toNamed(widget.navigationPath, arguments: element);
                 },
                 contentPadding: EdgeInsets.fromLTRB(16, 8, 16, 8),
                 title: Column(
@@ -116,7 +110,7 @@ class _CampusScreenState extends State<CampusScreen> {
                       height: 8,
                     ),
                     Text(
-                      "Địa chỉ: " + element.location,
+                      "Địa chỉ: " + element.location ?? "-",
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.black,

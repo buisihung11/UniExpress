@@ -68,10 +68,7 @@ class OrderDTO {
         stores: map["store_orders"] != null
             ? StoreDTO.fromList(map["store_orders"])
             : null,
-        paymentType: map["payment_type"] != null &&
-                (map["payment_type"] as List).length > 0
-            ? map["payment_type"][0]
-            : 0,
+        paymentType: map["payment_type"],
       );
 
   static List<OrderDTO> fromList(List list) =>
