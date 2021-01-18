@@ -8,6 +8,7 @@ import 'package:uni_express/acessories/appbar.dart';
 import 'package:uni_express/acessories/dash_border.dart';
 import 'package:uni_express/acessories/loading.dart';
 import 'package:uni_express/enums/view_status.dart';
+import 'package:uni_express/route_constraint.dart';
 import 'package:uni_express/utils/index.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -50,6 +51,18 @@ class _StoreOrderDetailScreenState extends State<StoreOrderDetailScreen> {
       child: Scaffold(
         appBar: DefaultAppBar(
           title: widget.supplier.name,
+        ),
+        floatingActionButton: FloatingActionButton(
+          child: Icon(
+            Icons.restaurant_menu,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            Get.toNamed(RouteHandler.STORE_ORDER_RESTAURANT_MODE, arguments: {
+              "storeId": widget.storeId,
+              "supplierId": widget.supplier.id,
+            });
+          },
         ),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.center,

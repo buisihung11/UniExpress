@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:uni_express/View/RestaurantScreen/restaurant_screen.dart';
 import 'package:uni_express/View/customer_order_detail.dart';
 import 'package:uni_express/View/store_order.dart';
 import 'package:uni_express/View/store_order_detail.dart';
@@ -77,6 +78,13 @@ class MyApp extends StatelessWidget {
                       store: settings.arguments,
                     ),
                 settings: settings);
+          case RouteHandler.STORE_ORDER_RESTAURANT_MODE:
+            return CupertinoPageRoute<bool>(
+                builder: (context) => RestaurantScreen(
+                      storeId: (settings.arguments as Map)["storeId"],
+                      supplierId: (settings.arguments as Map)["supplierId"],
+                    ),
+                settings: settings);
           case RouteHandler.STORE_ORDER_PRE:
             return CupertinoPageRoute<bool>(
                 builder: (context) => CampusScreen(
@@ -88,15 +96,15 @@ class MyApp extends StatelessWidget {
             return CupertinoPageRoute<bool>(
                 builder: (context) => StoreOrderDetailScreen(
                       supplier: storeOrderDetailScreen.supplier,
-                  storeId: storeOrderDetailScreen.storeId,
+                      storeId: storeOrderDetailScreen.storeId,
                     ),
                 settings: settings);
           case RouteHandler.CUSTOMER_ORDER_PRE: // List store screen
             return CupertinoPageRoute(
                 builder: (context) => CampusScreen(
-                  navigationPath: RouteHandler.CUSTOMER_ORDER,
-                  title: "Giao hàng",
-                ),
+                      navigationPath: RouteHandler.CUSTOMER_ORDER,
+                      title: "Giao hàng",
+                    ),
                 settings: settings);
           case RouteHandler.CUSTOMER_ORDER:
             return CupertinoPageRoute<bool>(
@@ -108,9 +116,9 @@ class MyApp extends StatelessWidget {
                 settings.arguments;
             return CupertinoPageRoute<bool>(
                 builder: (context) => CustomerOrderDetail(
-                  order: customerOrderDetailAgrs.order,
-                  storeId: customerOrderDetailAgrs.storeId,
-                ),
+                      order: customerOrderDetailAgrs.order,
+                      storeId: customerOrderDetailAgrs.storeId,
+                    ),
                 settings: settings);
           default:
             return CupertinoPageRoute(

@@ -93,7 +93,7 @@ class _StoreOrderScreenState extends State<StoreOrderScreen> {
               ),
               child: ListTile(
                 onTap: () {
-                  _settingModalBottomSheet(element);
+                  _onTapSupplier(element);
                 },
                 contentPadding: EdgeInsets.fromLTRB(16, 8, 16, 8),
                 title: Column(
@@ -166,7 +166,7 @@ class _StoreOrderScreenState extends State<StoreOrderScreen> {
     );
   }
 
-  Future<void> _settingModalBottomSheet(SupplierDTO supplierDTO) async {
+  Future<void> _onTapSupplier(SupplierDTO supplierDTO) async {
     // get orderDetail
 
     bool result = await Get.toNamed(RouteHandler.STORE_ORDER_DETAIL,
