@@ -33,6 +33,8 @@ class OrderDTO {
   final CustomerInfoDTO customer;
   final List<StoreDTO> stores;
 
+  bool isCompleted;
+
   OrderDTO(this.id,
       {this.otherAmounts,
       this.finalAmount,
@@ -44,7 +46,8 @@ class OrderDTO {
       this.paymentType,
       this.invoiceId,
       this.customer,
-      this.stores});
+      this.stores,
+      this.isCompleted = false});
 
   factory OrderDTO.fromJSON(Map<String, dynamic> map) => OrderDTO(
         map["order_id"],

@@ -51,9 +51,8 @@ class RestaurantOrderViewModel extends BaseModel {
   }
 
   void completeOrder() {
-    _currentIndex =
-        _currentIndex < orderList.orders.length - 1 ? _currentIndex + 1 : 0;
-    processChangeIndex();
+    orderList.orders.elementAt(_currentIndex).isCompleted = true;
+    nextOrder();
   }
 
   void preOrder() {
@@ -81,5 +80,11 @@ class RestaurantOrderViewModel extends BaseModel {
       } else
         setState(ViewStatus.Error);
     } finally {}
+  }
+
+  int get orderLeftQuanitity {
+    if (orderList?.orders == null) return 0;
+    return orderList?.orders?.where((element) => !element.isCompleted).length ??
+        0;
   }
 }
