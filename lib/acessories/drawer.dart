@@ -68,8 +68,9 @@ class _DrawState extends State<DrawerMenu> {
                             splashColor: Colors.lightBlue,
                             onPressed: () async {
                               Get.back();
-                              bool result =
-                                  await Get.toNamed(RouteHandler.SIGN_UP, arguments: model.currentUser);
+                              bool result = await Get.toNamed(
+                                  RouteHandler.SIGN_UP,
+                                  arguments: model.currentUser);
                               if (result != null && result) {
                                 model.fetchUser();
                               }

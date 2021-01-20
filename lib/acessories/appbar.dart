@@ -7,7 +7,6 @@ import 'package:uni_express/ViewModel/index.dart';
 import 'package:uni_express/enums/view_status.dart';
 import 'package:shimmer/shimmer.dart';
 
-
 import '../constraints.dart';
 
 class DefaultAppBar extends StatefulWidget implements PreferredSizeWidget {
@@ -31,14 +30,15 @@ class _AppBarSate extends State<DefaultAppBar> {
   Widget build(BuildContext context) {
     return AppBar(
       elevation: 5.0,
+      backgroundColor: Colors.white,
       centerTitle: true,
       iconTheme: IconThemeData(
-        color: Colors.white
+        color: kPrimary,
       ),
       title: Text(
         widget.title,
         style: TextStyle(
-          color: Colors.white,
+          color: kPrimary,
           fontWeight: FontWeight.bold,
         ),
       ),
@@ -104,7 +104,6 @@ class _HomeAppBarSate extends State<HomeAppBar> {
                         return GestureDetector(
                           onTap: () async {
                             await model.fetchUser();
-
                           },
                           child: Align(
                             alignment: Alignment.bottomCenter,

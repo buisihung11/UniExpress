@@ -64,12 +64,9 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                   padding: const EdgeInsets.fromLTRB(32, 16, 32, 0),
                   child: Column(
                     children: [
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Expanded(
-                          flex: 1,
-                          child: _buildCount(),
-                        ),
+                      Expanded(
+                        flex: 1,
+                        child: _buildCount(),
                       ),
                       Expanded(
                         flex: 7,
@@ -315,27 +312,34 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
           child: Container(
             color: Colors.white,
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      decoration: const BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                              width: 1.0, color: Color(0xFFFF000000)),
+                        ),
+                      ),
+                      child: Text(
+                        "${currentOrder.invoiceId}",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 20),
+                      ),
+                    ),
+                  ],
+                ),
                 Expanded(
                   child: Container(
                     padding: EdgeInsets.all(8),
                     height: Get.height,
                     color: Colors.white,
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          decoration: const BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                  width: 1.0, color: Color(0xFFFF000000)),
-                            ),
-                          ),
-                          child: Text(
-                            "${currentOrder.invoiceId}",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 20),
-                          ),
-                        ),
                         SizedBox(
                           height: 16,
                         ),
@@ -367,26 +371,26 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                           ],
                         ),
                         SizedBox(height: 8),
-                        Container(
-                          child: Row(
-                            children: [
-                              Text(
-                                "Tên K/H: ",
-                                style: TextStyle(color: Colors.grey),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Tên K/H: ",
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                            Text(
+                              "${currentOrder.customer.name}",
+                              style: kTextSecondary.copyWith(
+                                fontSize: 14,
+                                color: Colors.grey,
+                                fontWeight: FontWeight.bold,
                               ),
-                              Text(
-                                "${currentOrder.customer.name}",
-                                style: kTextSecondary.copyWith(
-                                  fontSize: 14,
-                                  color: Colors.grey,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                         Container(
                           child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               Text(
                                 "SDT: ",

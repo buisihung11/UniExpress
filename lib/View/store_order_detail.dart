@@ -363,7 +363,7 @@ class _OrderDetailBottomSheetState extends State<OrderDetailBottomSheet> {
   Widget build(BuildContext context) {
     return Container(
       width: Get.width,
-      padding: EdgeInsets.fromLTRB(16, 8, 16, 0),
+      padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(16),
@@ -384,86 +384,117 @@ class _OrderDetailBottomSheetState extends State<OrderDetailBottomSheet> {
               );
 
             final orderDetail = model.orderDetail;
-            return Container(
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    width: Get.width,
-                    child: Row(
-                      children: [
-                        // Container(
-                        //   width: 85,
-                        //   child: orderDetail.status == OrderFilter.ORDERING
-                        //       ? TyperAnimatedTextKit(
-                        //       speed: Duration(milliseconds: 100),
-                        //       onTap: () {
-                        //         print("Tap Event");
-                        //       },
-                        //       text: ['Đang giao...'],
-                        //       textStyle: TextStyle(
-                        //           fontFamily: "Bobbers",
-                        //           color: Colors.amber),
-                        //       textAlign: TextAlign.start,
-                        //       alignment: AlignmentDirectional
-                        //           .topStart // or Alignment.topLeft
-                        //   )
-                        //       : Text(
-                        //     'Đã nhận hàng',
-                        //     style: TextStyle(
-                        //       color: kPrimary,
-                        //     ),
-                        //   ),
-                        // ),
-                        Expanded(
-                          child: Padding(
-                            padding: EdgeInsets.only(left: 8, right: 8),
-                            child: Divider(),
+            return Scaffold(
+              bottomNavigationBar: _buildBottomBar(),
+              body: Container(
+                padding: EdgeInsets.only(left: 8, right: 8),
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      width: Get.width,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding: EdgeInsets.only(left: 8, right: 8),
+                              child: Divider(),
+                            ),
                           ),
-                        ),
-                        Container(
-                          width: Get.width * 0.4,
-                          child: Column(
-                            children: [
-                              Text(
-                                '${orderDetail.invoiceId}',
-                                style: TextStyle(color: Colors.black45),
-                                overflow: TextOverflow.ellipsis,
-                                textAlign: TextAlign.center,
-                                maxLines: 2,
-                              ),
-                            ],
+                          Container(
+                            width: Get.width * 0.4,
+                            child: Column(
+                              children: [
+                                Text(
+                                  '${orderDetail.invoiceId}',
+                                  style: TextStyle(color: Colors.black45),
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.center,
+                                  maxLines: 2,
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding: EdgeInsets.only(left: 8, right: 8),
-                            child: Divider(),
+                          Expanded(
+                            child: Padding(
+                              padding: EdgeInsets.only(left: 8, right: 8),
+                              child: Divider(),
+                            ),
                           ),
-                        ),
-                        Text(
-                          DateFormat('HH:mm dd/MM')
-                              .format(DateTime.parse(orderDetail.orderTime)),
-                          style: TextStyle(color: Colors.black45),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                        ),
-                      ],
+                          Text(
+                            DateFormat('HH:mm dd/MM')
+                                .format(DateTime.parse(orderDetail.orderTime)),
+                            style: TextStyle(color: Colors.black45),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 8),
-                  SizedBox(height: 8),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: buildOrderSummaryList(orderDetail),
+                    SizedBox(height: 8),
+                    SizedBox(height: 8),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: buildOrderSummaryList(orderDetail),
+                      ),
                     ),
-                  ),
-                  layoutSubtotal(orderDetail),
-                ],
+                    layoutSubtotal(orderDetail),
+                  ],
+                ),
               ),
             );
           },
         ),
+      ),
+    );
+  }
+
+  Container _buildBottomBar() {
+    return Container(
+      padding: const EdgeInsets.only(left: 8, right: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey,
+            offset: Offset(0.0, 1.0), //(x,y)
+            blurRadius: 6.0,
+          ),
+        ],
+      ),
+      child: ListView(
+        shrinkWrap: true,
+        children: [
+          SizedBox(
+            height: 16,
+          ),
+          FlatButton(
+            onPressed: () async {
+              // if (!isOrderDone) await model.putOrder(widget.storeId);
+            },
+            padding: EdgeInsets.only(left: 8.0, right: 8.0),
+            textColor: Colors.white,
+            color: kPrimary,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(8))),
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 16,
+                ),
+                Text("${!false ? 'Đã nhận đơn' : 'Đã hoàn thành'}",
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                SizedBox(
+                  height: 16,
+                )
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 8,
+          )
+        ],
       ),
     );
   }
@@ -574,14 +605,14 @@ class _OrderDetailBottomSheetState extends State<OrderDetailBottomSheet> {
           Container(
             margin: EdgeInsets.only(top: 15),
             padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-                border: Border.all(color: kBackgroundGrey[4]),
-                borderRadius: BorderRadius.all(Radius.circular(10))),
+            // decoration: BoxDecoration(
+            //     border: Border.all(color: kBackgroundGrey[4]),
+            //     borderRadius: BorderRadius.all(Radius.circular(10))),
             child: Column(
               children: [
                 // OTHER AMOUNTS GO HERE
-                ..._buildOtherAmount(orderDetail.otherAmounts),
-                Divider(color: Colors.black),
+                // ..._buildOtherAmount(orderDetail.otherAmounts),
+                // Divider(color: Colors.black),
                 Padding(
                   padding: const EdgeInsets.only(top: 5, bottom: 5),
                   child: Row(
