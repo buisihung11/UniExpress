@@ -14,8 +14,10 @@ import 'package:url_launcher/url_launcher.dart';
 class RestaurantScreen extends StatefulWidget {
   final int storeId;
   final int supplierId;
+  final String supplierName;
 
-  RestaurantScreen({Key key, this.storeId, this.supplierId}) : super(key: key);
+  RestaurantScreen({Key key, this.storeId, this.supplierId, this.supplierName})
+      : super(key: key);
 
   @override
   _RestaurantScreenState createState() => _RestaurantScreenState();
@@ -314,6 +316,23 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
+                      decoration: BoxDecoration(
+                        color: kPrimary,
+                        borderRadius: BorderRadius.only(
+                          bottomRight: Radius.circular(16),
+                        ),
+                      ),
+                      child: Text(widget.supplierName, style: kTextPrimary),
+                    ),
+                    SizedBox(width: 12)
+                  ],
+                ),
+                SizedBox(height: 8),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

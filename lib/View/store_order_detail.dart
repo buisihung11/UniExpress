@@ -61,6 +61,7 @@ class _StoreOrderDetailScreenState extends State<StoreOrderDetailScreen> {
             Get.toNamed(RouteHandler.STORE_ORDER_RESTAURANT_MODE, arguments: {
               "storeId": widget.storeId,
               "supplierId": widget.supplier.id,
+              "supplierName": widget.supplier.name,
             });
           },
         ),

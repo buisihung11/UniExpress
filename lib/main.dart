@@ -83,6 +83,7 @@ class MyApp extends StatelessWidget {
                 builder: (context) => RestaurantScreen(
                       storeId: (settings.arguments as Map)["storeId"],
                       supplierId: (settings.arguments as Map)["supplierId"],
+                      supplierName: (settings.arguments as Map)["supplierName"],
                     ),
                 settings: settings);
           case RouteHandler.STORE_ORDER_PRE:
