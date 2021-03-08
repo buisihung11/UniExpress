@@ -34,6 +34,7 @@ const TEST_STORE = 69;
 const int ORDER_NEW_STATUS = 1;
 const int ORDER_DONE_STATUS = 3;
 const int VIRTUAL_STORE_TYPE = 8;
+const int DEFAULT_SIZE = 20;
 
 class ProductType {
   static const int MASTER_PRODUCT = 6;
@@ -53,4 +54,18 @@ class PaymentType {
   static String getPaymentName(int type) {
     return options[type] ?? "N/A";
   }
+}
+
+class BatchStatus{
+  static const int NEW = 0;
+  static const int PROCESSING = 1;
+  static const int SUCCESS = 2;
+  static const int FAIL = 3;
+  static const int ABANDON = 4;
+
+}
+
+class ActionType{
+  static const int PICKUP = 0;
+  static const int DELIVERY = 1;
 }

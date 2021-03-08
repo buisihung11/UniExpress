@@ -76,7 +76,7 @@ class _SignUpState extends State<SignUp> {
           if (widget.user != null && !widget.user.isFirstLogin) {
             Get.back(result: true);
           } else {
-            Get.offAllNamed(RouteHandler.STORE_ORDER);
+            Get.offAllNamed(RouteHandler.ROUTE);
           }
         } else {}
       }
@@ -261,7 +261,7 @@ class _SignUpState extends State<SignUp> {
                                   !widget.user.isFirstLogin) {
                                 Get.back();
                               } else
-                                Get.offAllNamed(RouteHandler.STORE_ORDER);
+                                Get.offAllNamed(RouteHandler.ROUTE);
                             },
                             child: Text(
                               "Bỏ qua",

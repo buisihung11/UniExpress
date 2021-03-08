@@ -11,6 +11,7 @@ import 'package:uni_express/enums/view_status.dart';
 import 'package:uni_express/route_constraint.dart';
 import 'package:uni_express/utils/index.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../constraints.dart';
 

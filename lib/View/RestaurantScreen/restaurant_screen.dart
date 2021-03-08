@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:get/get.dart';
-import 'package:swipe_to/swipe_to.dart';
-// widgets
-import 'package:uni_express/Model/DTO/OrderDTO.dart';
+
 import 'package:uni_express/ViewModel/restaurant_order_viewModel.dart';
 import 'package:uni_express/constraints.dart';
 import 'package:uni_express/enums/view_status.dart';

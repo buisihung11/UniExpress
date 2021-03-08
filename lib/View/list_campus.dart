@@ -109,13 +109,14 @@ class _CampusScreenState extends State<CampusScreen> {
                     SizedBox(
                       height: 8,
                     ),
-                    Text(
-                      "Địa chỉ: " + element.location ?? "-",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.black,
+                    for (int i = 0; i < element.locations.length; i++)
+                      Text(
+                        "Địa chỉ: " + element.locations[i].address ?? "-",
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.black,
+                        ),
                       ),
-                    ),
                   ],
                 ),
               ),

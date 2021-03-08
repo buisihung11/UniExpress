@@ -65,7 +65,7 @@ class CustomInterceptors extends InterceptorsWrapper {
 
 class MyRequest {
   static BaseOptions options = new BaseOptions(
-      baseUrl: 'http://13.212.101.182/api/',
+      baseUrl: 'https://beanapi.unibean.net/api/',
       //baseUrl: 'https://118.71.16.121:80/api/v2',
       headers: {
         Headers.contentTypeHeader: "application/json",
@@ -87,8 +87,11 @@ class MyRequest {
           await showStatusDialog("assets/images/global_error.png", "Lỗi",
               "Vui lòng đang nhập lại");
           Get.offAllNamed(RouteHandler.LOGIN);
-        } else
-          throw e; //continue
+        } else{
+
+          throw e;
+        }
+           //continue
       },
     ));
   }

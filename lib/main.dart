@@ -4,9 +4,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:uni_express/View/DriverScreen/edge_detail.dart';
+import 'package:uni_express/View/DriverScreen/list_batch.dart';
+import 'package:uni_express/View/DriverScreen/route.dart';
 import 'package:uni_express/View/RestaurantScreen/restaurant_screen.dart';
 import 'package:uni_express/View/customer_order_detail.dart';
-import 'package:uni_express/View/store_order.dart';
 import 'package:uni_express/View/store_order_detail.dart';
 import 'package:uni_express/route_constraint.dart';
 import 'package:uni_express/setup.dart';
@@ -72,12 +74,6 @@ class MyApp extends StatelessWidget {
                       title: settings.arguments ?? "Đang xử lý...",
                     ),
                 settings: settings);
-          case RouteHandler.STORE_ORDER:
-            return CupertinoPageRoute<bool>(
-                builder: (context) => StoreOrderScreen(
-                      store: settings.arguments,
-                    ),
-                settings: settings);
           case RouteHandler.STORE_ORDER_RESTAURANT_MODE:
             return CupertinoPageRoute<bool>(
                 builder: (context) => RestaurantScreen(
@@ -86,10 +82,9 @@ class MyApp extends StatelessWidget {
                       supplierName: (settings.arguments as Map)["supplierName"],
                     ),
                 settings: settings);
-          case RouteHandler.STORE_ORDER_PRE:
+          case RouteHandler.BATCH:
             return CupertinoPageRoute<bool>(
-                builder: (context) => CampusScreen(
-                    navigationPath: RouteHandler.STORE_ORDER,
+                builder: (context) => BatchScreen(
                     title: "Lấy hàng"),
                 settings: settings);
           case RouteHandler.STORE_ORDER_DETAIL:
@@ -121,6 +116,19 @@ class MyApp extends StatelessWidget {
                       storeId: customerOrderDetailAgrs.storeId,
                     ),
                 settings: settings);
+          case RouteHandler.ROUTE:
+            return CupertinoPageRoute<bool>(
+                builder: (context) => RouteScreen(
+                  batch: settings.arguments,
+                ),
+                settings: settings);
+          case RouteHandler.EDGE:
+            return CupertinoPageRoute<bool>(
+                builder: (context) => EdgeScreen(
+                  area: (settings.arguments as EdgeScreen).area,
+                  pakages: (settings.arguments as EdgeScreen).pakages,
+                ),
+                settings: settings);
           default:
             return CupertinoPageRoute(
                 builder: (context) => NotFoundScreen(), settings: settings);
@@ -134,7 +142,7 @@ class MyApp extends StatelessWidget {
         toggleableActiveColor: kPrimary,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: StartUpView(),
+      home: StartUpView()
       // home: ProfileScreen(new AccountDTO(name: "Mít tơ Bin")),
     );
   }

@@ -7,6 +7,7 @@ class SupplierDTO {
   String brand_name;
   String contact_name;
   String phone_number;
+  bool isSelected;
 
   SupplierDTO({
     this.id,
@@ -17,6 +18,7 @@ class SupplierDTO {
     this.brand_name,
     this.contact_name,
     this.phone_number,
+    this.isSelected = false
   });
 
   factory SupplierDTO.fromJson(dynamic json) {

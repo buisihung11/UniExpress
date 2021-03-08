@@ -7,7 +7,6 @@ import 'package:uni_express/acessories/dialog.dart';
 
 import '../constraints.dart';
 
-
 class PushNotificationService {
   static PushNotificationService _instance;
 
@@ -37,22 +36,29 @@ class PushNotificationService {
         onMessage: (Map<String, dynamic> message) async {
           print('onMessage: $message');
           hideSnackbar();
+
           Get.snackbar(
-            message['notification']['title'], // title
-            message['notification']['body'],
-            colorText: kBackgroundGrey[0],
-            icon: Icon(Icons.alarm),
-            shouldIconPulse: true,
-            backgroundColor: kPrimary,
-            isDismissible: true,
-            duration: Duration(minutes: 1),
-            mainButton: FlatButton(
-              child: Text("OK", style: kTextPrimary,),
-              onPressed: (){
-              hideSnackbar();
-          },
-            )
-          );
+              Platform.isIOS
+                  ? message['aps']['alert']['title']
+                  : message['notification']['title'], // title
+              Platform.isIOS
+                  ? message['aps']['alert']['body']
+                  : message['notification']['body'],
+              colorText: kBackgroundGrey[0],
+              shouldIconPulse: true,
+              backgroundColor: kPrimary,
+              isDismissible: true,
+              duration: Duration(minutes: 1),
+              mainButton: FlatButton(
+                color: kPrimary,
+                child: Text(
+                  "OK",
+                  style: kTextPrimary,
+                ),
+                onPressed: () {
+                  hideSnackbar();
+                },
+              ));
           // Get.rawSnackbar(
           //     message: message['notification']['title'],
           //     duration: ,

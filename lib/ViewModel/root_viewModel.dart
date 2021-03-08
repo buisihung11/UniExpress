@@ -1,19 +1,25 @@
 import 'package:get/get.dart';
-import 'package:uni_express/Model/DAO/StoreDAO.dart';
-import 'package:uni_express/Model/DAO/SupplierDAO.dart';
 import 'package:uni_express/Model/DAO/index.dart';
-import 'package:uni_express/Model/DTO/StoreDTO.dart';
 import 'package:uni_express/Model/DTO/index.dart';
 import 'package:uni_express/acessories/dialog.dart';
 import 'package:uni_express/enums/view_status.dart';
 import 'package:uni_express/utils/shared_pref.dart';
 import '../route_constraint.dart';
 import 'base_model.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class RootViewModel extends BaseModel {
   AccountDAO _dao;
   AccountDTO currentUser;
   String error;
+  Map<String, LatLng> suppliers = {
+    "Đầm Sen": LatLng(10.766311624602196, 106.64190483025601),
+    "Bến Thành": LatLng(10.772815186731581, 106.69830011594244),
+    "FPT University": LatLng(10.84203783147812, 106.80930917241754),
+    "Suối Tiên": LatLng(10.866104142943794, 106.8030719020283),
+  };
+
+
   static RootViewModel _instance;
 
 
@@ -33,7 +39,8 @@ class RootViewModel extends BaseModel {
 
   RootViewModel() {
     _dao = AccountDAO();
-    setState(ViewStatus.Loading);
+
+
     fetchUser();
   }
 
@@ -66,21 +73,6 @@ class RootViewModel extends BaseModel {
     destroyInstance();
   }
 
-  Future<void> getSuppliersFromStore(int storeId) async {
-    try {
-      setState(ViewStatus.Loading);
-      SupplierDAO dao = new SupplierDAO();
-      listSupplier = await dao.getSuppliersFromStore(storeId);
-      setState(ViewStatus.Completed);
-    } catch (e) {
-      bool result = await showErrorDialog();
-      if (result) {
-        await getSuppliersFromStore(storeId);
-      } else
-        setState(ViewStatus.Error);
-    }
-  }
-
   Future<void> getVirtualStores() async {
     try {
       setState(ViewStatus.Loading);
@@ -95,4 +87,5 @@ class RootViewModel extends BaseModel {
         setState(ViewStatus.Error);
     }
   }
+
 }
