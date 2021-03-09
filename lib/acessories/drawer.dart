@@ -121,6 +121,12 @@ class _DrawState extends State<DrawerMenu> {
             RouteHandler.BATCH,
           );
         }),
+        itemDrawer('Nhà hàng', Icons.restaurant, () {
+          Get.back();
+          Get.toNamed(
+            RouteHandler.STORE_ORDER_PRE,
+          );
+        }),
         itemDrawer('Giao hàng', Icons.person, () {
           Get.back();
           Get.toNamed(RouteHandler.CUSTOMER_ORDER_PRE);

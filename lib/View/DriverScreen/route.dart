@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:uni_express/Model/DTO/index.dart';
 import 'package:uni_express/View/DriverScreen/edge_detail.dart';
-import 'package:uni_express/View/store_order_detail.dart';
 import 'package:uni_express/ViewModel/route_viewModel.dart';
 import 'package:uni_express/acessories/appbar.dart';
 import 'package:uni_express/acessories/loading.dart';
@@ -58,16 +57,19 @@ class _RouteScreenState extends State<RouteScreen> {
     return ScopedModelDescendant<RouteViewModel>(
       builder: (context, child, model) {
         if(model.mapHeight != Get.height){
-          return Container(
-            width: Get.width,
-            padding: EdgeInsets.all(8),
-            color: Colors.red,
-            child: Text(
-              "Danh sách điểm đến",
-              style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold),
+          return Material(
+            elevation: 4,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Center(
+                child: Text(
+                  "Lộ trình 🚚",
+                  style: TextStyle(
+                      fontSize: 16,
+                      color: kSecondary,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
             ),
           );
         }
@@ -162,12 +164,12 @@ class _RouteScreenState extends State<RouteScreen> {
                             height: 8,
                           ),
 
-                          Text("📦 ${element.packages.length}",
+                          Text("📦 ${element.actions.length}",
                               style: TextStyle(
                                 fontSize: 14,
                                 color: area.isSelected
                                     ? Colors.white
-                                    : Colors.black,
+                                    : kSecondary,
                               ))
                         ],
                       ),
@@ -181,14 +183,15 @@ class _RouteScreenState extends State<RouteScreen> {
                           style: TextStyle(color: Colors.white),
                         ),
                         onPressed: () {
-                          Get.toNamed(RouteHandler.EDGE, arguments: EdgeScreen(area: area, pakages: element.packages,));
+                          Get.toNamed(RouteHandler.EDGE, arguments: EdgeScreen(area: area, packages: model.route.listPackages, actions: element.actions, title: "${area.id} - Chuyến hàng ${widget.batch.id}",));
                         },
                       )),
                 ));
               });
               return ListView(
                 children: [
-                  ...list
+                  ...list,
+                  SizedBox(height: 8,)
                 ],
               );
             }
@@ -210,9 +213,7 @@ class _RouteScreenState extends State<RouteScreen> {
               child: Container(
                   height: model.mapHeight - 80,
                   width: Get.width,
-                  decoration: BoxDecoration(
-                      border: Border(
-                          bottom: BorderSide(color: kBackgroundGrey[4]))),
+                  decoration: BoxDecoration(),
                   child: Stack(
                     children: <Widget>[
                       // Map View
@@ -319,19 +320,6 @@ class _RouteScreenState extends State<RouteScreen> {
         }
       },
     );
-  }
-
-  Future<void> _onTapSupplier(SupplierDTO supplierDTO) async {
-    // get orderDetail
-
-    bool result = await Get.toNamed(RouteHandler.STORE_ORDER_DETAIL,
-        arguments: StoreOrderDetailScreen(
-          supplier: supplierDTO,
-          storeId: widget.batch.area.id,
-        ));
-    if (result != null && result) {
-      await refreshFetchOrder();
-    }
   }
 
 

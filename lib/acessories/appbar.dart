@@ -39,11 +39,29 @@ class _AppBarSate extends State<DefaultAppBar> {
         widget.title,
         style: TextStyle(
           color: kPrimary,
-          fontWeight: FontWeight.bold,
         ),
       ),
     );
   }
+}
+
+Widget displayedTitle(String title, String content,
+    {double size, Color titleColor, Color contentColor}) {
+  return Text.rich(TextSpan(
+      text: title,
+      style: TextStyle(
+          fontSize: size ?? 14,
+          color: titleColor ?? Colors.black,
+          fontWeight: FontWeight.bold),
+      children: [
+        TextSpan(
+          text: content,
+          style: TextStyle(
+            fontSize: size ?? 14,
+            color: contentColor ?? Colors.grey,
+          ),
+        )
+      ]));
 }
 
 class HomeAppBar extends StatefulWidget {

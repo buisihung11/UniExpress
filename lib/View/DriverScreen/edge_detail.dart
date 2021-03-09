@@ -9,9 +9,11 @@ import '../../constraints.dart';
 import 'package:get/get.dart';
 
 class EdgeScreen extends StatefulWidget {
+  final String title;
   final AreaDTO area;
-  final List<ActionDTO> pakages;
-  EdgeScreen({Key key, this.area, this.pakages}) : super(key: key);
+  final List<ActionDTO> actions;
+  final List<PackageDTO> packages;
+  EdgeScreen({Key key, this.area, this.actions, this.packages, this.title}) : super(key: key);
 
   @override
   _EdgeScreenState createState() => _EdgeScreenState();
@@ -33,15 +35,16 @@ class _EdgeScreenState extends State<EdgeScreen> {
 
     return Scaffold(
       appBar: DefaultAppBar(
-        title: widget.area.name,
+        title: widget.title,
       ),
+      bottomNavigationBar: bottomBar(),
       body: Column(
         children: [
           areaInfo(),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.only(left: 8, right: 8),
-              child: _buildPakages(),
+              padding: const EdgeInsets.only(left: 8, right: 8, top: 8),
+              child: _buildPackages(),
             ),
           )
         ],
@@ -49,14 +52,14 @@ class _EdgeScreenState extends State<EdgeScreen> {
     );
   }
 
-  Widget _buildPakages() {
-    List<ActionDTO> listPick = widget.pakages.where((element) => element.actionType == ActionType.PICKUP).toList();
-    List<ActionDTO> listDeli = widget.pakages.where((element) => element.actionType == ActionType.DELIVERY).toList();
+  Widget _buildPackages() {
+    List<ActionDTO> listPick = widget.actions.where((element) => element.actionType == ActionType.PICKUP).toList();
+    List<ActionDTO> listDeli = widget.actions.where((element) => element.actionType == ActionType.DELIVERY).toList();
     List<Widget> list = List();
     if(listPick.isNotEmpty && listPick != null){
       list.add(SizedBox(height: 8,));
       list.add(Text(
-        "Danh sách túi phải lấy:",
+        "Danh sách túi phải lấy",
         style: TextStyle(
             fontSize: 16,
             color: Colors.orange,
@@ -70,7 +73,7 @@ class _EdgeScreenState extends State<EdgeScreen> {
     if(listDeli.isNotEmpty && listDeli != null){
       list.add(SizedBox(height: 8,));
       list.add(Text(
-        "Danh sách túi phải giao:",
+        "Danh sách túi phải giao",
         style: TextStyle(
           fontSize: 16,
           color: Colors.orange,
@@ -88,8 +91,9 @@ class _EdgeScreenState extends State<EdgeScreen> {
   }
 
  Widget _buildPackageDetail(ActionDTO actionDTO, String type){
+    PackageDTO package = widget.packages.where((element) => element.packageId == actionDTO.packageId).first;
     return Container(
-      margin: EdgeInsets.all(8),
+      margin: EdgeInsets.only(top: 8),
       padding: EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -98,13 +102,13 @@ class _EdgeScreenState extends State<EdgeScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              "${actionDTO.packageId}",
-              style: TextStyle(
-                fontSize: 15,
-                color: kSecondary,
-                fontWeight: FontWeight.bold
-              ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                displayedTitle("ID: ", package.packageId.toString(), titleColor: Colors.black54, contentColor: kSecondary),
+                SizedBox(height: 8,),
+                displayedTitle("Số món: ", package.capacity.toString(), titleColor: Colors.black54, contentColor: kSecondary)
+              ],
             ),
             Column(
               children: [
@@ -141,61 +145,127 @@ class _EdgeScreenState extends State<EdgeScreen> {
 
   Widget areaInfo() {
     return Container(
-      color: Colors.yellow[100],
+      color: Colors.white,
       width: Get.width,
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.fromLTRB(8, 16, 8, 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Thông tin điểm đến",
-            style: TextStyle(color: Colors.deepOrange, fontSize: 17),
+            "🔎 Thông tin điểm đến",
+            style: TextStyle(color: kSecondary, fontSize: 16, fontWeight: FontWeight.bold),
           ),
-          SizedBox(height: 32,),
           SizedBox(
-            height: 8,
+            height: 12,
           ),
           RichText(
             text: TextSpan(
               text: 'Tên cửa hàng: ',
-              style: TextStyle(color: Colors.grey, fontSize: 14),
+              style: TextStyle(color: Colors.black54, fontSize: 14),
               children: <TextSpan>[
                 TextSpan(
                     text: '${widget.area.name}',
                     style: TextStyle(
                       color: Colors.black,
-                      fontSize: 16,
+                      fontSize: 14,
                       fontWeight: FontWeight.bold,
                     )),
               ],
             ),
           ),
-          SizedBox(
-            height: 8,
-          ),
-          Row(
-            children: [
-              Text(
-                "Liên hệ: ",
-                style: TextStyle(color: Colors.grey, fontSize: 14),
-              ),
-              FlatButton(
-                onPressed: () async {
-                  final url = 'tel:+84123456789';
-                  if (await canLaunch(url)) {
-                    await launch(url);
-                  } else {
-                    throw 'Could not launch $url';
-                  }
-                },
-                child: new Text("+84123456789",
+          SizedBox(height: 8,),
+          RichText(
+            text: TextSpan(
+              text: 'Địa chỉ: ',
+              style: TextStyle(color: Colors.black54, fontSize: 14),
+              children: <TextSpan>[
+                TextSpan(
+                    text: '123/35, Lê Văn Việt, q9, HCM',
                     style: TextStyle(
-                      color: Colors.blue,
+                      color: Colors.black,
+                      fontSize: 14,
                       fontWeight: FontWeight.bold,
                     )),
-              ),
-            ],
+              ],
+            ),
           ),
+          SizedBox(height: 8,),
+          RichText(
+            text: TextSpan(
+              text: 'Liên hệ: ',
+              style: TextStyle(color: Colors.black54, fontSize: 14),
+              children:[
+                WidgetSpan(
+                  child: InkWell(
+                    onTap: () async {
+                      final url = 'tel:+84123456789';
+                      if (await canLaunch(url)) {
+                        await launch(url);
+                      } else {
+                        throw 'Could not launch $url';
+                      }
+                    },
+                    child: new Text("+84123456789",
+                        style: TextStyle(
+                          decoration: TextDecoration.underline,
+                          color: Colors.blue,
+                        )),
+                  ),
+                )
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget bottomBar() {
+    return Container(
+      padding: const EdgeInsets.only(left: 8, right: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey,
+            offset: Offset(0.0, 1.0), //(x,y)
+            blurRadius: 6.0,
+          ),
+        ],
+      ),
+      child: ListView(
+        shrinkWrap: true,
+        children: [
+          SizedBox(
+            height: 16,
+          ),
+          FlatButton(
+            onPressed: () async {
+              await showOptionDialog("Xác nhận hoàn tất mọi túi?");
+            },
+            padding: EdgeInsets.only(left: 8.0, right: 8.0),
+            textColor: Colors.white,
+            color: kPrimary,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(8))),
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 16,
+                ),
+                Text(
+                    "Đã hoàn tất mọi túi",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 15)),
+                SizedBox(
+                  height: 16,
+                )
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 8,
+          )
         ],
       ),
     );

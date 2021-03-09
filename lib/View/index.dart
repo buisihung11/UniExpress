@@ -4,6 +4,6 @@ export 'list_campus.dart';
 export 'profile.dart';
 export 'signup.dart';
 export 'NotFoundScreen.dart';
-export 'customer_order_detail.dart';
+export 'CustomerScreen/customer_order_detail.dart';
 export 'LoginScreen/LoginByPhone.dart';
 export 'LoginScreen/LoginPhoneOTP.dart';

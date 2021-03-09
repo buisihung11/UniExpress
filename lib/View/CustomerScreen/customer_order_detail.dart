@@ -10,14 +10,8 @@ import 'package:intl/intl.dart';
 import 'package:uni_express/utils/index.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../constraints.dart';
+import '../../constraints.dart';
 
-class CustomerOrderDetailArguments {
-  final OrderDTO order;
-  final int storeId;
-
-  CustomerOrderDetailArguments(this.order, this.storeId);
-}
 
 class CustomerOrderDetail extends StatefulWidget {
   final OrderDTO order;
@@ -448,8 +442,8 @@ class _OrderDetailState extends State<CustomerOrderDetail> {
                 },
                 child: new Text("${customer.phone}",
                     style: TextStyle(
+                      decoration: TextDecoration.underline,
                       color: Colors.blue,
-                      fontWeight: FontWeight.bold,
                     )),
               ),
             ],

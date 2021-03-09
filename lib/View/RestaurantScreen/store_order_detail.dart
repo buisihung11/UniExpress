@@ -13,7 +13,7 @@ import 'package:uni_express/utils/index.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../constraints.dart';
+import '../../constraints.dart';
 
 class StoreOrderDetailScreen extends StatefulWidget {
   StoreOrderDetailScreen({Key key, @required this.supplier, this.storeId})

@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:uni_express/Model/DTO/index.dart';
-import 'package:uni_express/View/customer_order_detail.dart';
+import 'package:uni_express/View/CustomerScreen/customer_order_detail.dart';
 import 'package:uni_express/ViewModel/index.dart';
 import 'package:uni_express/acessories/appbar.dart';
 import 'package:uni_express/acessories/loading.dart';
@@ -13,7 +13,7 @@ import 'package:uni_express/utils/index.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../constraints.dart';
+import '../../constraints.dart';
 
 class CustomerOrderScreen extends StatefulWidget {
   CustomerOrderScreen({Key key, @required this.store}) : super(key: key);
@@ -283,7 +283,7 @@ class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
     // get orderDetail
     bool result = await Get.toNamed(
       RouteHandler.CUSTOMER_ORDER_DETAIL,
-      arguments: CustomerOrderDetailArguments(order, storeId),
+      arguments: CustomerOrderDetail(order: order, storeId: storeId,),
     );
     if (result != null && result) {
       await refreshFetchOrder();

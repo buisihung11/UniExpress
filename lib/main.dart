@@ -8,8 +8,8 @@ import 'package:uni_express/View/DriverScreen/edge_detail.dart';
 import 'package:uni_express/View/DriverScreen/list_batch.dart';
 import 'package:uni_express/View/DriverScreen/route.dart';
 import 'package:uni_express/View/RestaurantScreen/restaurant_screen.dart';
-import 'package:uni_express/View/customer_order_detail.dart';
-import 'package:uni_express/View/store_order_detail.dart';
+import 'package:uni_express/View/RestaurantScreen/store_order.dart';
+import 'package:uni_express/View/RestaurantScreen/store_order_detail.dart';
 import 'package:uni_express/route_constraint.dart';
 import 'package:uni_express/setup.dart';
 import 'package:uni_express/utils/pageNavigation.dart';
@@ -17,7 +17,7 @@ import 'package:uni_express/utils/request.dart';
 
 import 'View/LoginScreen/LoginByPhone.dart';
 import 'View/LoginScreen/LoginPhoneOTP.dart';
-import 'View/customer_order.dart';
+import 'View/CustomerScreen/customer_order.dart';
 import 'View/index.dart';
 import 'View/login.dart';
 import 'View/profile.dart';
@@ -74,6 +74,18 @@ class MyApp extends StatelessWidget {
                       title: settings.arguments ?? "Đang xử lý...",
                     ),
                 settings: settings);
+          case RouteHandler.STORE_ORDER_PRE:
+            return CupertinoPageRoute<bool>(
+                builder: (context) => CampusScreen(
+                    navigationPath: RouteHandler.STORE_ORDER,
+                    title: "Nhà hàng"),
+                settings: settings);
+          case RouteHandler.STORE_ORDER:
+            return CupertinoPageRoute<bool>(
+                builder: (context) => StoreOrderScreen(
+                  store: settings.arguments,
+                ),
+                settings: settings);
           case RouteHandler.STORE_ORDER_RESTAURANT_MODE:
             return CupertinoPageRoute<bool>(
                 builder: (context) => RestaurantScreen(
@@ -81,11 +93,6 @@ class MyApp extends StatelessWidget {
                       supplierId: (settings.arguments as Map)["supplierId"],
                       supplierName: (settings.arguments as Map)["supplierName"],
                     ),
-                settings: settings);
-          case RouteHandler.BATCH:
-            return CupertinoPageRoute<bool>(
-                builder: (context) => BatchScreen(
-                    title: "Lấy hàng"),
                 settings: settings);
           case RouteHandler.STORE_ORDER_DETAIL:
             StoreOrderDetailScreen storeOrderDetailScreen = settings.arguments;
@@ -108,13 +115,16 @@ class MyApp extends StatelessWidget {
                     CustomerOrderScreen(store: settings.arguments),
                 settings: settings);
           case RouteHandler.CUSTOMER_ORDER_DETAIL:
-            CustomerOrderDetailArguments customerOrderDetailAgrs =
-                settings.arguments;
             return CupertinoPageRoute<bool>(
                 builder: (context) => CustomerOrderDetail(
-                      order: customerOrderDetailAgrs.order,
-                      storeId: customerOrderDetailAgrs.storeId,
+                      order: (settings.arguments as CustomerOrderDetail).order,
+                      storeId: (settings.arguments as CustomerOrderDetail).storeId,
                     ),
+                settings: settings);
+          case RouteHandler.BATCH:
+            return CupertinoPageRoute<bool>(
+                builder: (context) => BatchScreen(
+                    title: "Lấy hàng"),
                 settings: settings);
           case RouteHandler.ROUTE:
             return CupertinoPageRoute<bool>(
@@ -126,7 +136,9 @@ class MyApp extends StatelessWidget {
             return CupertinoPageRoute<bool>(
                 builder: (context) => EdgeScreen(
                   area: (settings.arguments as EdgeScreen).area,
-                  pakages: (settings.arguments as EdgeScreen).pakages,
+                  actions: (settings.arguments as EdgeScreen).actions,
+                  packages: (settings.arguments as EdgeScreen).packages,
+                  title: (settings.arguments as EdgeScreen).title,
                 ),
                 settings: settings);
           default:
