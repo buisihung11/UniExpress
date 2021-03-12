@@ -6,3 +6,4 @@ export 'StoreDTO.dart';
 export 'BatchDTO.dart';
 export 'MetaDataDTO.dart';
 export 'RouteDTO.dart';
+export 'PackageDTO.dart';

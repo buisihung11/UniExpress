@@ -183,7 +183,7 @@ class _RouteScreenState extends State<RouteScreen> {
                           style: TextStyle(color: Colors.white),
                         ),
                         onPressed: () {
-                          Get.toNamed(RouteHandler.EDGE, arguments: EdgeScreen(area: area, packages: model.route.listPackages, actions: element.actions, title: "${area.id} - Chuyến hàng ${widget.batch.id}",));
+                          Get.toNamed(RouteHandler.EDGE, arguments: EdgeScreen(area: area, packages: model.route.listPackages, actions: element.actions, batchId: widget.batch.id,));
                         },
                       )),
                 ));

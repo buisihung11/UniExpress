@@ -30,4 +30,9 @@ class BatchDAO extends BaseDAO{
     }
     return null;
   }
+
+  Future<PackageDTO> getPackage(int batchId, int packageId) async {
+    final res = await request.get('batchs/${batchId}/packages/${packageId}', );
+    return PackageDTO.fromJson(res.data);
+  }
 }

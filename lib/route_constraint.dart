@@ -20,4 +20,5 @@ class RouteHandler {
   static const String BATCH = "batch";
   static const String ROUTE = "route";
   static const String EDGE = "edge";
+  static const String PACAKGE = "PACAKGE";
 }

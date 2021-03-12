@@ -2,18 +2,22 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:uni_express/Model/DTO/BatchDTO.dart';
 import 'package:uni_express/Model/DTO/index.dart';
+import 'package:uni_express/View/DriverScreen/package_detail.dart';
 import 'package:uni_express/acessories/appbar.dart';
 import 'package:uni_express/acessories/dialog.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../constraints.dart';
 import 'package:get/get.dart';
 
+import '../../route_constraint.dart';
+
 class EdgeScreen extends StatefulWidget {
-  final String title;
+  final int batchId;
   final AreaDTO area;
   final List<ActionDTO> actions;
   final List<PackageDTO> packages;
-  EdgeScreen({Key key, this.area, this.actions, this.packages, this.title}) : super(key: key);
+
+  EdgeScreen({Key key, this.area, this.actions, this.packages, this.batchId}) : super(key: key);
 
   @override
   _EdgeScreenState createState() => _EdgeScreenState();
@@ -34,13 +38,15 @@ class _EdgeScreenState extends State<EdgeScreen> {
     ];
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: DefaultAppBar(
-        title: widget.title,
+        title: "${widget.area.id} - Chuyến hàng ${widget.batchId}",
       ),
       bottomNavigationBar: bottomBar(),
       body: Column(
         children: [
           areaInfo(),
+          Divider(color: Colors.grey,),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.only(left: 8, right: 8, top: 8),
@@ -58,13 +64,7 @@ class _EdgeScreenState extends State<EdgeScreen> {
     List<Widget> list = List();
     if(listPick.isNotEmpty && listPick != null){
       list.add(SizedBox(height: 8,));
-      list.add(Text(
-        "Danh sách túi phải lấy",
-        style: TextStyle(
-            fontSize: 16,
-            color: Colors.orange,
-          fontWeight: FontWeight.bold
-        ),));
+      list.add(displayedTitle("Danh sách túi phải ", "LẤY", titleColor: Colors.black, contentColor: Colors.red));
       listPick.forEach((element) {
         list.add(_buildPackageDetail(element, "Đã lấy"));
       });
@@ -72,13 +72,7 @@ class _EdgeScreenState extends State<EdgeScreen> {
 
     if(listDeli.isNotEmpty && listDeli != null){
       list.add(SizedBox(height: 8,));
-      list.add(Text(
-        "Danh sách túi phải giao",
-        style: TextStyle(
-          fontSize: 16,
-          color: Colors.orange,
-          fontWeight: FontWeight.bold
-        ),));
+      list.add(displayedTitle("Danh sách túi phải ", "GIAO", titleColor:  Colors.black, contentColor: Colors.red));
       listDeli.forEach((element) {
         list.add(_buildPackageDetail(element, "Đã giao"));
       });
@@ -96,50 +90,57 @@ class _EdgeScreenState extends State<EdgeScreen> {
       margin: EdgeInsets.only(top: 8),
       padding: EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.all(Radius.circular(8))
+        color: kBackgroundGrey[3],
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                displayedTitle("ID: ", package.packageId.toString(), titleColor: Colors.black54, contentColor: kSecondary),
-                SizedBox(height: 8,),
-                displayedTitle("Số món: ", package.capacity.toString(), titleColor: Colors.black54, contentColor: kSecondary)
-              ],
+      child: InkWell(
+        onTap: () async {
+          await Get.toNamed(
+              RouteHandler.PACAKGE,
+              arguments: PackageDetailScreen(package: package, batchId: widget.batchId,)
+          );
+        },
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  displayedTitle("Mã túi: ", package.packageId.toString(), titleColor: Colors.black54, contentColor: kSecondary),
+                  SizedBox(height: 8,),
+                  displayedTitle("Số đơn: ", package.items.length.toString(), titleColor: Colors.black54, contentColor: kSecondary)
+                ],
+              ),
+              Column(
+                children: [
+                  FlatButton(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
+                    color: kPrimary,
+                    child: Text(
+                      type,
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    onPressed: () async {
+                      await showOptionDialog("Xác nhận ${type.toLowerCase()} túi ✔");
+                    },
+                  ),
+                  // FlatButton(
+                  //   shape: RoundedRectangleBorder(
+                  //       borderRadius: BorderRadius.circular(8)),
+                  //   color: Colors.grey[400],
+                  //   child: Text(
+                  //     "Hủy",
+                  //     style: TextStyle(color: Colors.white),
+                  //   ),
+                  //   onPressed: () async {
+                  //     await showOptionDialog("Xác nhân hủy túi ❌");
+                  //   },
+                  // ),
+                ],
+              )
+            ],
             ),
-            Column(
-              children: [
-                FlatButton(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8)),
-                  color: kPrimary,
-                  child: Text(
-                    type,
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  onPressed: () async {
-                    await showOptionDialog("Xác nhận ${type.toLowerCase()} túi ✔");
-                  },
-                ),
-                FlatButton(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8)),
-                  color: Colors.grey[400],
-                  child: Text(
-                    "Hủy",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  onPressed: () async {
-                    await showOptionDialog("Xác nhân hủy túi ❌");
-                  },
-                ),
-              ],
-            )
-          ],
-          ),
+      ),
     );
  }
 

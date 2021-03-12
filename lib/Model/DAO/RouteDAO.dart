@@ -1,4 +1,4 @@
-import 'package:uni_express/Model/DTO/RouteDTO.dart';
+import 'package:uni_express/Model/DTO/index.dart';
 import 'package:uni_express/utils/request.dart';
 
 class RouteDAO {

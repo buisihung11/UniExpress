@@ -112,7 +112,7 @@ class _StoreOrderScreenState extends State<StoreOrderScreen> {
                       height: 8,
                     ),
                     Text(
-                      "Địa chỉ: ${element.location}",
+                      "Địa chỉ: ${element.location ?? "..."}",
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.black,
@@ -122,7 +122,7 @@ class _StoreOrderScreenState extends State<StoreOrderScreen> {
                       height: 8,
                     ),
                     Text(
-                      "Liên hệ: ${element.contact_name}",
+                      "Liên hệ: ${element.contact_name ?? "..."}",
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.black,
@@ -130,21 +130,6 @@ class _StoreOrderScreenState extends State<StoreOrderScreen> {
                     ),
                     SizedBox(
                       height: 8,
-                    ),
-                    Row(
-                      children: [
-                        Icon(Icons.phone),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        Text(
-                          "${element.phone_number}",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                      ],
                     ),
                   ],
                 ),

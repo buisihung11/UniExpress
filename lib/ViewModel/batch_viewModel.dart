@@ -26,7 +26,7 @@ class BatchViewModel extends BaseModel{
   ScrollController scrollController;
   BatchDAO _batchDAO;
   int selectedStatus;
-  List<int> batchStatus = [-1, BatchStatus.PROCESSING, BatchStatus.FAIL, BatchStatus.SUCCESS];
+  List<int> batchStatus = [-1, BatchStatus.PROCESSING, BatchStatus.SUCCESS];
 
   BatchViewModel(){
     _batchDAO = new BatchDAO();

@@ -50,7 +50,7 @@ class _CampusScreenState extends State<CampusScreen> {
                 height: 16,
               ),
               Text(
-                "Danh sách cửa hàng",
+                "Danh sách khu vực",
                 style: TextStyle(
                     fontSize: 18,
                     color: Colors.deepOrange,
@@ -109,14 +109,6 @@ class _CampusScreenState extends State<CampusScreen> {
                     SizedBox(
                       height: 8,
                     ),
-                    for (int i = 0; i < element.locations.length; i++)
-                      Text(
-                        "Địa chỉ: " + element.locations[i].address ?? "-",
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.black,
-                        ),
-                      ),
                   ],
                 ),
               ),

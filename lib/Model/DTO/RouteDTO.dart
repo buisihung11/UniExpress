@@ -1,4 +1,4 @@
-import 'package:uni_express/Model/DTO/BatchDTO.dart';
+import 'package:uni_express/Model/DTO/index.dart';
 
 class RouteDTO {
   List<EdgeDTO> listEdges;
@@ -45,13 +45,4 @@ class ActionDTO {
   }
 }
 
-class PackageDTO {
-  int packageId;
-  int capacity;
 
-  PackageDTO({this.packageId, this.capacity});
-
-  factory PackageDTO.fromJson(dynamic json) {
-    return PackageDTO(packageId: json['id'], capacity: json['cap']);
-  }
-}

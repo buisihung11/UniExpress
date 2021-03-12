@@ -155,20 +155,6 @@ class _StoreOrderDetailScreenState extends State<StoreOrderDetailScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // isToday
-        //     ? Padding(
-        //         padding: const EdgeInsets.only(bottom: 16),
-        //         child: Text(
-        //           "Tổng số đơn hôm nay: " +
-        //               orderSummary.orders.length.toString(),
-        //           style: TextStyle(
-        //             color: Colors.red,
-        //             fontWeight: FontWeight.bold,
-        //             fontSize: 18,
-        //           ),
-        //         ),
-        //       )
-        //     : Container(),
         Container(
           padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
@@ -184,6 +170,7 @@ class _StoreOrderDetailScreenState extends State<StoreOrderDetailScreen> {
           ),
           width: Get.width,
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -208,28 +195,25 @@ class _StoreOrderDetailScreenState extends State<StoreOrderDetailScreen> {
                   ),
                 ],
               ),
-              SizedBox(width: 8),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      "Số đơn:",
-                      style: TextStyle(
-                        color: Colors.grey[300],
-                        fontWeight: FontWeight.bold,
-                      ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    "Số đơn:",
+                    style: TextStyle(
+                      color: Colors.grey[300],
+                      fontWeight: FontWeight.bold,
                     ),
-                    Text(
-                      orderSummary.orders.length.toString(),
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
+                  ),
+                  Text(
+                    orderSummary.orders.length.toString(),
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               )
             ],
           ),
@@ -248,13 +232,13 @@ class _StoreOrderDetailScreenState extends State<StoreOrderDetailScreen> {
         SizedBox(height: 8),
         ...orderSummary.orders.reversed
             .toList()
-            .map((order) => _buildOrderItem(order, context))
+            .map((order) => _buildOrderItem(order))
             .toList(),
       ],
     );
   }
 
-  Widget _buildOrderItem(OrderDTO order, BuildContext context) {
+  Widget _buildOrderItem(OrderDTO order) {
     return Container(
       // height: 80,
       margin: EdgeInsets.fromLTRB(8, 0, 8, 16),
@@ -511,49 +495,64 @@ class _OrderDetailBottomSheetState extends State<OrderDetailBottomSheet> {
           orderItemPrice += element.amount;
         });
         // orderItemPrice *= orderMaster.quantity;
+        Widget displayName = Container(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                orderMaster.masterProductName.contains("Extra")
+                    ? orderMaster.masterProductName
+                    .replaceAll("Extra", "+")
+                    : orderMaster.masterProductName,
+                textAlign: TextAlign.start,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              ...orderChilds
+                  .map(
+                    (child) => Text(
+                  child.masterProductName.contains("Extra")
+                      ? child.masterProductName
+                      .replaceAll("Extra", "+")
+                      : child.masterProductName,
+                  style: TextStyle(fontSize: 12),
+                ),
+              )
+                  .toList(),
+            ],
+          ),
+        );
+
+        if (orderMaster.type == ProductType.GIFT_PRODUCT) {
+          displayName = Text(
+            "🎁 ${orderMaster.masterProductName} 🎁",
+            textAlign: TextAlign.start,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: Colors.orange
+            ),
+          );
+        }
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  "${orderMaster.quantity}x",
-                  style: TextStyle(color: Colors.grey),
-                ),
-                SizedBox(width: 4),
-                Expanded(
-                  child: Container(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          orderMaster.masterProductName.contains("Extra")
-                              ? orderMaster.masterProductName
-                                  .replaceAll("Extra", "+")
-                              : orderMaster.masterProductName,
-                          textAlign: TextAlign.start,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        ...orderChilds
-                            .map(
-                              (child) => Text(
-                                child.masterProductName.contains("Extra")
-                                    ? child.masterProductName
-                                        .replaceAll("Extra", "+")
-                                    : child.masterProductName,
-                                style: TextStyle(fontSize: 12),
-                              ),
-                            )
-                            .toList(),
-                      ],
+                Row(
+                  children: [
+                    Text(
+                      "${orderMaster.quantity}x",
+                      style: TextStyle(color: Colors.grey),
                     ),
-                  ),
+                    SizedBox(width: 4),
+                    displayName,
+                  ],
                 ),
-                Text("${formatPrice(orderItemPrice)}"),
+                Flexible(child: Text("${formatPrice(orderItemPrice)}")),
               ],
             ),
           ],

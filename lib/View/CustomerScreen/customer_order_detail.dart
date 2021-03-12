@@ -12,7 +12,6 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../constraints.dart';
 
-
 class CustomerOrderDetail extends StatefulWidget {
   final OrderDTO order;
   final int storeId;
@@ -158,54 +157,72 @@ class _OrderDetailState extends State<CustomerOrderDetail> {
                   orderItemPrice += element.amount;
                 });
                 // orderItemPrice *= orderMaster.quantity;
+                Widget displayPrice = Text("${formatPrice(orderItemPrice)}");
+                if (orderMaster.type == ProductType.GIFT_PRODUCT) {
+                  displayPrice = RichText(
+                      text: TextSpan(
+                          style: TextStyle(color: Colors.black),
+                          text: orderItemPrice.toString() + " ",
+                          children: [
+                        WidgetSpan(
+                            alignment: PlaceholderAlignment.bottom,
+                            child: Image(
+                              image: AssetImage("assets/images/bean_coin.png"),
+                              width: 20,
+                              height: 20,
+                            ))
+                      ]));
+                }
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          "${orderMaster.quantity}x",
-                          style: TextStyle(color: Colors.grey, fontSize: 15),
-                        ),
-                        SizedBox(width: 4),
-                        Expanded(
-                          child: Container(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  orderMaster.masterProductName
-                                          .contains("Extra")
-                                      ? orderMaster.masterProductName
-                                          .replaceAll("Extra", "+")
-                                      : orderMaster.masterProductName,
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                ...orderChilds
-                                    .map(
-                                      (child) => Padding(
-                                        padding: const EdgeInsets.all(4.0),
-                                        child: Text(
-                                          child.masterProductName
-                                                  .contains("Extra")
-                                              ? child.masterProductName
-                                                  .replaceAll("Extra", "+")
-                                              : child.masterProductName,
-                                          style: TextStyle(fontSize: 15),
-                                        ),
-                                      ),
-                                    )
-                                    .toList(),
-                              ],
+                        Row(
+                          children: [
+                            Text(
+                              "${orderMaster.quantity}x",
+                              style: TextStyle(color: Colors.grey, fontSize: 15),
                             ),
-                          ),
+                            SizedBox(width: 4),
+                            Container(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    orderMaster.masterProductName
+                                        .contains("Extra")
+                                        ? orderMaster.masterProductName
+                                        .replaceAll("Extra", "+")
+                                        : orderMaster.masterProductName,
+                                    textAlign: TextAlign.start,
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  ...orderChilds
+                                      .map(
+                                        (child) => Padding(
+                                      padding: const EdgeInsets.all(4.0),
+                                      child: Text(
+                                        child.masterProductName
+                                            .contains("Extra")
+                                            ? child.masterProductName
+                                            .replaceAll("Extra", "+")
+                                            : child.masterProductName,
+                                        style: TextStyle(fontSize: 15),
+                                      ),
+                                    ),
+                                  )
+                                      .toList(),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
-                        Text("${formatPrice(orderItemPrice)}"),
+                        Flexible(child: displayPrice),
                       ],
                     ),
                   ],
@@ -317,6 +334,7 @@ class _OrderDetailState extends State<CustomerOrderDetail> {
   }
 
   List<Widget> _buildOtherAmount(List<OtherAmount> otherAmounts) {
+    var f = new NumberFormat("###.#");
     if (otherAmounts == null) return [SizedBox.shrink()];
     return otherAmounts
         .map((amountObj) => Padding(
@@ -325,7 +343,8 @@ class _OrderDetailState extends State<CustomerOrderDetail> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text("${amountObj.name}", style: TextStyle()),
-                  Text("${formatPrice(amountObj.amount)}", style: TextStyle()),
+                  Text("${f.format(amountObj.amount)} ${amountObj.unit}",
+                      style: TextStyle()),
                 ],
               ),
             ))
