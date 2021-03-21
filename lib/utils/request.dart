@@ -81,7 +81,7 @@ class MyRequest {
         return response; // continue
       },
       onError: (DioError e) async {
-        print(e.request.baseUrl + e.request.path);
+        print(e.response.data.toString());
         // Do something with response error
         if (e.response.statusCode == 401) {
           await showStatusDialog("assets/images/global_error.png", "Lỗi",
