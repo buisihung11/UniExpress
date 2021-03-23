@@ -11,6 +11,7 @@ import 'package:uni_express/View/DriverScreen/route.dart';
 import 'package:uni_express/View/RestaurantScreen/restaurant_screen.dart';
 import 'package:uni_express/View/RestaurantScreen/store_order.dart';
 import 'package:uni_express/View/RestaurantScreen/store_order_detail.dart';
+import 'package:uni_express/View/layout.dart';
 import 'package:uni_express/route_constraint.dart';
 import 'package:uni_express/setup.dart';
 import 'package:uni_express/utils/pageNavigation.dart';
@@ -154,6 +155,9 @@ class MyApp extends StatelessWidget {
                             (settings.arguments as PackageDetailScreen).batchId,
                       ),
                   settings: settings);
+            case RouteHandler.HOME:
+              return CupertinoPageRoute<bool>(
+                  builder: (context) => Layout(), settings: settings);
             default:
               return CupertinoPageRoute(
                   builder: (context) => NotFoundScreen(), settings: settings);
@@ -163,7 +167,12 @@ class MyApp extends StatelessWidget {
           fontFamily: 'Gotham',
           primarySwatch: Colors.green,
           primaryColor: kPrimary,
-          scaffoldBackgroundColor: Color(0xFFF0F2F5),
+          textTheme: TextTheme(
+            headline1: TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold),
+            headline6: TextStyle(fontSize: 36.0, fontStyle: FontStyle.italic),
+            bodyText2: TextStyle(fontSize: 14.0),
+          ),
+          // scaffoldBackgroundColor: Color(0xFFF0F2F5),
           toggleableActiveColor: kPrimary,
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),

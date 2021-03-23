@@ -501,8 +501,7 @@ class _OrderDetailBottomSheetState extends State<OrderDetailBottomSheet> {
             children: [
               Text(
                 orderMaster.masterProductName.contains("Extra")
-                    ? orderMaster.masterProductName
-                    .replaceAll("Extra", "+")
+                    ? orderMaster.masterProductName.replaceAll("Extra", "+")
                     : orderMaster.masterProductName,
                 textAlign: TextAlign.start,
                 style: TextStyle(
@@ -513,13 +512,12 @@ class _OrderDetailBottomSheetState extends State<OrderDetailBottomSheet> {
               ...orderChilds
                   .map(
                     (child) => Text(
-                  child.masterProductName.contains("Extra")
-                      ? child.masterProductName
-                      .replaceAll("Extra", "+")
-                      : child.masterProductName,
-                  style: TextStyle(fontSize: 12),
-                ),
-              )
+                      child.masterProductName.contains("Extra")
+                          ? child.masterProductName.replaceAll("Extra", "+")
+                          : child.masterProductName,
+                      style: TextStyle(fontSize: 12),
+                    ),
+                  )
                   .toList(),
             ],
           ),
@@ -530,10 +528,9 @@ class _OrderDetailBottomSheetState extends State<OrderDetailBottomSheet> {
             "🎁 ${orderMaster.masterProductName} 🎁",
             textAlign: TextAlign.start,
             style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: Colors.orange
-            ),
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Colors.orange),
           );
         }
         return Column(
@@ -601,6 +598,17 @@ class _OrderDetailBottomSheetState extends State<OrderDetailBottomSheet> {
                     )),
               ),
             ],
+          ),
+          Container(
+            child: Column(children: [
+              Text(
+                "Ghi chú: ",
+                style: TextStyle(color: Colors.grey),
+              ),
+              orderDetail.notes != null
+                  ? Text(orderDetail.notes?.first['content'] ?? '-')
+                  : Text('-')
+            ]),
           ),
           Container(
             margin: EdgeInsets.only(top: 15),

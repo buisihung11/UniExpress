@@ -21,4 +21,5 @@ class RouteHandler {
   static const String ROUTE = "route";
   static const String EDGE = "edge";
   static const String PACAKGE = "PACAKGE";
+  static const String HOME = "HOME";
 }

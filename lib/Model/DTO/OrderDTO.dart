@@ -32,22 +32,26 @@ class OrderDTO {
   final List<OtherAmount> otherAmounts;
   final CustomerInfoDTO customer;
   final List<StoreDTO> stores;
+  final List<dynamic> notes;
 
   bool isCompleted;
 
-  OrderDTO(this.id,
-      {this.otherAmounts,
-      this.finalAmount,
-      this.orderTime,
-      this.total,
-      this.itemQuantity,
-      this.status,
-      this.orderItems,
-      this.paymentType,
-      this.invoiceId,
-      this.customer,
-      this.stores,
-      this.isCompleted = false});
+  OrderDTO(
+    this.id, {
+    this.otherAmounts,
+    this.finalAmount,
+    this.orderTime,
+    this.total,
+    this.itemQuantity,
+    this.status,
+    this.orderItems,
+    this.paymentType,
+    this.invoiceId,
+    this.customer,
+    this.stores,
+    this.isCompleted = false,
+    this.notes,
+  });
 
   factory OrderDTO.fromJSON(Map<String, dynamic> map) => OrderDTO(
         map["order_id"],
@@ -72,6 +76,7 @@ class OrderDTO {
             ? StoreDTO.fromList(map["store_orders"])
             : null,
         paymentType: map["payment_type"],
+        notes: map["notes"],
       );
 
   static List<OrderDTO> fromList(List list) =>

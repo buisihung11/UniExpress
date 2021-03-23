@@ -30,7 +30,7 @@ class StartUpViewModel extends BaseModel {
     await Future.delayed(Duration(seconds: 5));
     var hasLoggedInUser = await _accountDAO.isUserLoggedIn();
     if (hasLoggedInUser) {
-      Get.offAndToNamed(RouteHandler.BATCH);
+      Get.offAndToNamed(RouteHandler.HOME);
     } else {
       Get.offAndToNamed(RouteHandler.LOGIN);
     }

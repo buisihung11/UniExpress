@@ -51,22 +51,25 @@ class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
       model: RootViewModel.getInstance(),
       child: Scaffold(
         appBar: DefaultAppBar(
-          title: widget.store.name,
+          title: "Giao hàng - ${widget.store.name}",
         ),
         body: ScopedModel<OrderHistoryViewModel>(
           model: model,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              _searchBar(),
-              selectSearchType(),
-              Expanded(
-                child: Container(
-                  child: _buildOrders(),
-                  color: Color(0xffefefef),
+          child: Container(
+            color: Colors.white,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                _searchBar(),
+                selectSearchType(),
+                Expanded(
+                  child: Container(
+                    child: _buildOrders(),
+                    color: Color(0xffefefef),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -76,15 +79,28 @@ class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
   Widget _searchBar() {
     return ScopedModelDescendant<OrderHistoryViewModel>(builder:
         (BuildContext context, Widget child, OrderHistoryViewModel model) {
-      return TextFormField(
-        controller: _editingController,
-        decoration: InputDecoration(
+      return Container(
+        padding: const EdgeInsets.only(left: 8.0, right: 8, top: 8),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+        ),
+        child: TextFormField(
+          controller: _editingController,
+          decoration: InputDecoration(
+            border: new OutlineInputBorder(
+              borderRadius: const BorderRadius.all(
+                const Radius.circular(16),
+              ),
+              borderSide: BorderSide.none,
+            ),
+            filled: true,
+            fillColor: Color(0xfff6f6f6),
             prefixIcon: Icon(
               Icons.search,
-              color: Colors.black,
+              color: Colors.grey,
             ),
             suffixIcon: IconButton(
-              icon: Icon(Icons.clear, color: Colors.black),
+              icon: Icon(Icons.clear, color: Colors.grey),
               onPressed: () {
                 _editingController.clear();
                 model.showAll();
@@ -92,13 +108,15 @@ class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
             ),
             contentPadding: EdgeInsets.only(left: 15.0, top: 15.0),
             hintText: 'Nhập vào đây để tìm',
-            hintStyle: TextStyle(color: Colors.orange)),
-        onFieldSubmitted: (String input) {
-          if (input.trim().isNotEmpty) {
-            model.searchOrderByPhone(input);
-            // model.getEventResult(input);
-          }
-        },
+            hintStyle: TextStyle(color: Colors.grey),
+          ),
+          onFieldSubmitted: (String input) {
+            if (input.trim().isNotEmpty) {
+              model.searchOrderByPhone(input);
+              // model.getEventResult(input);
+            }
+          },
+        ),
       );
     });
   }
@@ -283,7 +301,10 @@ class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
     // get orderDetail
     bool result = await Get.toNamed(
       RouteHandler.CUSTOMER_ORDER_DETAIL,
-      arguments: CustomerOrderDetail(order: order, storeId: storeId,),
+      arguments: CustomerOrderDetail(
+        order: order,
+        storeId: storeId,
+      ),
     );
     if (result != null && result) {
       await refreshFetchOrder();
@@ -296,7 +317,7 @@ class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
           (BuildContext context, Widget child, OrderHistoryViewModel model) {
         if (model.list != null && model.list.isNotEmpty) {
           return Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.only(left: 8.0, right: 8),
             child: Column(
               children: [
                 Row(
@@ -324,14 +345,17 @@ class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
                     ),
                   ],
                 ),
-                CheckboxListTile(
-                  value: model.isFilterDone,
-                  onChanged: (isFilterDone) {
-                    model.changeOrderStatusFilter(
-                        isFilterDone, widget.store.id);
-                  },
-                  title: Text('Đã hoàn thành'),
-                  controlAffinity: ListTileControlAffinity.leading,
+                Container(
+                  height: 50,
+                  child: CheckboxListTile(
+                    value: model.isFilterDone,
+                    onChanged: (isFilterDone) {
+                      model.changeOrderStatusFilter(
+                          isFilterDone, widget.store.id);
+                    },
+                    title: Text('Đã hoàn thành'),
+                    controlAffinity: ListTileControlAffinity.leading,
+                  ),
                 )
               ],
             ),

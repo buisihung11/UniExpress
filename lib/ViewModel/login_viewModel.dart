@@ -8,7 +8,6 @@ import 'package:uni_express/enums/view_status.dart';
 import 'package:uni_express/services/analytic_service.dart';
 import 'package:uni_express/services/firebase.dart';
 
-
 import '../route_constraint.dart';
 import 'base_model.dart';
 
@@ -77,7 +76,7 @@ class LoginViewModel extends BaseModel {
           // Navigate to sign up screen
           await Get.offAllNamed(RouteHandler.SIGN_UP, arguments: userInfo);
         } else {
-          await Get.offAllNamed(RouteHandler.BATCH);
+          await Get.offAllNamed(RouteHandler.HOME);
           // chuyen sang trang home
         }
       } catch (e) {
@@ -114,7 +113,6 @@ class LoginViewModel extends BaseModel {
       verificationFailed: verificationFailed,
       codeSent: phoneCodeSent,
       codeAutoRetrievalTimeout: phoneTimeout,
-
     );
     print("Login Done");
   }
@@ -155,7 +153,7 @@ class LoginViewModel extends BaseModel {
             snackPosition: SnackPosition.BOTTOM,
             margin: EdgeInsets.only(left: 8, right: 8, bottom: 32),
             borderRadius: 8);
-        await Get.offAllNamed(RouteHandler.BATCH);
+        await Get.offAllNamed(RouteHandler.HOME);
       }
     } on FirebaseAuthException catch (e) {
       print("Error: " + e.toString());

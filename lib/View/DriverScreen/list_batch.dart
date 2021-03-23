@@ -48,9 +48,13 @@ class _BatchScreenState extends State<BatchScreen> {
       model: model,
       child: Scaffold(
         backgroundColor: Colors.white,
-        drawer: DrawerMenu(),
-        appBar: DefaultAppBar(
-          title: widget.title,
+        // drawer: DrawerMenu(),
+        appBar: AppBar(
+          title: Text(
+            widget.title,
+            style: TextStyle(color: Colors.white),
+          ),
+          centerTitle: true,
         ),
         body: Container(
           padding: const EdgeInsets.all(8.0),
@@ -180,31 +184,40 @@ class _BatchScreenState extends State<BatchScreen> {
                             batchItem(listFuture[index]),
                         itemCount: listFuture.length,
                         pagination: new SwiperPagination(
-                          builder: DotSwiperPaginationBuilder(color: Colors.grey),
+                          builder:
+                              DotSwiperPaginationBuilder(color: Colors.grey),
                         ),
 
                         // viewportFraction: 0.85,
                       ),
-                    Positioned(
-                        height: 120,
-                        width: 120,
-                        bottom: -16,
-                        right: -16,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Image(image: AssetImage("assets/images/backgroundForBatchs.png")),
-                        ))
+                      Positioned(
+                          height: 120,
+                          width: 120,
+                          bottom: -16,
+                          right: -16,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Image(
+                                image: AssetImage(
+                                    "assets/images/backgroundForBatchs.png")),
+                          ))
                     ],
                   ),
                 );
               }
               return Container(
                   height: Get.height * 0.18,
-                  child: Center(child: Image(image: AssetImage("assets/images/backgroundForBatchs.jpg"))));
+                  child: Center(
+                      child: Image(
+                          image: AssetImage(
+                              "assets/images/backgroundForBatchs.jpg"))));
             }
             return Container(
                 height: Get.height * 0.18,
-                child: Center(child: Image(image: AssetImage("assets/images/backgroundForBatchs.jpg"))));
+                child: Center(
+                    child: Image(
+                        image: AssetImage(
+                            "assets/images/backgroundForBatchs.jpg"))));
         }
       },
     );

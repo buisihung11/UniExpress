@@ -75,6 +75,8 @@ class _OrderDetailState extends State<CustomerOrderDetail> {
                   SizedBox(height: 8),
                   customerInfo(widget.order.customer),
                   SizedBox(height: 8),
+                  _customerNotes(widget.order.notes),
+                  SizedBox(height: 8),
                   listStore(model.listSuppliers),
                   SizedBox(height: 8),
                   buildOrderSummaryList(orderDetail),
@@ -183,7 +185,8 @@ class _OrderDetailState extends State<CustomerOrderDetail> {
                           children: [
                             Text(
                               "${orderMaster.quantity}x",
-                              style: TextStyle(color: Colors.grey, fontSize: 15),
+                              style:
+                                  TextStyle(color: Colors.grey, fontSize: 15),
                             ),
                             SizedBox(width: 4),
                             Container(
@@ -192,9 +195,9 @@ class _OrderDetailState extends State<CustomerOrderDetail> {
                                 children: [
                                   Text(
                                     orderMaster.masterProductName
-                                        .contains("Extra")
+                                            .contains("Extra")
                                         ? orderMaster.masterProductName
-                                        .replaceAll("Extra", "+")
+                                            .replaceAll("Extra", "+")
                                         : orderMaster.masterProductName,
                                     textAlign: TextAlign.start,
                                     style: TextStyle(
@@ -205,17 +208,17 @@ class _OrderDetailState extends State<CustomerOrderDetail> {
                                   ...orderChilds
                                       .map(
                                         (child) => Padding(
-                                      padding: const EdgeInsets.all(4.0),
-                                      child: Text(
-                                        child.masterProductName
-                                            .contains("Extra")
-                                            ? child.masterProductName
-                                            .replaceAll("Extra", "+")
-                                            : child.masterProductName,
-                                        style: TextStyle(fontSize: 15),
-                                      ),
-                                    ),
-                                  )
+                                          padding: const EdgeInsets.all(4.0),
+                                          child: Text(
+                                            child.masterProductName
+                                                    .contains("Extra")
+                                                ? child.masterProductName
+                                                    .replaceAll("Extra", "+")
+                                                : child.masterProductName,
+                                            style: TextStyle(fontSize: 15),
+                                          ),
+                                        ),
+                                      )
                                       .toList(),
                                 ],
                               ),
@@ -467,6 +470,46 @@ class _OrderDetailState extends State<CustomerOrderDetail> {
               ),
             ],
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _customerNotes(List<dynamic> notes) {
+    return Container(
+      color: kBackgroundGrey[0],
+      width: Get.width,
+      padding: const EdgeInsets.all(8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Align(
+            alignment: Alignment.center,
+            child: Text(
+              "Ghi chú: ",
+              style: TextStyle(color: Colors.deepOrange, fontSize: 17),
+            ),
+          ),
+          SizedBox(
+            height: 8,
+          ),
+          notes != null && notes.length != 0
+              ? notes.map((note) => Container(
+                    child: Column(children: [
+                      Text(
+                        "Ghi chú: ",
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                      notes != null && notes.length != 0
+                          ? Text(
+                              notes?.first['content'] ?? '-',
+                              style:
+                                  TextStyle(fontSize: 12, color: Colors.grey),
+                            )
+                          : Text('-')
+                    ]),
+                  ))
+              : Text('Không')
         ],
       ),
     );

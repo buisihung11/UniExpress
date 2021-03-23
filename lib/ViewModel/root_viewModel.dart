@@ -12,9 +12,7 @@ class RootViewModel extends BaseModel {
   AccountDTO currentUser;
   String error;
 
-
   static RootViewModel _instance;
-
 
   static RootViewModel getInstance() {
     if (_instance == null) {
@@ -33,7 +31,6 @@ class RootViewModel extends BaseModel {
   RootViewModel() {
     _dao = AccountDAO();
 
-
     fetchUser();
   }
 
@@ -45,6 +42,7 @@ class RootViewModel extends BaseModel {
       setState(ViewStatus.Completed);
     } catch (e) {
       bool result = await showErrorDialog();
+      print(e.toString());
       if (result) {
         await fetchUser();
       } else
@@ -76,8 +74,9 @@ class RootViewModel extends BaseModel {
       bool result = await showErrorDialog();
       if (result) {
         await getVirtualStores();
-      } else
+      } else {
         setState(ViewStatus.Error);
+      }
     }
   }
 
@@ -91,9 +90,9 @@ class RootViewModel extends BaseModel {
       bool result = await showErrorDialog();
       if (result) {
         await getSuppliersFromStore(storeId);
-      } else
+      } else {
         setState(ViewStatus.Error);
+      }
     }
   }
-
 }

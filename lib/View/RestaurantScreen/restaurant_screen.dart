@@ -234,7 +234,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                       children: [
                         Text(
                           "${orderMaster.quantity}x",
-                          style: TextStyle(color: Colors.grey),
+                          style: TextStyle(color: Colors.grey, fontSize: 16),
                         ),
                         SizedBox(width: 4),
                         Expanded(
@@ -350,94 +350,108 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                   ],
                 ),
                 Expanded(
-                  child: Container(
-                    padding: EdgeInsets.all(8),
-                    height: Get.height,
-                    color: Colors.white,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          height: 16,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "Tổng số món: ",
-                              style: TextStyle(color: Colors.grey),
-                            ),
-                            Text(
-                              "${currentOrder.itemQuantity} món",
-                              style: kTextSecondary.copyWith(fontSize: 18),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 8),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "Tổng tiền: ",
-                              style: TextStyle(color: Colors.grey),
-                            ),
-                            Text(
-                              "${formatPrice(currentOrder.finalAmount)}",
-                              style: kTextSecondary.copyWith(fontSize: 18),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 8),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Tên K/H: ",
-                              style: TextStyle(color: Colors.grey),
-                            ),
-                            Text(
-                              "${currentOrder.customer.name}",
-                              style: kTextSecondary.copyWith(
-                                fontSize: 14,
-                                color: Colors.grey,
-                                fontWeight: FontWeight.bold,
+                  child: SingleChildScrollView(
+                    child: Container(
+                      padding: EdgeInsets.all(8),
+                      height: Get.height,
+                      color: Colors.white,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height: 16,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Tổng số món: ",
+                                style: TextStyle(color: Colors.grey),
                               ),
-                            ),
-                          ],
-                        ),
-                        Container(
-                          child: Row(
+                              Text(
+                                "${currentOrder.itemQuantity} món",
+                                style: kTextSecondary.copyWith(fontSize: 18),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 8),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Tổng tiền: ",
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                              Text(
+                                "${formatPrice(currentOrder.finalAmount)}",
+                                style: kTextSecondary.copyWith(fontSize: 18),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 8),
+                          Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               Text(
-                                "SDT: ",
+                                "Tên K/H: ",
                                 style: TextStyle(color: Colors.grey),
                               ),
-                              FlatButton(
-                                // height: 12,
-                                padding: EdgeInsets.all(0),
-                                onPressed: () async {
-                                  final url =
-                                      'tel:${currentOrder.customer.phone}';
-                                  if (await canLaunch(url) &&
-                                      currentOrder.customer.phone != null) {
-                                    await launch(url);
-                                  } else {
-                                    throw 'Could not launch $url';
-                                  }
-                                },
-                                child: new Text(
-                                  "${currentOrder.customer.phone}",
-                                  style: TextStyle(
-                                    color: Colors.grey,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                              Text(
+                                "${currentOrder.customer.name}",
+                                style: kTextSecondary.copyWith(
+                                  fontSize: 14,
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ],
                           ),
-                        )
-                      ],
+                          Container(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "SDT: ",
+                                  style: TextStyle(color: Colors.grey),
+                                ),
+                                FlatButton(
+                                  // height: 12,
+                                  padding: EdgeInsets.all(0),
+                                  onPressed: () async {
+                                    final url =
+                                        'tel:${currentOrder.customer.phone}';
+                                    if (await canLaunch(url) &&
+                                        currentOrder.customer.phone != null) {
+                                      await launch(url);
+                                    } else {
+                                      throw 'Could not launch $url';
+                                    }
+                                  },
+                                  child: new Text(
+                                    "${currentOrder.customer.phone}",
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            child: Column(children: [
+                              Text(
+                                "Ghi chú: ",
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                              currentOrder.notes != null
+                                  ? Text(currentOrder.notes?.first['content'] ??
+                                      '-')
+                                  : Text('-')
+                            ]),
+                          )
+                        ],
+                      ),
                     ),
                   ),
                 ),
