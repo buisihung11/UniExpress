@@ -476,6 +476,28 @@ class _OrderDetailState extends State<CustomerOrderDetail> {
   }
 
   Widget _customerNotes(List<dynamic> notes) {
+    List<Widget> renderNotes = notes != null && notes.length != 0
+        ? notes
+            .map((note) => Container(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      notes != null && notes.length != 0
+                          ? Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Text(
+                                "- ${notes?.first['content']}" ?? '-',
+                                style:
+                                    TextStyle(fontSize: 14, color: Colors.grey),
+                              ),
+                            )
+                          : Text('-')
+                    ],
+                  ),
+                ))
+            .toList()
+        : [];
+
     return Container(
       color: kBackgroundGrey[0],
       width: Get.width,
@@ -493,23 +515,7 @@ class _OrderDetailState extends State<CustomerOrderDetail> {
           SizedBox(
             height: 8,
           ),
-          notes != null && notes.length != 0
-              ? notes.map((note) => Container(
-                    child: Column(children: [
-                      Text(
-                        "Ghi chú: ",
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                      notes != null && notes.length != 0
-                          ? Text(
-                              notes?.first['content'] ?? '-',
-                              style:
-                                  TextStyle(fontSize: 12, color: Colors.grey),
-                            )
-                          : Text('-')
-                    ]),
-                  ))
-              : Text('Không')
+          ...renderNotes,
         ],
       ),
     );

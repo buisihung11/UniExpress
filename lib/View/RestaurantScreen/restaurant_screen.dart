@@ -439,16 +439,20 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                             ),
                           ),
                           Container(
-                            child: Column(children: [
-                              Text(
-                                "Ghi chú: ",
-                                style: TextStyle(color: Colors.grey),
-                              ),
-                              currentOrder.notes != null
-                                  ? Text(currentOrder.notes?.first['content'] ??
-                                      '-')
-                                  : Text('-')
-                            ]),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Ghi chú: ",
+                                  style: TextStyle(color: Colors.grey),
+                                ),
+                                currentOrder.notes != null
+                                    ? Text(
+                                        currentOrder.notes?.first['content'] ??
+                                            '-')
+                                    : Text('-')
+                              ],
+                            ),
                           )
                         ],
                       ),
