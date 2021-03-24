@@ -12,21 +12,10 @@ import '../route_constraint.dart';
 import 'base_model.dart';
 
 class LoginViewModel extends BaseModel {
-  static LoginViewModel _instance;
   AccountDAO dao = AccountDAO();
   String verificationId;
   AnalyticsService _analyticsService;
   String _phoneNb;
-  static LoginViewModel getInstance() {
-    if (_instance == null) {
-      _instance = LoginViewModel();
-    }
-    return _instance;
-  }
-
-  static void destroyInstance() {
-    _instance = null;
-  }
 
   AccountDTO user;
 

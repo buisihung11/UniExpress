@@ -37,7 +37,6 @@ class _CampusScreenState extends State<CampusScreen> {
     return ScopedModel<RootViewModel>(
       model: RootViewModel.getInstance(),
       child: Scaffold(
-        drawer: DrawerMenu(),
         appBar: DefaultAppBar(
           title: widget.title,
         ),

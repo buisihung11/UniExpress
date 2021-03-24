@@ -1,5 +1,3 @@
-
-
 import 'package:uni_express/Model/DAO/index.dart';
 import 'package:uni_express/Model/DTO/index.dart';
 import 'package:uni_express/acessories/dialog.dart';
@@ -8,20 +6,9 @@ import 'package:uni_express/enums/view_status.dart';
 import 'base_model.dart';
 
 class SignUpViewModel extends BaseModel {
-  static SignUpViewModel _instance;
   AccountDAO dao = AccountDAO();
 
   SignUpViewModel() {}
-  static SignUpViewModel getInstance() {
-    if (_instance == null) {
-      _instance = SignUpViewModel();
-    }
-    return _instance;
-  }
-
-  static void destroyInstance() {
-    _instance = null;
-  }
 
   Future<AccountDTO> updateUser(Map<String, dynamic> user) async {
     try {

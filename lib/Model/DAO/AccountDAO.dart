@@ -51,6 +51,10 @@ class AccountDAO {
     // return AccountDTO(uid: idToken, name: "Default Name");
   }
 
+  Future<void> sendFeedback(String feedBack) async {
+    await request.post("/me/feedback", data: "'$feedBack'");
+  }
+
   Future<void> logOut() async {
     await AuthService().signOut();
   }

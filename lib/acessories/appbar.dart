@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:get/get.dart';
+import 'package:uni_express/ViewModel/account_viewModel.dart';
 import 'package:uni_express/ViewModel/index.dart';
 import 'package:uni_express/enums/view_status.dart';
 import 'package:shimmer/shimmer.dart';
@@ -117,7 +118,7 @@ class _HomeAppBarSate extends State<HomeAppBar> {
                         borderRadius: BorderRadius.all(
                           Radius.circular(10),
                         )),
-                    child: ScopedModelDescendant<RootViewModel>(
+                    child: ScopedModelDescendant<AccountViewModel>(
                       builder: (context, child, model) {
                         return GestureDetector(
                           onTap: () async {
@@ -202,7 +203,7 @@ class _HomeAppBarSate extends State<HomeAppBar> {
   }
 
   Widget _buildWelcome() {
-    return ScopedModelDescendant<RootViewModel>(
+    return ScopedModelDescendant<AccountViewModel>(
       builder: (context, child, model) {
         final status = model.status;
         final user = model.currentUser;
