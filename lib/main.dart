@@ -164,7 +164,7 @@ class MyApp extends StatelessWidget {
           }
         },
         theme: ThemeData(
-          fontFamily: 'Gotham',
+          fontFamily: 'Nunito',
           primarySwatch: Colors.green,
           primaryColor: kPrimary,
           textTheme: TextTheme(

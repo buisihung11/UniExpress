@@ -82,11 +82,11 @@ class TabNavigationItem {
   });
 
   static List<TabNavigationItem> get items => [
-        // TabNavigationItem(
-        //   page: BatchScreen(title: 'Lấy hàng'),
-        //   icon: Icon(Icons.home),
-        //   title: "Trang chủ",
-        // ),
+        TabNavigationItem(
+          page: BatchScreen(title: 'Lấy hàng'),
+          icon: Icon(Icons.home),
+          title: "Trang chủ",
+        ),
         TabNavigationItem(
           page: StoreOrderScreen(
             store: StoreDTO(id: 150, name: 'Unibean FPT'),
