@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:uni_express/Model/DTO/index.dart';
 import 'package:uni_express/ViewModel/batch_viewModel.dart';
@@ -45,60 +46,117 @@ class _BatchScreenState extends State<BatchScreen> {
     ];
 
     return ScopedModel<BatchViewModel>(
-      model: model,
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        // drawer: DrawerMenu(),
-        appBar: AppBar(
-          title: Text(
-            widget.title,
-            style: TextStyle(color: Colors.white),
-          ),
-          centerTitle: true,
-        ),
-        body: Container(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildTotalBatches(),
-              SizedBox(
-                height: 8,
+        model: model,
+        child: Scaffold(
+          body: Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Color(0xFFF5F4EF),
+              image: DecorationImage(
+                fit: BoxFit.cover,
+                colorFilter: ColorFilter.mode(
+                    Color(0xfff0feff).withOpacity(0.4), BlendMode.srcOver),
+                image: AssetImage("assets/images/ux_big.png"),
+                alignment: Alignment.topRight,
               ),
-              Container(
-                padding: EdgeInsets.all(8),
-                child: Text(
-                  "📍 Các chuyến hàng sắp tới",
-                  style: TextStyle(
-                      fontSize: 16,
-                      color: kSecondary,
-                      fontWeight: FontWeight.bold),
+            ),
+            child: Column(
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.only(left: 20, top: 50, right: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        'Chào buổi sáng 👋',
+                        style: kSubtitleTextSyule,
+                      ),
+                      Text('Hung Bui', style: kHeadingextStyle),
+                      ClipPath(
+                        clipper: BestSellerClipper(),
+                        child: Container(
+                          color: kBestSellerColor,
+                          padding: EdgeInsets.only(
+                              left: 10, top: 5, right: 20, bottom: 5),
+                          child: Text("Chỉ số tuần này".toUpperCase(),
+                              style: kHeadingextStyle.copyWith(fontSize: 16)),
+                        ),
+                      ),
+                      // SizedBox(height: 16),
+                      // Text('Chỉ số tuần này',
+                      //     style: kHeadingextStyle.copyWith(fontSize: 16)),
+                      SizedBox(height: 8),
+                      Container(
+                        width: Get.width,
+                        // color: Color(0xfff0feff),
+                        height: 120,
+                        child: ListView(
+                          scrollDirection: Axis.horizontal,
+                          children: [
+                            DriverStatistic(
+                              iconPath: "assets/icons/package.png",
+                              contentTxt: '12',
+                              labelTxt: 'Túi đã giao',
+                            ),
+                            DriverStatistic(
+                              iconPath: "assets/icons/path.png",
+                              contentTxt: '12.000 m',
+                              labelTxt: 'Quãng đường',
+                            ),
+                            Center(
+                              child: Container(
+                                width: 120,
+                                child: Text('Chi tiết 👉',
+                                    textAlign: TextAlign.left,
+                                    style: kTitleTextStyle),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      // SizedBox(height: 20),
+                    ],
+                  ),
                 ),
-              ),
-              _buildFutureBatches(),
-              Divider(),
-              Container(
-                child: Text(
-                  "📑 Danh sách chuyến hàng",
-                  style: TextStyle(
-                      fontSize: 16,
-                      color: kSecondary,
-                      fontWeight: FontWeight.bold),
+                SizedBox(height: 30),
+                Expanded(
+                  child: Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(50),
+                        topRight: Radius.circular(50),
+                      ),
+                      color: Colors.white,
+                    ),
+                    child: Stack(
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(30, 15, 30, 0),
+                          child: Column(
+                            children: [
+                              Text("Hôm nay bạn có 1 chuyến hàng cần giao",
+                                  style: kTitleTextStyle),
+                              Expanded(
+                                child: ListView(
+                                  // crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text("Thông tin chuyến hàng"),
+                                    Text("Dự kiến quãng đường"),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-              filterStatus(),
-              Expanded(
-                flex: 2,
-                child: RefreshIndicator(
-                    key: _refreshIndicatorKey,
-                    onRefresh: refreshFetchOrder,
-                    child: _buildBatches()),
-              )
-            ],
+              ],
+            ),
           ),
-        ),
-      ),
-    );
+        ));
   }
 
   Widget _buildTotalBatches() {
@@ -403,5 +461,147 @@ class _BatchScreenState extends State<BatchScreen> {
         );
       },
     );
+  }
+}
+
+class DriverStatistic extends StatelessWidget {
+  final String iconPath;
+  final String contentTxt;
+  final String labelTxt;
+
+  const DriverStatistic({
+    Key key,
+    this.iconPath,
+    this.contentTxt,
+    this.labelTxt,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 120,
+      height: 100,
+      margin: EdgeInsets.only(left: 8, right: 8),
+      padding: EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        color: Color(0xfffefefe),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            padding: EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: kPrimary.withOpacity(0.7),
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: Center(
+              child: Image(
+                width: 25,
+                height: 25,
+                image: AssetImage(iconPath),
+              ),
+            ),
+          ),
+          Text(contentTxt, style: kHeadingextStyle.copyWith(fontSize: 16)),
+          Text(
+            labelTxt,
+            overflow: TextOverflow.ellipsis,
+            style: kSubtitleTextSyule.copyWith(
+              fontSize: 14,
+              color: Color(0xffc5c5c9),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class CourseContent extends StatelessWidget {
+  final String number;
+  final double duration;
+  final String title;
+  final bool isDone;
+  const CourseContent({
+    Key key,
+    this.number,
+    this.duration,
+    this.title,
+    this.isDone = false,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 30),
+      child: Row(
+        children: <Widget>[
+          Text(
+            number,
+            style: kHeadingextStyle.copyWith(
+              color: kTextColor.withOpacity(.15),
+              fontSize: 28,
+            ),
+          ),
+          SizedBox(width: 20),
+          RichText(
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text: "$duration mins\n",
+                  style: TextStyle(
+                    color: kTextColor.withOpacity(.5),
+                    fontSize: 18,
+                  ),
+                ),
+                TextSpan(
+                  text: title,
+                  style: kSubtitleTextSyule.copyWith(
+                    fontWeight: FontWeight.w600,
+                    height: 1.5,
+                    fontSize: 18,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Spacer(),
+          Container(
+            margin: EdgeInsets.only(left: 10),
+            height: 40,
+            width: 30,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: kGreenColor.withOpacity(isDone ? 1 : .5),
+            ),
+            child: Icon(Icons.play_arrow, color: Colors.white),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class BestSellerClipper extends CustomClipper<Path> {
+  @override
+  getClip(Size size) {
+    var path = Path();
+    path.lineTo(size.width - 20, 0);
+    path.lineTo(size.width, size.height / 2);
+    path.lineTo(size.width - 20, size.height);
+    path.lineTo(0, size.height);
+    path.lineTo(0, 0);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper oldClipper) {
+    return false;
   }
 }

@@ -19,6 +19,36 @@ final kGreyTitle = Color(0xFF575757);
 final kTextPrimary = TextStyle(color: Color(0xFFFFFFFF));
 final kTextSecondary = TextStyle(color: kPrimary);
 
+// Colors
+const kTextColor = Color(0xFF0D1333);
+const kBlueColor = Color(0xFF6E8AFA);
+const kBestSellerColor = Color(0xFFFFD073);
+const kGreenColor = Color(0xFF49CC96);
+
+// My Text Styles
+const kHeadingextStyle = TextStyle(
+  fontSize: 28,
+  color: kTextColor,
+  fontWeight: FontWeight.bold,
+);
+const kSubheadingextStyle = TextStyle(
+  fontSize: 24,
+  color: Color(0xFF61688B),
+  height: 2,
+);
+
+const kTitleTextStyle = TextStyle(
+  fontSize: 20,
+  color: kTextColor,
+  fontWeight: FontWeight.bold,
+);
+
+const kSubtitleTextSyule = TextStyle(
+  fontSize: 18,
+  color: kTextColor,
+  // fontWeight: FontWeight.bold,
+);
+
 const String CART_TAG = "cartTag";
 
 const double DELIVERY_FEE = 5000;
@@ -57,16 +87,15 @@ class PaymentType {
   }
 }
 
-class BatchStatus{
+class BatchStatus {
   static const int NEW = 0;
   static const int PROCESSING = 1;
   static const int SUCCESS = 2;
   static const int FAIL = 3;
   static const int ABANDON = 4;
-
 }
 
-class ActionType{
+class ActionType {
   static const int PICKUP = 0;
   static const int DELIVERY = 1;
 }
