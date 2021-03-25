@@ -71,7 +71,7 @@ class _BatchScreenState extends State<BatchScreen> {
                         'Chào buổi sáng 👋',
                         style: kSubtitleTextSyule,
                       ),
-                      Text('Hung Bui', style: kHeadingextStyle),
+                      Text('Hung Bui', style: kSubheadingextStyle),
                       ClipPath(
                         clipper: BestSellerClipper(),
                         child: Container(

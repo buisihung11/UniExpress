@@ -31,6 +31,7 @@ const kHeadingextStyle = TextStyle(
   color: kTextColor,
   fontWeight: FontWeight.bold,
 );
+
 const kSubheadingextStyle = TextStyle(
   fontSize: 24,
   color: Color(0xFF61688B),
