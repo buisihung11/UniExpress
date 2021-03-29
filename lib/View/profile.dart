@@ -164,7 +164,7 @@ class _UpdateAccountState extends State<ProfileScreen> {
                 title: Text("Lịch sử chuyến hàng",
                     style: TextStyle(color: Colors.black54)),
                 function: ()  {
-                  Get.toNamed(RouteHandler.BATCH);
+                  Get.toNamed(RouteHandler.BATCH_HISTORY);
                 }),
             Divider(),
             section(

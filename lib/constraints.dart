@@ -44,10 +44,16 @@ const kTitleTextStyle = TextStyle(
   fontWeight: FontWeight.bold,
 );
 
-const kSubtitleTextSyule = TextStyle(
+const kSubtitleTextStyle = TextStyle(
   fontSize: 18,
   color: kTextColor,
   // fontWeight: FontWeight.bold,
+);
+
+const kDescriptionTextSyle = TextStyle(
+  fontSize: 14,
+  color: Color(0xffa7b4ce),
+  fontWeight: FontWeight.bold,
 );
 
 const String CART_TAG = "cartTag";

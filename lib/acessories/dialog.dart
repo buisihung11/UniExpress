@@ -1,8 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:reactive_forms/reactive_forms.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:uni_express/View/index.dart';
+import 'package:uni_express/ViewModel/batch_viewModel.dart';
 
 import '../constraints.dart';
 
@@ -101,7 +105,8 @@ void showLoadingDialog() {
       titleStyle: TextStyle(fontSize: 16));
 }
 
-Future<bool> showErrorDialog() async {
+Future<bool> showErrorDialog(
+    [String errTitle = 'Có một chút trục trặc nhỏ!!']) async {
   hideDialog();
   bool result;
   await Get.dialog(
@@ -115,25 +120,27 @@ Future<bool> showErrorDialog() async {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Align(
-                alignment: Alignment.topRight,
-                child: IconButton(
-                  icon: Icon(
-                    AntDesign.closecircleo,
-                    color: Colors.red,
+              Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      errTitle,
+                      style: TextStyle(fontSize: 16, color: kPrimary),
+                    ),
                   ),
-                  onPressed: () {
-                    result = false;
-                    hideDialog();
-                  },
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  "Có một chút trục trặc nhỏ!!",
-                  style: TextStyle(fontSize: 16, color: kPrimary),
-                ),
+                  Spacer(),
+                  IconButton(
+                    icon: Icon(
+                      AntDesign.closecircleo,
+                      color: Colors.red,
+                    ),
+                    onPressed: () {
+                      result = false;
+                      hideDialog();
+                    },
+                  ),
+                ],
               ),
               SizedBox(
                 height: 8,
@@ -175,7 +182,8 @@ Future<bool> showErrorDialog() async {
   return result;
 }
 
-Future<int> showOptionDialog(String text, {String firstOption, String secondOption}) async {
+Future<int> showOptionDialog(String text,
+    {String firstOption, String secondOption}) async {
   hideDialog();
   int option;
   await Get.dialog(
@@ -228,12 +236,12 @@ Future<int> showOptionDialog(String text, {String firstOption, String secondOpti
                           // color: Colors.grey,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.only(
-                                // bottomRight: Radius.circular(16),
-                                bottomLeft: Radius.circular(16),
-                              )),
+                            // bottomRight: Radius.circular(16),
+                            bottomLeft: Radius.circular(16),
+                          )),
                           child: Padding(
                             padding:
-                            const EdgeInsets.only(top: 16.0, bottom: 16.0),
+                                const EdgeInsets.only(top: 16.0, bottom: 16.0),
                             child: Center(
                               child: Text(
                                 firstOption ?? "Hủy",
@@ -260,7 +268,7 @@ Future<int> showOptionDialog(String text, {String firstOption, String secondOpti
                           ),
                           child: Padding(
                             padding:
-                            const EdgeInsets.only(top: 16.0, bottom: 16.0),
+                                const EdgeInsets.only(top: 16.0, bottom: 16.0),
                             child: Center(
                               child: Text(
                                 secondOption ?? "Đồng ý",
@@ -415,3 +423,111 @@ Future<String> inputDialog(String title, String buttonTitle,
   return controller.text;
 }
 
+Future<bool> selectDateDialog(BatchViewModel model, String title, String buttonTitle) async {
+  hideDialog();
+  FormGroup form = FormGroup({
+    'start': FormControl(validators: [
+    ], touched: false),
+    'end': FormControl(validators: [
+    ], touched: false),});
+  form.value = {
+    'start': model.start,
+    'end': model.end
+  };
+
+  bool result = true;
+  await Get.dialog(
+      ScopedModel(
+        model: model,
+        child: ScopedModelDescendant<BatchViewModel>(
+          builder: (context, child, model) {
+            return ReactiveForm(
+              formGroup: form,
+              child: Dialog(
+                backgroundColor: Colors.white,
+                elevation: 8.0,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(16.0))),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Flexible(
+                              child: Text(
+                                title,
+                                style: TextStyle(fontSize: 16, color: kPrimary),
+                              ),
+                            ),
+                            IconButton(
+                              icon: Icon(
+                                AntDesign.closecircleo,
+                                color: Colors.red,
+                              ),
+                              onPressed: () {
+                                result = false;
+                                hideDialog();
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        height: 8,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                        child: FormItem(
+                          "Bắt đầu",
+                          "",
+                          "start",
+                          keyboardType: "datetime",
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                        child: FormItem(
+                          "Kết thúc",
+                          "",
+                          "end",
+                          keyboardType: "datetime",
+                        ),
+                      ),
+                      SizedBox(height: 8,),
+                      Container(
+                        width: double.infinity,
+                        child: FlatButton(
+                          color: kPrimary,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                  bottomRight: Radius.circular(16),
+                                  bottomLeft: Radius.circular(16))),
+                          onPressed: () {
+                            model.setDate(form.value);
+                            hideDialog();
+                          },
+                          child: Padding(
+                            padding: EdgeInsets.only(top: 16, bottom: 16),
+                            child: Text(
+                              buttonTitle,
+                              style: kTextPrimary,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+      barrierDismissible: false);
+  return result;
+}

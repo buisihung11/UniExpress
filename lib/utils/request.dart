@@ -1,10 +1,7 @@
 import 'dart:io';
-
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' as G;
 import 'package:uni_express/acessories/dialog.dart';
-
 import '../route_constraint.dart';
 
 class AppException implements Exception {
@@ -65,8 +62,8 @@ class CustomInterceptors extends InterceptorsWrapper {
 
 class MyRequest {
   static BaseOptions options = new BaseOptions(
-      baseUrl: 'https://beanapi.unibean.net/api/',
-      //baseUrl: 'https://118.71.16.121:80/api/v2',
+      //baseUrl: 'https://beanapi.unibean.net/api/',
+      baseUrl: 'http://13.212.101.182:8090/api/',
       headers: {
         Headers.contentTypeHeader: "application/json",
       },
@@ -86,12 +83,11 @@ class MyRequest {
         if (e.response.statusCode == 401) {
           await showStatusDialog("assets/images/global_error.png", "Lỗi",
               "Vui lòng đang nhập lại");
-          Get.offAllNamed(RouteHandler.LOGIN);
-        } else{
-
+          G.Get.offAllNamed(RouteHandler.LOGIN);
+        } else {
           throw e;
         }
-           //continue
+        //continue
       },
     ));
   }

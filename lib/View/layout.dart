@@ -6,6 +6,7 @@ import 'package:uni_express/View/CustomerScreen/customer_order.dart';
 import 'package:uni_express/View/DriverScreen/list_batch.dart';
 import 'package:uni_express/View/RestaurantScreen/store_order.dart';
 import 'package:uni_express/View/index.dart';
+import 'package:uni_express/ViewModel/index.dart';
 import 'package:uni_express/constraints.dart';
 import 'package:uni_express/route_constraint.dart';
 
@@ -43,26 +44,29 @@ class _LayoutState extends State<Layout> {
           // TODO:
           // FEATURE: HIEN GOI Y KHI USER KHONG TAP VAO SCREEN MOT KHOANG THOI GIAN
         },
-        child: Scaffold(
-          body: IndexedStack(
-            index: _selectedIndex,
-            children: [
-              for (final tabItem in TabNavigationItem.items) tabItem.page,
-            ],
-          ),
-          bottomNavigationBar: BottomNavigationBar(
-            currentIndex: _selectedIndex,
-            backgroundColor: Colors.white,
-            selectedItemColor: Theme.of(context).primaryColor,
-            unselectedItemColor: Colors.grey,
-            onTap: (int index) => setState(() => _selectedIndex = index),
-            items: [
-              for (final tabItem in TabNavigationItem.items)
-                BottomNavigationBarItem(
-                  icon: tabItem.icon,
-                  label: tabItem.title,
-                )
-            ],
+        child: ScopedModel<RootViewModel>(
+          model: RootViewModel.getInstance(),
+          child: Scaffold(
+            body: IndexedStack(
+              index: _selectedIndex,
+              children: [
+                for (final tabItem in TabNavigationItem.items) tabItem.page,
+              ],
+            ),
+            bottomNavigationBar: BottomNavigationBar(
+              currentIndex: _selectedIndex,
+              backgroundColor: Colors.white,
+              selectedItemColor: Theme.of(context).primaryColor,
+              unselectedItemColor: Colors.grey,
+              onTap: (int index) => setState(() => _selectedIndex = index),
+              items: [
+                for (final tabItem in TabNavigationItem.items)
+                  BottomNavigationBarItem(
+                    icon: tabItem.icon,
+                    label: tabItem.title,
+                  )
+              ],
+            ),
           ),
         ),
       ),

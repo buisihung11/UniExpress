@@ -49,11 +49,10 @@ class PushNotificationService {
               backgroundColor: kPrimary,
               isDismissible: true,
               duration: Duration(minutes: 1),
-              mainButton: FlatButton(
-                color: kPrimary,
+              mainButton: TextButton(
                 child: Text(
                   "OK",
-                  style: kTextPrimary,
+                  style: TextStyle(color: kPrimary),
                 ),
                 onPressed: () {
                   hideSnackbar();

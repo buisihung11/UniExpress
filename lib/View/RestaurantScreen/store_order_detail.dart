@@ -5,7 +5,6 @@ import 'package:scoped_model/scoped_model.dart';
 import 'package:uni_express/Model/DTO/index.dart';
 import 'package:uni_express/ViewModel/index.dart';
 import 'package:uni_express/acessories/appbar.dart';
-import 'package:uni_express/acessories/dash_border.dart';
 import 'package:uni_express/acessories/loading.dart';
 import 'package:uni_express/enums/view_status.dart';
 import 'package:uni_express/route_constraint.dart';
@@ -495,7 +494,7 @@ class _OrderDetailBottomSheetState extends State<OrderDetailBottomSheet> {
           orderItemPrice += element.amount;
         });
         // orderItemPrice *= orderMaster.quantity;
-        Widget displayName = Container(
+        Widget displayName = Flexible(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -524,13 +523,15 @@ class _OrderDetailBottomSheetState extends State<OrderDetailBottomSheet> {
         );
 
         if (orderMaster.type == ProductType.GIFT_PRODUCT) {
-          displayName = Text(
-            "🎁 ${orderMaster.masterProductName} 🎁",
-            textAlign: TextAlign.start,
-            style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Colors.orange),
+          displayName = Flexible(
+            child: Text(
+              "🎁 ${orderMaster.masterProductName} 🎁",
+              textAlign: TextAlign.start,
+              style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.orange),
+            ),
           );
         }
         return Column(

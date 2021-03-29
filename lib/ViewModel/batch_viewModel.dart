@@ -22,11 +22,12 @@ class BatchViewModel extends BaseModel{
   //   _instance = null;
   // }
   List<BatchDTO> listBatch;
-  List<EdgeDTO> routes;
   ScrollController scrollController;
   BatchDAO _batchDAO;
   int selectedStatus;
   List<int> batchStatus = [-1, BatchStatus.PROCESSING, BatchStatus.SUCCESS];
+  DateTimeRange timeRange;
+  DateTime start, end;
 
   BatchViewModel(){
     _batchDAO = new BatchDAO();
@@ -85,6 +86,35 @@ class BatchViewModel extends BaseModel{
   void changeFilter(int value) {
     selectedStatus = value;
     getBatches();
+  }
+
+  Future<void> changeFilterTime() async {
+    if(timeRange != null){
+      start = timeRange.start;
+      end = timeRange.end;
+    }
+    bool result = await selectDateDialog(this, "Lọc theo ngày", "Xác nhận");
+    if(result){
+      if(start == null){
+        timeRange = null;
+      }else{
+        if(end == null){
+          end = DateTime.now();
+        }
+        if(start.compareTo(end) > 0){
+          timeRange = DateTimeRange(start: end, end: start);
+        }else{
+          timeRange = DateTimeRange(start: start, end: end);
+        }
+
+      }
+      getBatches();
+    }
+  }
+
+  void setDate(Map<String, dynamic> form){
+    start = form['start'];
+    end = form['end'];
   }
 
 }

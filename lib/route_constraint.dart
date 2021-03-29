@@ -18,6 +18,7 @@ class RouteHandler {
   static const String LOADING = "loading";
   static const String CUSTOMER_ORDER_PRE = "customer_order_pre";
   static const String BATCH = "batch";
+  static const String BATCH_HISTORY = "batch_history";
   static const String ROUTE = "route";
   static const String EDGE = "edge";
   static const String PACAKGE = "PACAKGE";

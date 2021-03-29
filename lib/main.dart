@@ -11,6 +11,7 @@ import 'package:uni_express/View/DriverScreen/route.dart';
 import 'package:uni_express/View/RestaurantScreen/restaurant_screen.dart';
 import 'package:uni_express/View/RestaurantScreen/store_order.dart';
 import 'package:uni_express/View/RestaurantScreen/store_order_detail.dart';
+import 'package:uni_express/View/batch_history.dart';
 import 'package:uni_express/View/layout.dart';
 import 'package:uni_express/route_constraint.dart';
 import 'package:uni_express/setup.dart';
@@ -158,6 +159,9 @@ class MyApp extends StatelessWidget {
             case RouteHandler.HOME:
               return CupertinoPageRoute<bool>(
                   builder: (context) => Layout(), settings: settings);
+            case RouteHandler.BATCH_HISTORY:
+              return CupertinoPageRoute<bool>(
+                  builder: (context) => BatchHistoryScreen(title: "Lịch sử chuyến hàng"), settings: settings);
             default:
               return CupertinoPageRoute(
                   builder: (context) => NotFoundScreen(), settings: settings);

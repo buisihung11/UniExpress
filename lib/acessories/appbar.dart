@@ -12,8 +12,9 @@ import '../constraints.dart';
 
 class DefaultAppBar extends StatefulWidget implements PreferredSizeWidget {
   final String title;
+  final String subTitle;
 
-  DefaultAppBar({Key key, this.title}) : super(key: key);
+  DefaultAppBar({Key key, this.title, this.subTitle}) : super(key: key);
 
   @override
   Size get preferredSize => Size.fromHeight(56);
@@ -36,11 +37,22 @@ class _AppBarSate extends State<DefaultAppBar> {
       iconTheme: IconThemeData(
         color: kPrimary,
       ),
-      title: Text(
-        widget.title,
-        style: TextStyle(
-          color: kPrimary,
-        ),
+      title: Column(
+        children: [
+          Text(
+            widget.title,
+            style: TextStyle(
+              color: kPrimary,
+            ),
+          ),
+          widget.subTitle != null ? Text(
+            widget.subTitle,
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 14
+            ),
+          ):SizedBox.shrink(),
+        ],
       ),
     );
   }
@@ -51,14 +63,14 @@ Widget displayedTitle(String title, String content,
   return Text.rich(TextSpan(
       text: title,
       style: TextStyle(
-          fontSize: size ?? 14,
+          fontSize: size ?? 20,
           color: titleColor ?? Colors.black,
           fontWeight: FontWeight.bold),
       children: [
         TextSpan(
           text: content,
           style: TextStyle(
-            fontSize: size ?? 14,
+            fontSize: size ?? 20,
             color: contentColor ?? Colors.grey,
           ),
         )

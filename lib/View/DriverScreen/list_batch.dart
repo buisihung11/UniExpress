@@ -2,17 +2,19 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:scoped_model/scoped_model.dart';
-import 'package:uni_express/Model/DTO/index.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:uni_express/Model/DTO/BatchDTO.dart';
+import 'package:uni_express/ViewModel/account_viewModel.dart';
 import 'package:uni_express/ViewModel/batch_viewModel.dart';
-import 'package:uni_express/acessories/appbar.dart';
-import 'package:uni_express/acessories/drawer.dart';
-import 'package:uni_express/acessories/loading.dart';
-import 'package:uni_express/enums/view_status.dart';
+import 'package:uni_express/ViewModel/index.dart';
 import 'package:intl/intl.dart';
+import 'package:uni_express/acessories/separator.dart';
+import 'package:uni_express/acessories/shimmer_block.dart';
+import 'package:uni_express/enums/view_status.dart';
+import 'package:uni_express/route_constraint.dart';
+
 import '../../constraints.dart';
 import 'package:get/get.dart';
-import 'package:flutter_swiper/flutter_swiper.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class BatchScreen extends StatefulWidget {
   final String title;
@@ -64,61 +66,21 @@ class _BatchScreenState extends State<BatchScreen> {
               children: <Widget>[
                 Padding(
                   padding: EdgeInsets.only(left: 20, top: 50, right: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        'Chào buổi sáng 👋',
-                        style: kSubtitleTextSyule,
-                      ),
-                      Text('Hung Bui', style: kSubheadingextStyle),
-                      ClipPath(
-                        clipper: BestSellerClipper(),
-                        child: Container(
-                          color: kBestSellerColor,
-                          padding: EdgeInsets.only(
-                              left: 10, top: 5, right: 20, bottom: 5),
-                          child: Text("Chỉ số tuần này".toUpperCase(),
-                              style: kHeadingextStyle.copyWith(fontSize: 16)),
-                        ),
-                      ),
-                      // SizedBox(height: 16),
-                      // Text('Chỉ số tuần này',
-                      //     style: kHeadingextStyle.copyWith(fontSize: 16)),
-                      SizedBox(height: 8),
-                      Container(
-                        width: Get.width,
-                        // color: Color(0xfff0feff),
-                        height: 120,
-                        child: ListView(
-                          scrollDirection: Axis.horizontal,
-                          children: [
-                            DriverStatistic(
-                              iconPath: "assets/icons/package.png",
-                              contentTxt: '12',
-                              labelTxt: 'Túi đã giao',
-                            ),
-                            DriverStatistic(
-                              iconPath: "assets/icons/path.png",
-                              contentTxt: '12.000 m',
-                              labelTxt: 'Quãng đường',
-                            ),
-                            Center(
-                              child: Container(
-                                width: 120,
-                                child: Text('Chi tiết 👉',
-                                    textAlign: TextAlign.left,
-                                    style: kTitleTextStyle),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      // SizedBox(height: 20),
-                    ],
+                  child: ScopedModel<AccountViewModel>(
+                    model: AccountViewModel.getInstance(),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        _buildUserWelcome(),
+
+                        SizedBox(height: 8),
+                        _buildDriverStatistics(),
+                        // SizedBox(height: 20),
+                      ],
+                    ),
                   ),
                 ),
-                SizedBox(height: 30),
+                SizedBox(height: 16),
                 Expanded(
                   child: Container(
                     width: double.infinity,
@@ -133,21 +95,7 @@ class _BatchScreenState extends State<BatchScreen> {
                       children: <Widget>[
                         Padding(
                           padding: const EdgeInsets.fromLTRB(30, 15, 30, 0),
-                          child: Column(
-                            children: [
-                              Text("Hôm nay bạn có 1 chuyến hàng cần giao",
-                                  style: kTitleTextStyle),
-                              Expanded(
-                                child: ListView(
-                                  // crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Text("Thông tin chuyến hàng"),
-                                    Text("Dự kiến quãng đường"),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
+                          child: IncomingBatchCard(),
                         ),
                       ],
                     ),
@@ -159,308 +107,382 @@ class _BatchScreenState extends State<BatchScreen> {
         ));
   }
 
-  Widget _buildTotalBatches() {
-    return ScopedModelDescendant<BatchViewModel>(
-      builder: (context, child, model) {
-        final status = model.status;
-        switch (status) {
-          case ViewStatus.Loading:
-          case ViewStatus.Error:
-            return SizedBox.shrink();
-          default:
-            if (model.listBatch != null && model.listBatch.isNotEmpty) {
-              DateTime now = DateTime.now();
-              List<BatchDTO> listFuture = model.listBatch.where((element) {
-                if (now.day == element.startTime.day &&
-                    now.month == element.startTime.month &&
-                    now.year == element.startTime.year) {
-                  return true;
-                }
-                return false;
-              }).toList();
-              if (listFuture != null && listFuture.isNotEmpty) {
-                return Container(
-                  padding: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: kPrimary,
-                    gradient: LinearGradient(
-                        begin: Alignment.centerLeft,
-                        end: Alignment.centerRight,
-                        colors: [
-                          Color(0xff0BAB64),
-                          Color(0xff3BB78F),
-                        ]),
-                  ),
-                  width: Get.width,
-                  child: Text(
-                    "Số chuyến hàng hôm nay: ${listFuture.length}",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16),
-                  ),
-                );
-              }
-              return SizedBox.shrink();
-            }
-            return SizedBox.shrink();
-        }
-      },
-    );
+  Widget _buildUserWelcome() {
+    return ScopedModelDescendant<AccountViewModel>(
+        builder: (context, child, model) {
+      final status = model.status;
+      final user = model.currentUser;
+      if (status == ViewStatus.Loading)
+        return Container(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ShimmerBlock(width: 200, height: 24),
+              SizedBox(height: 8),
+              ShimmerBlock(width: 150, height: 24),
+              SizedBox(height: 8),
+            ],
+          ),
+        );
+      return Container(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Chào buổi sáng 👋',
+              style: kSubtitleTextStyle,
+            ),
+            Text(user.name, style: kHeadingextStyle),
+            ClipPath(
+              clipper: BestSellerClipper(),
+              child: Container(
+                color: kBestSellerColor,
+                padding:
+                    EdgeInsets.only(left: 10, top: 5, right: 20, bottom: 5),
+                child: Text("Chỉ số tuần này".toUpperCase(),
+                    style: kHeadingextStyle.copyWith(fontSize: 16)),
+              ),
+            ),
+          ],
+        ),
+      );
+    });
   }
 
-  Widget _buildFutureBatches() {
-    return ScopedModelDescendant<BatchViewModel>(
-      builder: (context, child, model) {
-        final status = model.status;
-        switch (status) {
-          case ViewStatus.Loading:
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Center(child: CircularProgressIndicator()),
-            );
-          case ViewStatus.Error:
-            return SizedBox.shrink();
-          default:
-            if (model.listBatch != null && model.listBatch.isNotEmpty) {
-              DateTime now = DateTime.now();
-              List<BatchDTO> listFuture = model.listBatch
-                  .where((element) => now.compareTo(element.startTime) < 0)
-                  .toList();
-              if (listFuture != null && listFuture.isNotEmpty) {
-                return Expanded(
-                  flex: 1,
-                  child: Stack(
-                    children: [
-                      Swiper(
-                        loop: true,
-                        fade: 0.2,
-                        // itemWidth: MediaQuery.of(context).size.width - 60,
-                        // itemHeight: 370,
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (BuildContext context, index) =>
-                            batchItem(listFuture[index]),
-                        itemCount: listFuture.length,
-                        pagination: new SwiperPagination(
-                          builder:
-                              DotSwiperPaginationBuilder(color: Colors.grey),
-                        ),
+  Widget _buildDriverStatistics() {
+    return ScopedModelDescendant<AccountViewModel>(
+        builder: (context, child, model) {
+      final status = model.status;
+      final user = model.currentUser;
+      if (status == ViewStatus.Loading)
+        return Container(
+          width: Get.width,
+          height: 120,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            children: [
+              DriverStatistic(isLoading: true),
+              DriverStatistic(isLoading: true),
+              DriverStatistic(isLoading: true),
+            ],
+          ),
+        );
 
-                        // viewportFraction: 0.85,
-                      ),
-                      Positioned(
-                          height: 120,
-                          width: 120,
-                          bottom: -16,
-                          right: -16,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Image(
-                                image: AssetImage(
-                                    "assets/images/backgroundForBatchs.png")),
-                          ))
-                    ],
-                  ),
-                );
-              }
-              return Container(
-                  height: Get.height * 0.18,
-                  child: Center(
-                      child: Image(
-                          image: AssetImage(
-                              "assets/images/backgroundForBatchs.jpg"))));
-            }
-            return Container(
-                height: Get.height * 0.18,
-                child: Center(
-                    child: Image(
-                        image: AssetImage(
-                            "assets/images/backgroundForBatchs.jpg"))));
-        }
-      },
-    );
+      return Container(
+        width: Get.width,
+        // color: Color(0xfff0feff),
+        height: 120,
+        child: ListView(
+          scrollDirection: Axis.horizontal,
+          children: [
+            DriverStatistic(
+              iconPath: "assets/icons/package.png",
+              contentTxt: '12',
+              labelTxt: 'Túi đã giao',
+            ),
+            DriverStatistic(
+              iconPath: "assets/icons/path.png",
+              contentTxt: '12.000 m',
+              labelTxt: 'Quãng đường',
+            ),
+            Center(
+              child: Container(
+                width: 120,
+                child: Text('Chi tiết 👉',
+                    textAlign: TextAlign.left, style: kTitleTextStyle),
+              ),
+            ),
+          ],
+        ),
+      );
+    });
   }
+}
 
-  Widget batchItem(BatchDTO dto) {
-    IconData status;
-    Color statusColor;
-    switch (dto.status) {
-      case BatchStatus.PROCESSING:
-        status = Icons.pending;
-        statusColor = Colors.blue;
-        break;
-      case BatchStatus.FAIL:
-        status = Icons.cancel;
-        statusColor = Colors.red;
-        break;
-      case BatchStatus.SUCCESS:
-        status = Icons.check_circle;
-        statusColor = Colors.green;
-        break;
-      default:
-        status = Icons.error;
-        statusColor = Colors.yellow;
-    }
-    return Container(
-      margin: EdgeInsets.only(bottom: 8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-      ),
-      child: Material(
-        elevation: 2,
-        child: InkWell(
-          onTap: () {
-            model.processBatch(dto);
-          },
-          child: Container(
-            padding: EdgeInsets.all(8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Flexible(
-                      child: displayedTitle("Khu vực: ", dto.area.name,
-                          size: 14,
-                          titleColor: Colors.black54,
-                          contentColor: Colors.orange),
+class IncomingBatchCard extends StatelessWidget {
+  const IncomingBatchCard({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ScopedModelDescendant<BatchViewModel>(
+        builder: (context, child, model) {
+      final status = model.status;
+      if (status == ViewStatus.Loading)
+        return SingleChildScrollView(
+          child: Column(
+            children: [
+              ShimmerBlock(width: Get.width, height: 24),
+              Container(
+                margin: EdgeInsets.only(top: 15),
+                padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color(0xffe8f2fb),
+                      spreadRadius: 2,
+                      blurRadius: 7,
+                      offset: Offset(0, 3),
                     ),
-                    Icon(
-                      status,
-                      color: statusColor,
-                    )
                   ],
                 ),
-                SizedBox(
-                  height: 8,
-                ),
-                displayedTitle("Bắt đầu: ",
-                    DateFormat("HH:mm dd/MM/yyyy").format(dto.startTime),
-                    titleColor: Colors.black54, contentColor: Colors.black),
-                SizedBox(
-                  height: 8,
-                ),
-                displayedTitle("Kết thúc: ",
-                    DateFormat("HH:mm dd/MM/yyyy").format(dto.endTime),
-                    titleColor: Colors.black54, contentColor: Colors.black)
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBatches() {
-    return ScopedModelDescendant<BatchViewModel>(
-      builder: (context, child, model) {
-        final status = model.status;
-        switch (status) {
-          case ViewStatus.Loading:
-            return Center(child: LoadingBean());
-          case ViewStatus.Error:
-            return ListView(
-              children: [
-                AspectRatio(
-                    aspectRatio: 1,
-                    child: Padding(
-                      padding: const EdgeInsets.all(32.0),
-                      child: Center(
-                        child: Image.asset("assets/images/error.png"),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        ShimmerBlock(width: 80, height: 24),
+                        SizedBox(width: 8),
+                        ShimmerBlock(width: 120, height: 24),
+                      ],
+                    ),
+                    SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        ShimmerBlock(width: 100, height: 24),
+                        ShimmerBlock(width: 100, height: 24),
+                      ],
+                    ),
+                    SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        ShimmerBlock(width: 100, height: 32),
+                        ShimmerBlock(width: 100, height: 32),
+                      ],
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(
+                        top: 16,
+                        bottom: 16,
                       ),
-                    )),
-              ],
-            );
-          default:
-            if (model.listBatch != null && model.listBatch.isNotEmpty) {
-              return ListView.builder(
-                physics: AlwaysScrollableScrollPhysics(),
-                controller: model.scrollController,
-                itemBuilder: (context, index) =>
-                    batchItem(model.listBatch[index]),
-                itemCount: model.listBatch.length,
-              );
-            }
-            return ListView(
-              children: [
-                Center(
-                    child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    'Chưa có chuyến hàng nào!',
-                    style: TextStyle(color: Colors.black54),
-                  ),
-                ))
-              ],
-            );
-        }
-      },
-    );
-  }
-
-  Widget loadMoreIcon() {
-    return ScopedModelDescendant<BatchViewModel>(
-      builder: (context, child, model) {
-        switch (model.status) {
-          case ViewStatus.LoadMore:
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Center(child: CircularProgressIndicator()),
-            );
-          default:
-            return SizedBox(
-              height: 8,
-            );
-        }
-      },
-    );
-  }
-
-  Widget filterStatus() {
-    return ScopedModelDescendant<BatchViewModel>(
-      builder: (BuildContext context, Widget child, BatchViewModel model) {
-        return Container(
-          decoration: BoxDecoration(),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                "Trạng thái:",
-                style: TextStyle(color: kPrimary),
-              ),
-              SizedBox(
-                width: 8,
-              ),
-              DropdownButton(
-                hint: new Text("-------"),
-                value: model.selectedStatus,
-                items: model.batchStatus.map((e) {
-                  String status;
-                  switch (e) {
-                    case BatchStatus.PROCESSING:
-                      status = "Đang xử lý";
-                      break;
-                    case BatchStatus.SUCCESS:
-                      status = "Thành công";
-                      break;
-                    default:
-                      status = "Tất cả";
-                  }
-                  return DropdownMenuItem(
-                      value: e,
-                      child: Text(status,
-                          style: TextStyle(fontSize: 13, color: Colors.black)));
-                }).toList(),
-                onChanged: (value) {
-                  model.changeFilter(value);
-                },
+                      child: MySeparator(
+                        color: Colors.grey,
+                        dashWidth: 8,
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        ShimmerBlock(width: 120, height: 40),
+                        SizedBox(width: 8),
+                        ShimmerBlock(width: 120, height: 40),
+                      ],
+                    ),
+                    SizedBox(height: 16),
+                    ShimmerBlock(width: Get.width, height: 40),
+                  ],
+                ),
               ),
             ],
           ),
         );
-      },
-    );
+      return Column(
+        children: [
+          Text("Hôm nay bạn có ${model.listBatch.length} chuyến hàng cần giao",
+              style: kTitleTextStyle),
+          Expanded(
+            child: ListView.separated(
+              separatorBuilder: (context, index) => Container(
+                height: 16,
+              ),
+              itemCount: model.listBatch.length,
+              itemBuilder: (context, index) {
+                BatchDTO batch = model.listBatch[index];
+                return Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color(0xffe8f2fb),
+                        spreadRadius: 2,
+                        blurRadius: 7,
+                        offset: Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Flexible(
+                            child: Row(
+                              children: [
+                                Text('#${batch.id}',
+                                    style: kTitleTextStyle.copyWith(
+                                      color: Color(0xff7986a1),
+                                    )),
+                                SizedBox(width: 8),
+                                Container(
+                                  padding: EdgeInsets.all(4),
+                                  color: Color(0xffffffb8),
+                                  child: Text(
+                                    'INCOMING',
+                                    style: TextStyle(
+                                      color: Color(0xfffadb14),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Flexible(
+                            child: Text.rich(
+                              TextSpan(text: 'Từ ', children: [
+                                TextSpan(text: "${DateFormat("HH:mm").format(batch.startTime)} ", style: kTitleTextStyle.copyWith(fontSize: 14)),
+                                TextSpan(text: "đến ",),
+                                TextSpan(text: "${DateFormat("HH:mm").format(batch.endTime)} ", style: kTitleTextStyle.copyWith(fontSize: 14)),
+                              ]),
+                              style: kDescriptionTextSyle.copyWith(fontSize: 12),
+                            ),
+                          )
+                        ],
+                      ),
+                      SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            '🚩 Bắt đầu',
+                            style: kDescriptionTextSyle,
+                          ),
+                          Text(
+                            '🎌 Kết thúc',
+                            textAlign: TextAlign.right,
+                            style: kDescriptionTextSyle,
+                          ),
+                        ],
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          SizedBox(
+                            width: 65,
+                            child: Text(
+                              '${batch.route.listPaths.first.name}',
+                              textAlign: TextAlign.left,
+                              maxLines: 2,
+                              overflow: TextOverflow.visible,
+                              style: kTitleTextStyle.copyWith(fontSize: 14),
+                            ),
+                          ),
+                          SizedBox(width: 5),
+                          Expanded(
+                            child: MySeparator(color: Colors.blueAccent),
+                          ),
+                          Column(
+                            children: [
+                              Image(
+                                width: 40,
+                                height: 40,
+                                image: AssetImage(
+                                    "assets/icons/shipper_motorbike.png"),
+                              ),
+                              Text(
+                                '~ ${batch.totalDistance} m',
+                                style: kTitleTextStyle.copyWith(fontSize: 12),
+                              )
+                            ],
+                          ),
+                          Expanded(
+                            child: MySeparator(color: Colors.blueAccent),
+                          ),
+                          SizedBox(width: 5),
+                          SizedBox(
+                            width: 65,
+                            child: Text(
+                              '${batch.route.listPaths.last.name}',
+                              textAlign: TextAlign.left,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: kTitleTextStyle.copyWith(fontSize: 14),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(
+                          top: 16,
+                          bottom: 16,
+                        ),
+                        child: MySeparator(
+                          color: Colors.grey,
+                          dashWidth: 8,
+                        ),
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Các điểm đi qua: (${batch.route.listPaths.length} điểm)", style: kSubtitleTextStyle.copyWith(fontSize: 16, fontWeight: FontWeight.bold),),
+                          SizedBox(height: 4,),
+                          Container(
+                            height: 35,
+                            child: ListView.separated(
+                              shrinkWrap: true,
+                              scrollDirection: Axis.horizontal,
+                              itemCount: batch.route.listPaths.length,
+                              itemBuilder: (context, index) => Container(
+                                padding: EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                    color: Colors.grey[300],
+                                    borderRadius: BorderRadius.circular(8)
+                                ),
+                                child: Text(batch.route.listPaths[index].name, style: TextStyle(color: Colors.black),),
+                              ),
+                              separatorBuilder: (context, index) => SizedBox(width: 8,),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Container(
+                        width: Get.width,
+                        margin: EdgeInsets.only(top: 16, bottom: 0),
+                        padding: EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(4),
+                          color: kPrimary,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color(0xffe8f2fb),
+                              spreadRadius: 2,
+                              blurRadius: 7,
+                              offset: Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: () {
+                              print('Khởi hành 🔥');
+                              Get.toNamed(RouteHandler.ROUTE, arguments: batch);
+                            },
+                            child: Text(
+                              'Khởi hành 🔥',
+                              textAlign: TextAlign.center,
+                              style: kTitleTextStyle.copyWith(
+                                fontSize: 20,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+              // crossAxisAlignment: CrossAxisAlignment.start,
+            ),
+          ),
+        ],
+      );
+    });
   }
 }
 
@@ -468,16 +490,33 @@ class DriverStatistic extends StatelessWidget {
   final String iconPath;
   final String contentTxt;
   final String labelTxt;
+  final bool isLoading;
 
   const DriverStatistic({
     Key key,
     this.iconPath,
     this.contentTxt,
     this.labelTxt,
+    this.isLoading = false,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return Shimmer.fromColors(
+        baseColor: Colors.grey[300],
+        highlightColor: Colors.grey[100],
+        child: Container(
+          width: 120,
+          height: 100,
+          margin: EdgeInsets.only(left: 8, right: 8),
+          padding: EdgeInsets.all(8),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8), color: Colors.grey[300]),
+        ),
+      );
+    }
+
     return Container(
       width: 120,
       height: 100,
@@ -511,76 +550,11 @@ class DriverStatistic extends StatelessWidget {
           Text(
             labelTxt,
             overflow: TextOverflow.ellipsis,
-            style: kSubtitleTextSyule.copyWith(
+            style: kSubtitleTextStyle.copyWith(
               fontSize: 14,
               color: Color(0xffc5c5c9),
             ),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class CourseContent extends StatelessWidget {
-  final String number;
-  final double duration;
-  final String title;
-  final bool isDone;
-  const CourseContent({
-    Key key,
-    this.number,
-    this.duration,
-    this.title,
-    this.isDone = false,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 30),
-      child: Row(
-        children: <Widget>[
-          Text(
-            number,
-            style: kHeadingextStyle.copyWith(
-              color: kTextColor.withOpacity(.15),
-              fontSize: 28,
-            ),
-          ),
-          SizedBox(width: 20),
-          RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text: "$duration mins\n",
-                  style: TextStyle(
-                    color: kTextColor.withOpacity(.5),
-                    fontSize: 18,
-                  ),
-                ),
-                TextSpan(
-                  text: title,
-                  style: kSubtitleTextSyule.copyWith(
-                    fontWeight: FontWeight.w600,
-                    height: 1.5,
-                    fontSize: 18,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Spacer(),
-          Container(
-            margin: EdgeInsets.only(left: 10),
-            height: 40,
-            width: 30,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: kGreenColor.withOpacity(isDone ? 1 : .5),
-            ),
-            child: Icon(Icons.play_arrow, color: Colors.white),
-          )
         ],
       ),
     );

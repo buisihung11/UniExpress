@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:uni_express/Model/DTO/index.dart';
 import 'package:uni_express/View/DriverScreen/edge_detail.dart';
 import 'package:uni_express/ViewModel/route_viewModel.dart';
 import 'package:uni_express/acessories/appbar.dart';
+import 'package:uni_express/acessories/dialog.dart';
 import 'package:uni_express/acessories/loading.dart';
 import 'package:uni_express/enums/view_status.dart';
 import 'package:uni_express/route_constraint.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../constraints.dart';
+import 'package:intl/intl.dart';
 
 // STORE = SUPPLIER
 class RouteScreen extends StatefulWidget {
@@ -40,7 +43,8 @@ class _RouteScreenState extends State<RouteScreen> {
       model: RouteViewModel.getInstance(),
       child: Scaffold(
         appBar: DefaultAppBar(
-          title: "Chuyến hàng ${widget.batch.id}",
+          title: "Chuyến hàng #${widget.batch.id}",
+          subTitle: " ${DateFormat("HH:mm").format(widget.batch.startTime)} - ${DateFormat("HH:mm").format(widget.batch.endTime)}",
         ),
         body: Column(
           children: [
@@ -53,22 +57,42 @@ class _RouteScreenState extends State<RouteScreen> {
     );
   }
 
-  Widget _buildTitle(){
+  Widget _buildTitle() {
     return ScopedModelDescendant<RouteViewModel>(
       builder: (context, child, model) {
-        if(model.mapHeight != Get.height){
-          return Material(
-            elevation: 4,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Center(
-                child: Text(
-                  "Lộ trình 🚚",
-                  style: TextStyle(
-                      fontSize: 16,
-                      color: kSecondary,
-                      fontWeight: FontWeight.bold),
-                ),
+        if (model.mapHeight != Get.height && model.status == ViewStatus.Completed) {
+          return Container(
+            padding: EdgeInsets.all(8),
+            width: Get.width,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(topLeft: Radius.circular(32), topRight: Radius.circular(32)),
+            ),
+            child: Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Image(
+                        width: 25,
+                        height: 25,
+                        image: AssetImage(
+                            "assets/icons/shipper_motorbike.png"),
+                      ),
+                      SizedBox(width: 8,),
+                      Text(
+                        "Lộ trình",
+                        style: TextStyle(
+                            fontSize: 16,
+                            color: kSecondary,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                  FlatButton(onPressed: () async {
+                    await showOptionDialog("Xác nhận hoàn tất chuyến hàng 🏁");
+                  }, child: Text("Hoàn tất", style: TextStyle(color: Colors.white),), color: kPrimary, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),)
+                ],
               ),
             ),
           );
@@ -103,96 +127,127 @@ class _RouteScreenState extends State<RouteScreen> {
               );
             }
             if (model.route != null && model.mapHeight != Get.height) {
-              List<Widget> list = List();
-              list.add(Container(
-                margin: EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: model.route.listPaths[0].isSelected ? kPrimary : Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(8)),
-                ),
-                child: ListTile(
-                    onTap: () {
-                      model.tapPath(model.route.listPaths[0]);
-                    },
-                    contentPadding: EdgeInsets.fromLTRB(16, 8, 16, 8),
-                    title: Text(
-                      "${model.route.listPaths[0].name}",
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: model.route.listPaths[0].isSelected
-                            ? Colors.white
-                            : Colors.black,
-                      ),
-                    ),
-                    trailing: Text(
-                      "Bắt đầu 🚩",
-                      style: TextStyle(color: model.route.listPaths[0].isSelected
-                          ? Colors.white
-                          : Colors.black,),
-                    )),
-              ));
-              model.route.listEdges.forEach((element) {
-                AreaDTO area = model.route.listPaths
-                    .where((area) => area.id == element.toId)
-                    .first;
-
-                list.add(Container(
-                  margin: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: area.isSelected ? kPrimary : Colors.white,
-                    borderRadius: BorderRadius.all(Radius.circular(8)),
-                  ),
-                  child: ListTile(
-                      onTap: () {
-                        model.tapPath(area);
-                      },
-                      contentPadding: EdgeInsets.fromLTRB(16, 8, 16, 8),
-                      title: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "${area.name}",
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: area.isSelected
-                                  ? Colors.white
-                                  : Colors.black,
+              return ListView.builder(
+                itemBuilder: (context, index) {
+                  AreaDTO area = model.route.listPaths[index];
+                  EdgeDTO edge = model.route.listEdges.firstWhere((element) => element.toId == area.id, orElse: () => null,);
+                  return Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 8,
+                          color: Colors.blue,
+                          height: 64,
+                          child: Center(
+                            child: Container(
+                              width: 8,
+                              height: 8,
+                              child: Material(
+                                color: Colors.white,
+                                shape: CircleBorder(),
+                              ),
                             ),
                           ),
-                          SizedBox(
-                            height: 8,
-                          ),
-
-                          Text("📦 ${element.actions.length}",
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: area.isSelected
-                                    ? Colors.white
-                                    : kSecondary,
-                              ))
-                        ],
-                      ),
-                      trailing: FlatButton(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8)),
-                        padding: EdgeInsets.all(4),
-                        color: Colors.orange,
-                        child: Text(
-                          "Chi tiết",
-                          style: TextStyle(color: Colors.white),
                         ),
-                        onPressed: () {
-                          Get.toNamed(RouteHandler.EDGE, arguments: EdgeScreen(area: area, packages: model.route.listPackages, actions: element.actions, batchId: widget.batch.id,));
-                        },
-                      )),
-                ));
-              });
-              return ListView(
-                children: [
-                  ...list,
-                  SizedBox(height: 8,)
-                ],
+                        Flexible(
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: area.isSelected ? kPrimary : Colors.white,
+                                border: Border(bottom: BorderSide(color: kBackgroundGrey[3]))
+                            ),
+                            child: ListTile(
+                              onTap: () {
+                                model.tapPath(area);
+                              },
+                              contentPadding: EdgeInsets.fromLTRB(16, 8, 16, 8),
+                              title: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "${area.name.toUpperCase()}",
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        color: area.isSelected
+                                            ? Colors.white
+                                            : kPrimary,
+                                        fontWeight: FontWeight.bold
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 8,
+                                  ),
+                                  edge != null ? Row(
+                                    children: [
+                                      Image(
+                                        width: 20,
+                                        height: 20,
+                                        image: AssetImage("assets/icons/package.png"),
+                                      ),
+                                      SizedBox(width: 8,),
+                                      Text.rich(TextSpan(text: "0", children: [
+                                        TextSpan(text: "/${edge.actions.length}", style: TextStyle(
+                                          fontSize: 14,
+                                          color: area.isSelected
+                                              ? Colors.white
+                                              : Colors.black,
+                                        ))
+                                      ]),
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: area.isSelected
+                                                ? Colors.yellow
+                                                : Colors.orange,
+                                          )),
+                                    ],
+                                  ) : SizedBox.shrink()
+                                ],
+                              ),
+                              trailing: Material(
+                                color: Colors.transparent,
+                                child: index != 0
+                                    ? InkWell(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      "${index == model.route.listPaths.length - 1 ? '🎌' : ""} Chi tiết",
+                                      style: TextStyle(
+                                          color: area.isSelected
+                                              ? Colors.white
+                                              : Colors.orange,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  onTap: () {
+                                    Get.toNamed(RouteHandler.EDGE,
+                                        arguments: EdgeScreen(
+                                          area: area,
+                                          packages: model.route.listPackages,
+                                          actions: edge.actions,
+                                          batchId: widget.batch.id,
+                                        ));
+                                  },
+                                )
+                                    : Text(
+                                  "🚩 Bắt đầu",
+                                  style: TextStyle(
+                                      color: area.isSelected
+                                          ? Colors.white
+                                          : Colors.orange,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ),
+
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+                itemCount: model.route.listPaths.length,
               );
             }
             print("expand map");
@@ -321,6 +376,4 @@ class _RouteScreenState extends State<RouteScreen> {
       },
     );
   }
-
-
 }

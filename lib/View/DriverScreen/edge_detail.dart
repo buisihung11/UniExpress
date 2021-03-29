@@ -38,18 +38,20 @@ class _EdgeScreenState extends State<EdgeScreen> {
     ];
 
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: DefaultAppBar(
-        title: "${widget.area.id} - Chuyến hàng ${widget.batchId}",
+        title: "${widget.area.id} - Chuyến hàng #${widget.batchId}",
       ),
       bottomNavigationBar: bottomBar(),
       body: Column(
         children: [
           areaInfo(),
-          Divider(color: Colors.grey,),
           Expanded(
-            child: Padding(
+            child: Container(
               padding: const EdgeInsets.only(left: 8, right: 8, top: 8),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(8)),
+                color: Colors.white,
+              ),
               child: _buildPackages(),
             ),
           )
@@ -63,18 +65,20 @@ class _EdgeScreenState extends State<EdgeScreen> {
     List<ActionDTO> listDeli = widget.actions.where((element) => element.actionType == ActionType.DELIVERY).toList();
     List<Widget> list = List();
     if(listPick.isNotEmpty && listPick != null){
+      list.add(Center(child: displayedTitle("Bạn có ${listPick.length} túi cần phải ", "LẤY", titleColor: Colors.grey, contentColor: Colors.red, size: 18)));
       list.add(SizedBox(height: 8,));
-      list.add(displayedTitle("Danh sách túi phải ", "LẤY", titleColor: Colors.black, contentColor: Colors.red));
       listPick.forEach((element) {
         list.add(_buildPackageDetail(element, "Đã lấy"));
+        list.add(SizedBox(height: 8,));
       });
     }
 
     if(listDeli.isNotEmpty && listDeli != null){
+      list.add(Center(child: displayedTitle("Bạn có ${listDeli.length} túi cần phải ", "GIAO", titleColor:  Colors.black, contentColor: Colors.red, size: 18)));
       list.add(SizedBox(height: 8,));
-      list.add(displayedTitle("Danh sách túi phải ", "GIAO", titleColor:  Colors.black, contentColor: Colors.red));
       listDeli.forEach((element) {
         list.add(_buildPackageDetail(element, "Đã giao"));
+        list.add(SizedBox(height: 8,));
       });
     }
     return ListView(
@@ -90,7 +94,8 @@ class _EdgeScreenState extends State<EdgeScreen> {
       margin: EdgeInsets.only(top: 8),
       padding: EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: kBackgroundGrey[3],
+        color: kBackgroundGrey[2],
+        borderRadius: BorderRadius.circular(8)
       ),
       child: InkWell(
         onTap: () async {
@@ -105,9 +110,9 @@ class _EdgeScreenState extends State<EdgeScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  displayedTitle("Mã túi: ", package.packageId.toString(), titleColor: Colors.black54, contentColor: kSecondary),
-                  SizedBox(height: 8,),
-                  displayedTitle("Số đơn: ", package.items.length.toString(), titleColor: Colors.black54, contentColor: kSecondary)
+                  displayedTitle("Mã túi: ", "#" + package.packageId.toString(), titleColor: Colors.black54, contentColor: kSecondary, size: 16),
+                  SizedBox(height: 4,),
+                  displayedTitle("Số đơn: ", package.items.length.toString(), titleColor: Colors.black54, contentColor: kSecondary, size: 16)
                 ],
               ),
               Column(
@@ -118,7 +123,7 @@ class _EdgeScreenState extends State<EdgeScreen> {
                     color: kPrimary,
                     child: Text(
                       type,
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(color: Colors.white, fontSize: 16),
                     ),
                     onPressed: () async {
                       await showOptionDialog("Xác nhận ${type.toLowerCase()} túi ✔");
@@ -146,29 +151,33 @@ class _EdgeScreenState extends State<EdgeScreen> {
 
   Widget areaInfo() {
     return Container(
-      color: Colors.white,
       width: Get.width,
-      padding: const EdgeInsets.fromLTRB(8, 16, 8, 16),
+      padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+      margin: EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(bottomRight: Radius.circular(8), bottomLeft: Radius.circular(8))
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            "🔎 Thông tin điểm đến",
-            style: TextStyle(color: kSecondary, fontSize: 16, fontWeight: FontWeight.bold),
+          Center(
+            child: Text(
+              "Thông tin điểm đến 🏪",
+              style: TextStyle(color: Colors.orange, fontSize: 18, fontWeight: FontWeight.bold),
+            ),
           ),
-          SizedBox(
-            height: 12,
-          ),
+          Divider(),
           RichText(
             text: TextSpan(
               text: 'Tên cửa hàng: ',
-              style: TextStyle(color: Colors.black54, fontSize: 14),
+              style: TextStyle(color: Colors.black54, fontSize: 16),
               children: <TextSpan>[
                 TextSpan(
-                    text: '${widget.area.name}',
+                    text: '${widget.area.name.toUpperCase()}',
                     style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 14,
+                      color: Colors.black54,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                     )),
               ],
@@ -178,14 +187,14 @@ class _EdgeScreenState extends State<EdgeScreen> {
           RichText(
             text: TextSpan(
               text: 'Địa chỉ: ',
-              style: TextStyle(color: Colors.black54, fontSize: 14),
+              style: TextStyle(color: Colors.black54, fontSize: 16),
               children: <TextSpan>[
                 TextSpan(
                     text: '123/35, Lê Văn Việt, q9, HCM',
                     style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
+                      color: Colors.black54,
+                      fontSize: 16,
+                      //fontWeight: FontWeight.bold,
                     )),
               ],
             ),
@@ -194,7 +203,7 @@ class _EdgeScreenState extends State<EdgeScreen> {
           RichText(
             text: TextSpan(
               text: 'Liên hệ: ',
-              style: TextStyle(color: Colors.black54, fontSize: 14),
+              style: TextStyle(color: Colors.black54, fontSize: 16),
               children:[
                 WidgetSpan(
                   child: InkWell(
@@ -210,12 +219,14 @@ class _EdgeScreenState extends State<EdgeScreen> {
                         style: TextStyle(
                           decoration: TextDecoration.underline,
                           color: Colors.blue,
+                          fontSize: 16
                         )),
                   ),
                 )
               ],
             ),
           ),
+          SizedBox(height: 8,),
         ],
       ),
     );
@@ -257,7 +268,7 @@ class _EdgeScreenState extends State<EdgeScreen> {
                 Text(
                     "Đã hoàn tất mọi túi",
                     style: TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 15)),
+                        fontWeight: FontWeight.bold, fontSize: 16)),
                 SizedBox(
                   height: 16,
                 )
