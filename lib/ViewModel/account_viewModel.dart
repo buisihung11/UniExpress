@@ -2,11 +2,14 @@ import 'package:get/get.dart';
 import 'package:package_info/package_info.dart';
 import 'package:uni_express/Model/DAO/index.dart';
 import 'package:uni_express/Model/DTO/index.dart';
+import 'package:uni_express/ViewModel/batch_viewModel.dart';
 import 'package:uni_express/acessories/dialog.dart';
 import 'package:uni_express/enums/view_status.dart';
 import 'package:uni_express/utils/shared_pref.dart';
 import '../route_constraint.dart';
 import 'index.dart';
+import '../constraints.dart';
+
 
 class AccountViewModel extends BaseModel {
   AccountDAO _dao;
@@ -35,11 +38,11 @@ class AccountViewModel extends BaseModel {
       if (status != ViewStatus.Loading) {
         setState(ViewStatus.Loading);
       }
-      final user = await _dao.getUser();
-      currentUser = user;
-
-      String token = await getToken();
-      print(token.toString());
+      currentUser = await _dao.getUser();
+      print(currentUser.toString());
+      if(currentUser.role == StaffRole.DRIVER){
+        currentUser.report = await _dao.getReport();
+      }
 
       if (version == null) {
         PackageInfo packageInfo = await PackageInfo.fromPlatform();
@@ -47,7 +50,8 @@ class AccountViewModel extends BaseModel {
       }
 
       setState(ViewStatus.Completed);
-    } catch (e) {
+    } catch (e, stacktrace) {
+      print(stacktrace.toString());
       bool result = await showErrorDialog();
       if (result) {
         await fetchUser();
@@ -79,10 +83,11 @@ class AccountViewModel extends BaseModel {
   Future<void> processSignout() async {
     int option = await showOptionDialog("Mình sẽ nhớ bạn lắm ó huhu :'(((");
     if (option == 1) {
-      await _dao.logOut();
+      //await _dao.logOut();
       await removeALL();
       destroyInstance();
       RootViewModel.destroyInstance();
+      BatchViewModel.destroyInstance();
       Get.offAllNamed(RouteHandler.LOGIN);
     }
   }

@@ -61,7 +61,6 @@ const String CART_TAG = "cartTag";
 const double DELIVERY_FEE = 5000;
 const UNIBEAN_STORE = 150;
 const UNIBEAN_BRAND = 10;
-const MASTER_PRODUCT = 6;
 const double DIALOG_ICON_SIZE = 60;
 const String defaultImage =
     "https://mcnewsmd1.keeng.net/netnews/archive/images/2020052200/tinngan_120240_510965964_20wap_320.jpg";
@@ -72,8 +71,10 @@ const int ORDER_NEW_STATUS = 1;
 const int ORDER_DONE_STATUS = 3;
 const int VIRTUAL_STORE_TYPE = 8;
 const int DEFAULT_SIZE = 20;
+const String MAP_KEY = "AIzaSyCme39Qpilr_NIsHPzxthtOulUSMx-54_Q";
 
 class ProductType {
+  static const int EXTRA_PRODUCT = 5;
   static const int MASTER_PRODUCT = 6;
   static const int DETAIL_PRODUCT = 7;
   static const int COMPLEX_PRODUCT = 10;
@@ -95,14 +96,24 @@ class PaymentType {
 }
 
 class BatchStatus {
-  static const int NEW = 0;
-  static const int PROCESSING = 1;
-  static const int SUCCESS = 2;
-  static const int FAIL = 3;
-  static const int ABANDON = 4;
+  static const int DRIVER_COMPLETED = 0;
+  static const int DRIVER_NOT_COMPLETED = 1;
+  static const int BEANER_COMPLETED = 3;
+  static const int BEANER_NEW = 2;
+}
+
+class PackageStatus {
+  static const int NEW = 1;
+  static const int PICKEDUP = 2;
+  static const int DELIVERIED = 3;
 }
 
 class ActionType {
   static const int PICKUP = 0;
   static const int DELIVERY = 1;
+}
+
+class StaffRole {
+  static const int DRIVER = 2;
+  static const int BEANER = 4;
 }

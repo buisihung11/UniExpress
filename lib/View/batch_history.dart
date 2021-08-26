@@ -16,7 +16,8 @@ import 'DriverScreen/edge_detail.dart';
 
 class BatchHistoryScreen extends StatefulWidget {
   final String title;
-  BatchHistoryScreen({Key key, this.title}) : super(key: key);
+  final int role;
+  BatchHistoryScreen({Key key, this.title, this.role}) : super(key: key);
 
   @override
   _BatchHistoryScreenState createState() => _BatchHistoryScreenState();
@@ -30,7 +31,7 @@ class _BatchHistoryScreenState extends State<BatchHistoryScreen> {
   @override
   void initState() {
     super.initState();
-    model = BatchViewModel();
+    model = BatchViewModel.getInstance();
     model.getBatches();
   }
 
@@ -40,11 +41,6 @@ class _BatchHistoryScreenState extends State<BatchHistoryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    List<String> messages = [
-      "Cuộc đời là những chuyến đi phải không bạn hiền ",
-      ""
-    ];
-
     return ScopedModel<BatchViewModel>(
       model: model,
       child: Scaffold(
@@ -88,39 +84,27 @@ class _BatchHistoryScreenState extends State<BatchHistoryScreen> {
             return SizedBox.shrink();
           default:
             if (model.listBatch != null && model.listBatch.isNotEmpty) {
-              DateTime now = DateTime.now();
-              List<BatchDTO> listFuture = model.listBatch.where((element) {
-                if (now.day == element.startTime.day &&
-                    now.month == element.startTime.month &&
-                    now.year == element.startTime.year) {
-                  return true;
-                }
-                return false;
-              }).toList();
-              if (listFuture != null && listFuture.isNotEmpty) {
-                return Container(
-                  padding: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: kPrimary,
-                    gradient: LinearGradient(
-                        begin: Alignment.centerLeft,
-                        end: Alignment.centerRight,
-                        colors: [
-                          Color(0xff0BAB64),
-                          Color(0xff3BB78F),
-                        ]),
-                  ),
-                  width: Get.width,
-                  child: Text(
-                    "Tổng số chuyến hàng: ${model.listBatch.length}",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16),
-                  ),
-                );
-              }
-              return SizedBox.shrink();
+              return Container(
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: kPrimary,
+                  gradient: LinearGradient(
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                      colors: [
+                        Color(0xff0BAB64),
+                        Color(0xff3BB78F),
+                      ]),
+                ),
+                width: Get.width,
+                child: Text(
+                  "Tổng số chuyến hàng: ${model.listBatch.length}",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16),
+                ),
+              );
             }
             return SizedBox.shrink();
         }
@@ -129,18 +113,17 @@ class _BatchHistoryScreenState extends State<BatchHistoryScreen> {
   }
 
   Widget batchItem(BatchDTO dto) {
+    List<String> timeSlot = dto.timeSlot.split(";");
     IconData status;
     Color statusColor;
     switch (dto.status) {
-      case BatchStatus.PROCESSING:
+      case BatchStatus.DRIVER_NOT_COMPLETED:
+      case BatchStatus.BEANER_NEW:
         status = Icons.pending;
         statusColor = Colors.blue;
         break;
-      case BatchStatus.FAIL:
-        status = Icons.cancel;
-        statusColor = Colors.red;
-        break;
-      case BatchStatus.SUCCESS:
+      case BatchStatus.DRIVER_COMPLETED:
+      case BatchStatus.BEANER_COMPLETED:
         status = Icons.check_circle;
         statusColor = Colors.green;
         break;
@@ -177,52 +160,54 @@ class _BatchHistoryScreenState extends State<BatchHistoryScreen> {
             ],
           ),
           SizedBox(height: 16),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              SizedBox(
-                width: 65,
-                child: Text(
-                  dto.route.listPaths.first.name,
-                  textAlign: TextAlign.left,
-                  maxLines: 2,
-                  overflow: TextOverflow.visible,
-                  style: kTitleTextStyle.copyWith(fontSize: 14),
-                ),
-              ),
-              SizedBox(width: 5),
-              Expanded(
-                child: MySeparator(color: Colors.blueAccent),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(
-                  left: 8.0,
-                  right: 8.0,
-                ),
-                child: Image(
-                  width: 25,
-                  height: 25,
-                  image: AssetImage("assets/icons/shipper_motorbike.png"),
-                ),
-              ),
-              Expanded(
-                child: MySeparator(color: Colors.blueAccent),
-              ),
-              SizedBox(width: 5),
-              SizedBox(
-                width: 65,
-                child: Text(
-                  dto.route.listPaths.last.name,
-                  textAlign: TextAlign.left,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: kTitleTextStyle.copyWith(fontSize: 14),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 8,),
+          // Row(
+          //   crossAxisAlignment: CrossAxisAlignment.center,
+          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //   children: [
+          //     SizedBox(
+          //       width: 65,
+          //       child: Text(
+          //         dto.startDepot ?? "Bị lỗi nha",
+          //         textAlign: TextAlign.left,
+          //         maxLines: 2,
+          //         overflow: TextOverflow.visible,
+          //         style: kTitleTextStyle.copyWith(fontSize: 14),
+          //       ),
+          //     ),
+          //     SizedBox(width: 5),
+          //     Expanded(
+          //       child: MySeparator(color: Colors.blueAccent),
+          //     ),
+          //     Padding(
+          //       padding: const EdgeInsets.only(
+          //         left: 8.0,
+          //         right: 8.0,
+          //       ),
+          //       child: Image(
+          //         width: 25,
+          //         height: 25,
+          //         image: AssetImage("assets/icons/shipper_motorbike.png"),
+          //       ),
+          //     ),
+          //     Expanded(
+          //       child: MySeparator(color: Colors.blueAccent),
+          //     ),
+          //     SizedBox(width: 5),
+          //     SizedBox(
+          //       width: 65,
+          //       child: Text(
+          //         "Khu cờ vua",
+          //         textAlign: TextAlign.left,
+          //         maxLines: 2,
+          //         overflow: TextOverflow.ellipsis,
+          //         style: kTitleTextStyle.copyWith(fontSize: 14),
+          //       ),
+          //     ),
+          //   ],
+          // ),
+          // SizedBox(
+          //   height: 8,
+          // ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -230,32 +215,31 @@ class _BatchHistoryScreenState extends State<BatchHistoryScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Thời gian: ${DateFormat("dd/MM/yyyy").format(dto.startTime)}',
+                    'Thời gian: ${DateFormat("dd/MM/yyyy").format(dto.createdDate)}',
                     style: kDescriptionTextSyle,
                   ),
                   Text(
-                    'Từ ${DateFormat("HH:mm").format(dto.startTime)} đến ${DateFormat("HH:mm").format(dto.endTime)}',
+                    'Từ ${timeSlot[0].substring(0, 5)} đến ${timeSlot[1].substring(0, 5)}',
                     style: kTitleTextStyle.copyWith(fontSize: 12),
                   )
                 ],
               ),
-              SizedBox(width: 8),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Quãng đường: ',
-                    style: kDescriptionTextSyle,
-                  ),
-                  Text(
-                    '~ ${dto.totalDistance} m',
-                    style: kTitleTextStyle.copyWith(fontSize: 12),
-                  )
-                ],
-              ),
+              // Column(
+              //   crossAxisAlignment: CrossAxisAlignment.start,
+              //   children: [
+              //     Text(
+              //       'Quãng đường: ',
+              //       style: kDescriptionTextSyle,
+              //     ),
+              //     Text(
+              //       '~ ... m',
+              //       style: kTitleTextStyle.copyWith(fontSize: 12),
+              //     )
+              //   ],
+              // ),
             ],
           ),
-          Container(
+          widget.role == StaffRole.DRIVER ? Container(
             width: Get.width,
             margin: EdgeInsets.only(top: 16, bottom: 0),
             padding: EdgeInsets.all(4),
@@ -275,11 +259,7 @@ class _BatchHistoryScreenState extends State<BatchHistoryScreen> {
               color: Colors.transparent,
               child: InkWell(
                 onTap: () {
-                  Get.bottomSheet(
-                      _BatchDetail(
-                        batch: dto,
-                      ),
-                      isScrollControlled: true);
+                  Get.toNamed(RouteHandler.ROUTE, arguments: dto);
                 },
                 child: Text(
                   'Chi tiết',
@@ -291,7 +271,7 @@ class _BatchHistoryScreenState extends State<BatchHistoryScreen> {
                 ),
               ),
             ),
-          ),
+          ) : SizedBox.shrink(),
         ],
       ),
     );
@@ -325,7 +305,9 @@ class _BatchHistoryScreenState extends State<BatchHistoryScreen> {
                 itemBuilder: (context, index) =>
                     batchItem(model.listBatch[index]),
                 itemCount: model.listBatch.length,
-                separatorBuilder: (context, index) => SizedBox(height: 8,),
+                separatorBuilder: (context, index) => SizedBox(
+                  height: 8,
+                ),
               );
             }
             return ListView(
@@ -384,10 +366,10 @@ class _BatchHistoryScreenState extends State<BatchHistoryScreen> {
                 items: model.batchStatus.map((e) {
                   String status;
                   switch (e) {
-                    case BatchStatus.PROCESSING:
+                    case BatchStatus.DRIVER_NOT_COMPLETED:
                       status = "Đang xử lý";
                       break;
-                    case BatchStatus.SUCCESS:
+                    case BatchStatus.DRIVER_COMPLETED:
                       status = "Thành công";
                       break;
                     default:
@@ -434,7 +416,7 @@ class _BatchHistoryScreenState extends State<BatchHistoryScreen> {
                     child: Center(
                       child: Text((model.timeRange != null)
                           ? "${DateFormat("dd/MM/yyyy").format(model.timeRange.start)} - ${DateFormat("dd/MM/yyyy").format(model.timeRange.end)}"
-                          : ""),
+                          : "Từ ngày - đến ngày"),
                     ),
                   ),
                 ),
@@ -447,137 +429,136 @@ class _BatchHistoryScreenState extends State<BatchHistoryScreen> {
   }
 }
 
-class _BatchDetail extends StatefulWidget {
-  BatchDTO batch;
-
-  _BatchDetail({this.batch});
-
-  @override
-  State<StatefulWidget> createState() {
-    // TODO: implement createState
-    return _BatchDetailState();
-  }
-}
-
-class _BatchDetailState extends State<_BatchDetail> {
-  @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-    return Container(
-      height: Get.height * 0.8,
-      decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-              topRight: Radius.circular(32), topLeft: Radius.circular(32))),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Center(
-                child: Text(
-              "Chuyến hàng #${widget.batch.id}",
-              style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold),
-            )),
-          ),
-          Divider(),
-          Expanded(
-            child: ListView.builder(
-              itemBuilder: (context, index) {
-                AreaDTO area = widget.batch.route.listPaths[index];
-                EdgeDTO edge = widget.batch.route.listEdges.firstWhere(
-                  (element) => element.toId == area.id,
-                  orElse: () => null,
-                );
-                return Container(
-                  decoration: BoxDecoration(
-                      color: area.isSelected ? kPrimary : Colors.white,
-                      border: Border(
-                          bottom: BorderSide(color: kBackgroundGrey[3]))),
-                  child: ListTile(
-                    contentPadding: EdgeInsets.fromLTRB(16, 8, 16, 8),
-                    title: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "${area.name.toUpperCase()}",
-                          style: TextStyle(
-                              fontSize: 14,
-                              color: area.isSelected ? Colors.white : kPrimary,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(
-                          height: 8,
-                        ),
-                        edge != null
-                            ? Row(
-                                children: [
-                                  Image(
-                                    width: 50,
-                                    height: 50,
-                                    image:
-                                        AssetImage("assets/icons/package.png"),
-                                  ),
-                                  SizedBox(
-                                    width: 8,
-                                  ),
-                                  Text("${edge.actions.length}",
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: area.isSelected
-                                            ? Colors.white
-                                            : Colors.black,
-                                      )),
-                                ],
-                              )
-                            : SizedBox.shrink()
-                      ],
-                    ),
-                    trailing: Material(
-                      color: Colors.transparent,
-                      child: index != 0
-                          ? InkWell(
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  "${index == widget.batch.route.listPaths.length - 1 ? '🎌' : ""} Chi tiết",
-                                  style: TextStyle(
-                                      color: area.isSelected
-                                          ? Colors.white
-                                          : Colors.orange,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                              onTap: () {
-                                Get.toNamed(RouteHandler.EDGE,
-                                    arguments: EdgeScreen(
-                                      area: area,
-                                      packages: widget.batch.route.listPackages,
-                                      actions: edge.actions,
-                                      batchId: widget.batch.id,
-                                    ));
-                              },
-                            )
-                          : Text(
-                              "🚩 Bắt đầu",
-                              style: TextStyle(
-                                  color: area.isSelected
-                                      ? Colors.white
-                                      : Colors.orange,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                    ),
-                  ),
-                );
-              },
-              itemCount: widget.batch.route.listPaths.length,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
+// class _BatchDetail extends StatefulWidget {
+//   BatchDTO batch;
+//
+//   _BatchDetail({this.batch});
+//
+//   @override
+//   State<StatefulWidget> createState() {
+//     // TODO: implement createState
+//     return _BatchDetailState();
+//   }
+// }
+//
+// class _BatchDetailState extends State<_BatchDetail> {
+//   @override
+//   Widget build(BuildContext context) {
+//     // TODO: implement build
+//     return Container(
+//       height: Get.height * 0.8,
+//       decoration: BoxDecoration(
+//           color: Colors.white,
+//           borderRadius: BorderRadius.only(
+//               topRight: Radius.circular(32), topLeft: Radius.circular(32))),
+//       child: Column(
+//         children: [
+//           Padding(
+//             padding: const EdgeInsets.all(8.0),
+//             child: Center(
+//                 child: Text(
+//               "Chuyến hàng #${widget.batch.id}",
+//               style: TextStyle(
+//                   color: Colors.grey,
+//                   fontSize: 16,
+//                   fontWeight: FontWeight.bold),
+//             )),
+//           ),
+//           Divider(),
+//           Expanded(
+//             child: ListView.builder(
+//               itemBuilder: (context, index) {
+//                 AreaDTO area = widget.batch.route.listPaths[index];
+//                 EdgeDTO edge = widget.batch.route.listEdges.firstWhere(
+//                   (element) => element.toId == area.id,
+//                   orElse: () => null,
+//                 );
+//                 return Container(
+//                   decoration: BoxDecoration(
+//                       color: area.isSelected ? kPrimary : Colors.white,
+//                       border: Border(
+//                           bottom: BorderSide(color: kBackgroundGrey[3]))),
+//                   child: ListTile(
+//                     contentPadding: EdgeInsets.fromLTRB(16, 8, 16, 8),
+//                     title: Column(
+//                       crossAxisAlignment: CrossAxisAlignment.start,
+//                       mainAxisAlignment: MainAxisAlignment.center,
+//                       children: [
+//                         Text(
+//                           "${area.name.toUpperCase()}",
+//                           style: TextStyle(
+//                               fontSize: 14,
+//                               color: area.isSelected ? Colors.white : kPrimary,
+//                               fontWeight: FontWeight.bold),
+//                         ),
+//                         SizedBox(
+//                           height: 8,
+//                         ),
+//                         edge != null
+//                             ? Row(
+//                                 children: [
+//                                   Image(
+//                                     width: 50,
+//                                     height: 50,
+//                                     image:
+//                                         AssetImage("assets/icons/package.png"),
+//                                   ),
+//                                   SizedBox(
+//                                     width: 8,
+//                                   ),
+//                                   Text("${edge.packages.length}",
+//                                       style: TextStyle(
+//                                         fontSize: 14,
+//                                         color: area.isSelected
+//                                             ? Colors.white
+//                                             : Colors.black,
+//                                       )),
+//                                 ],
+//                               )
+//                             : SizedBox.shrink()
+//                       ],
+//                     ),
+//                     trailing: Material(
+//                       color: Colors.transparent,
+//                       child: index != 0
+//                           ? InkWell(
+//                               child: Padding(
+//                                 padding: const EdgeInsets.all(8.0),
+//                                 child: Text(
+//                                   "${index == widget.batch.route.listPaths.length - 1 ? '🎌' : ""} Chi tiết",
+//                                   style: TextStyle(
+//                                       color: area.isSelected
+//                                           ? Colors.white
+//                                           : Colors.orange,
+//                                       fontWeight: FontWeight.bold),
+//                                 ),
+//                               ),
+//                               onTap: () {
+//                                 Get.toNamed(RouteHandler.EDGE,
+//                                     arguments: EdgeScreen(
+//                                       area: area,
+//                                       edge: edge,
+//                                       batch: widget.batch,
+//                                     ));
+//                               },
+//                             )
+//                           : Text(
+//                               "🚩 Bắt đầu",
+//                               style: TextStyle(
+//                                   color: area.isSelected
+//                                       ? Colors.white
+//                                       : Colors.orange,
+//                                   fontWeight: FontWeight.bold),
+//                             ),
+//                     ),
+//                   ),
+//                 );
+//               },
+//               itemCount: widget.batch.route.listPaths.length,
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }

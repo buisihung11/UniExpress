@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:scoped_model/scoped_model.dart';
-import 'package:uni_express/Model/DTO/index.dart';
-import 'package:uni_express/View/CustomerScreen/customer_order.dart';
-import 'package:uni_express/View/DriverScreen/list_batch.dart';
-import 'package:uni_express/View/RestaurantScreen/store_order.dart';
 import 'package:uni_express/View/index.dart';
 import 'package:uni_express/ViewModel/index.dart';
 import 'package:uni_express/constraints.dart';
-import 'package:uni_express/route_constraint.dart';
+import 'BeanerScreen/beaner_home.dart';
 
 class Layout extends StatefulWidget {
   final int initScreenIndex;
+  final int role;
+  final int batchId;
 
-  const Layout({Key key, this.initScreenIndex = 0}) : super(key: key);
+  const Layout({Key key, this.initScreenIndex = 0, this.role, this.batchId}) : super(key: key);
 
   @override
   _LayoutState createState() => _LayoutState();
@@ -50,7 +48,7 @@ class _LayoutState extends State<Layout> {
             body: IndexedStack(
               index: _selectedIndex,
               children: [
-                for (final tabItem in TabNavigationItem.items) tabItem.page,
+                for (final tabItem in items) tabItem.page,
               ],
             ),
             bottomNavigationBar: BottomNavigationBar(
@@ -60,7 +58,7 @@ class _LayoutState extends State<Layout> {
               unselectedItemColor: Colors.grey,
               onTap: (int index) => setState(() => _selectedIndex = index),
               items: [
-                for (final tabItem in TabNavigationItem.items)
+                for (final tabItem in items)
                   BottomNavigationBarItem(
                     icon: tabItem.icon,
                     label: tabItem.title,
@@ -71,6 +69,35 @@ class _LayoutState extends State<Layout> {
         ),
       ),
     );
+  }
+
+  List<TabNavigationItem> get items{
+    if(widget.role == StaffRole.DRIVER){
+      return [
+        TabNavigationItem(
+          page: BatchScreen(batchId: widget.batchId,),
+          icon: Icon(Icons.home),
+          title: "Trang chủ",
+        ),
+        TabNavigationItem(
+          page: ProfileScreen(),
+          icon: Icon(MaterialCommunityIcons.face_outline),
+          title: "Thông tin",
+        ),
+      ];
+    }
+    return [
+      TabNavigationItem(
+        page: BeanerHomeScreen(batchId: widget.batchId,),
+        icon: Icon(Icons.home),
+        title: "Trang chủ",
+      ),
+      TabNavigationItem(
+        page: ProfileScreen(),
+        icon: Icon(MaterialCommunityIcons.face_outline),
+        title: "Thông tin",
+      ),
+    ];
   }
 }
 
@@ -84,83 +111,4 @@ class TabNavigationItem {
     @required this.title,
     @required this.icon,
   });
-
-  static List<TabNavigationItem> get items => [
-        TabNavigationItem(
-          page: BatchScreen(title: 'Lấy hàng'),
-          icon: Icon(Icons.home),
-          title: "Trang chủ",
-        ),
-        TabNavigationItem(
-          page: StoreOrderScreen(
-            store: StoreDTO(id: 150, name: 'Unibean FPT'),
-          ),
-          icon: Icon(FontAwesome.motorcycle),
-          title: "Lấy hàng",
-        ),
-        TabNavigationItem(
-          page: CustomerOrderScreen(
-              store: StoreDTO(id: 150, name: 'Unibean FPT')),
-          icon: Icon(SimpleLineIcons.handbag),
-          title: "Giao hàng",
-        ),
-        TabNavigationItem(
-          page: ProfileScreen(),
-          icon: Icon(MaterialCommunityIcons.face_outline),
-          title: "Thông tin",
-        ),
-      ];
-}
-
-class CustomTabBar extends StatelessWidget {
-  final List<IconData> icons;
-  final int selectedIndex;
-  final Function(int) onTap;
-  final bool isBottomIndicator;
-
-  const CustomTabBar({
-    Key key,
-    @required this.icons,
-    @required this.selectedIndex,
-    @required this.onTap,
-    this.isBottomIndicator = false,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return TabBar(
-      indicatorPadding: EdgeInsets.zero,
-      indicator: BoxDecoration(
-        border: isBottomIndicator
-            ? Border(
-                bottom: BorderSide(
-                  color: kPrimary,
-                  width: 3.0,
-                ),
-              )
-            : Border(
-                top: BorderSide(
-                  color: kPrimary,
-                  width: 3.0,
-                ),
-              ),
-      ),
-      tabs: icons
-          .asMap()
-          .map((i, e) => MapEntry(
-                i,
-                Tab(
-                  text: "Home",
-                  icon: Icon(
-                    e,
-                    color: i == selectedIndex ? kPrimary : Colors.black45,
-                    size: i == selectedIndex ? 24.0 : 16.0,
-                  ),
-                ),
-              ))
-          .values
-          .toList(),
-      onTap: onTap,
-    );
-  }
 }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:get/get.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:uni_express/View/batch_history.dart';
 import 'package:uni_express/ViewModel/account_viewModel.dart';
 import 'package:uni_express/acessories/dialog.dart';
 import 'package:uni_express/acessories/loading.dart';
@@ -144,27 +145,27 @@ class _UpdateAccountState extends State<ProfileScreen> {
       child: Center(
         child: Column(
           children: <Widget>[
-            Divider(),
-            section(
-                icon: Icon(Icons.person, color: Colors.black54),
-                title: Text("Cập nhật thông tin",
-                    style: TextStyle(color: Colors.black54)),
-                function: () async {
-                  bool result = await Get.toNamed(RouteHandler.SIGN_UP,
-                      arguments: model.currentUser);
-                  if (result != null) {
-                    if (result) {
-                      await model.fetchUser();
-                    }
-                  }
-                }),
+            // Divider(),
+            // section(
+            //     icon: Icon(Icons.person, color: Colors.black54),
+            //     title: Text("Cập nhật thông tin",
+            //         style: TextStyle(color: Colors.black54)),
+            //     function: () async {
+            //       bool result = await Get.toNamed(RouteHandler.SIGN_UP,
+            //           arguments: model.currentUser);
+            //       if (result != null) {
+            //         if (result) {
+            //           await model.fetchUser();
+            //         }
+            //       }
+            //     }),
             Divider(),
             section(
                 icon: Icon(Icons.history, color: Colors.black54),
                 title: Text("Lịch sử chuyến hàng",
                     style: TextStyle(color: Colors.black54)),
                 function: ()  {
-                  Get.toNamed(RouteHandler.BATCH_HISTORY);
+                  Get.toNamed(RouteHandler.BATCH_HISTORY, arguments: model.currentUser.role,);
                 }),
             Divider(),
             section(

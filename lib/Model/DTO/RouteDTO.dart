@@ -3,16 +3,16 @@ import 'package:uni_express/Model/DTO/index.dart';
 class RouteDTO {
   List<EdgeDTO> listEdges;
   List<AreaDTO> listPaths;
-  List<PackageDTO> listPackages;
 
-  RouteDTO({this.listEdges, this.listPaths, this.listPackages});
+  RouteDTO({this.listEdges, this.listPaths,});
 
-  factory RouteDTO.fromJson(dynamic json) {
+  factory RouteDTO.fromJson(dynamic json, List<PackageDTO> packages) {
     return RouteDTO(
-        listEdges:
-            (json["edges"] as List).map((e) => EdgeDTO.fromJson(e)).toList(),
-        listPaths:
-            (json["path"] as List).map((e) => AreaDTO.fromJson(e)).toList(),
+      listEdges: (json["edges"] as List)
+          .map((e) => EdgeDTO.fromJson(e, packages))
+          .toList(),
+      listPaths:
+          (json["path"] as List).map((e) => AreaDTO.fromJson(e)).toList(),
     );
   }
 }
@@ -20,29 +20,24 @@ class RouteDTO {
 class EdgeDTO {
   int fromId;
   int toId;
-  List<ActionDTO> actions;
+  List<PackageDTO> packages;
 
-  EdgeDTO({this.fromId, this.toId, this.actions});
+  EdgeDTO({this.fromId, this.toId, this.packages});
 
-  factory EdgeDTO.fromJson(dynamic json) {
+  factory EdgeDTO.fromJson(dynamic json, List<PackageDTO> packages) {
+    List<PackageDTO> edgePackages = List();
+    (json["package_actions"] as List).forEach((action) {
+      List<PackageDTO> tmp = packages.map((e) => PackageDTO.clone(e)).toList();
+      PackageDTO dto = tmp
+          .where((element) => element.packageId == action['p_id'])
+          .first;
+      dto.actionType = action['action_type'];
+      edgePackages.add(dto);
+    });
+
     return EdgeDTO(
         fromId: json["from_s_id"],
         toId: json["to_s_id"],
-        actions: (json["package_actions"] as List)
-            .map((e) => ActionDTO.fromJson(e))
-            .toList());
+        packages: edgePackages);
   }
 }
-
-class ActionDTO {
-  int packageId;
-  int actionType;
-
-  ActionDTO({this.packageId, this.actionType});
-
-  factory ActionDTO.fromJson(dynamic json) {
-    return ActionDTO(packageId: json['p_id'], actionType: json['action_type']);
-  }
-}
-
-

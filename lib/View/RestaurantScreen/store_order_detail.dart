@@ -118,9 +118,7 @@ class _StoreOrderDetailScreenState extends State<StoreOrderDetailScreen> {
           child: ListView(
             padding: EdgeInsets.all(8),
             children: [
-              ...orderSummaryList
-                  .map((orderSummary) => _buildOrderSummary(orderSummary))
-                  .toList(),
+              _buildOrderSummary(orderSummaryList),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Center(
@@ -137,20 +135,11 @@ class _StoreOrderDetailScreenState extends State<StoreOrderDetailScreen> {
     });
   }
 
-  Widget _buildOrderSummary(OrderListDTO orderSummary) {
-    DateTime orderDate = DateTime.parse(orderSummary.checkInDate);
-    DateTime today = DateTime.now();
-    bool isToday = false;
-
+  Widget _buildOrderSummary(List<OrderDTO> orderSummary) {
     var f = new NumberFormat("###.0#", "vi_VN");
-    final totalSellAmount = orderSummary.orders.fold(
+    final totalSellAmount = orderSummary.fold(
         0, (previousValue, element) => previousValue + element.finalAmount);
 
-    if (orderDate.year == today.year &&
-        orderDate.month == today.month &&
-        orderDate.day == today.day) {
-      isToday = true;
-    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -205,7 +194,7 @@ class _StoreOrderDetailScreenState extends State<StoreOrderDetailScreen> {
                     ),
                   ),
                   Text(
-                    orderSummary.orders.length.toString(),
+                    orderSummary.length.toString(),
                     style: TextStyle(
                       fontSize: 20,
                       color: Colors.white,
@@ -217,22 +206,19 @@ class _StoreOrderDetailScreenState extends State<StoreOrderDetailScreen> {
             ],
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.only(left: 24, bottom: 16, top: 8),
-          child: Text(
-            DateFormat('dd/MM/yyyy').format(orderDate),
-            style: TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-            ),
-          ),
-        ),
+        // Padding(
+        //   padding: const EdgeInsets.only(left: 24, bottom: 16, top: 8),
+        //   child: Text(
+        //     DateFormat('dd/MM/yyyy').format(orderDate),
+        //     style: TextStyle(
+        //       color: Colors.black,
+        //       fontWeight: FontWeight.bold,
+        //       fontSize: 18,
+        //     ),
+        //   ),
+        // ),
         SizedBox(height: 8),
-        ...orderSummary.orders.reversed
-            .toList()
-            .map((order) => _buildOrderItem(order))
-            .toList(),
+        ...orderSummary.map((order) => _buildOrderItem(order)).toList(),
       ],
     );
   }
@@ -540,15 +526,17 @@ class _OrderDetailBottomSheetState extends State<OrderDetailBottomSheet> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    Text(
-                      "${orderMaster.quantity}x",
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                    SizedBox(width: 4),
-                    displayName,
-                  ],
+                Flexible(
+                  child: Row(
+                    children: [
+                      Text(
+                        "${orderMaster.quantity}x",
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                      SizedBox(width: 4),
+                      displayName,
+                    ],
+                  ),
                 ),
                 Flexible(child: Text("${formatPrice(orderItemPrice)}")),
               ],
@@ -607,7 +595,7 @@ class _OrderDetailBottomSheetState extends State<OrderDetailBottomSheet> {
                 style: TextStyle(color: Colors.grey),
               ),
               orderDetail.notes != null
-                  ? Text(orderDetail.notes?.first['content'] ?? '-')
+                  ? Text(orderDetail.notes?.first?.content ?? '-')
                   : Text('-')
             ]),
           ),

@@ -3,51 +3,36 @@ import 'package:uni_express/Model/DTO/index.dart';
 
 class BatchDTO {
   int id;
-  DateTime startTime;
-  DateTime endTime;
-  AreaDTO area;
+  String timeSlot;
+  int areaId;
   int status;
+  int routingBatchId;
+  String startDepot;
   RouteDTO route;
-  int totalDistance;
+  int totalLoad;
+  DateTime createdDate;
 
   BatchDTO(
       {this.id,
-      this.startTime,
-      this.endTime,
-      this.area,
+      this.timeSlot,
       this.status,
       this.route,
-      this.totalDistance});
+      this.routingBatchId,
+      this.areaId,
+      this.startDepot,
+      this.totalLoad, this.createdDate});
 
   factory BatchDTO.fromJson(dynamic json) {
-    RouteDTO route;
-    var jsonList = json["routes"] as List;
-    if (jsonList != null) {
-      List<RouteDTO> routes =
-          jsonList.map((e) => RouteDTO.fromJson(e)).toList();
-      routes[0].listPackages = (json['packages'] as List)
-          .map((e) => PackageDTO.fromJson(e))
-          .toList();
-      route = routes[0];
-    }
     return BatchDTO(
         id: json['id'],
-        startTime: DateTime.parse(json['start_time']),
-        endTime: DateTime.parse(json['end_time']),
-        area: AreaDTO.fromJson(json['area']),
+        timeSlot: json['time_slot'],
+        areaId: json['area_id'],
         status: json['status'],
-        route: route,
-        totalDistance: json['total_distance']);
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      "id": id,
-      "start_time": startTime.toIso8601String(),
-      "end_time": endTime.toIso8601String(),
-      "area": area.toJson(),
-      "status": status
-    };
+        totalLoad: json['total_load'],
+        startDepot: json['start_depot_name'],
+        routingBatchId: json['routing_batch_id'],
+        createdDate: DateTime.parse(json['created_date'])
+    );
   }
 }
 

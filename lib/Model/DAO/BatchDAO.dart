@@ -1,29 +1,41 @@
-import 'dart:io';
-
 import 'package:uni_express/Model/DAO/BaseDAO.dart';
 import 'package:uni_express/Model/DTO/BatchDTO.dart';
 import 'package:uni_express/Model/DTO/index.dart';
-import 'package:uni_express/ViewModel/account_viewModel.dart';
+import 'package:uni_express/ViewModel/batch_viewModel.dart';
 import 'package:uni_express/utils/request.dart';
 import 'package:dio/dio.dart';
+import 'package:uni_express/utils/shared_pref.dart';
 import '../../constraints.dart';
 
 class BatchDAO extends BaseDAO {
-  Future<List<BatchDTO>> getBatches(int status, {int page, int size}) async {
-    Response res;
-    // request.options.baseUrl = "http://13.212.101.182:8089/api/v1/";
-    // request.options.headers["X-API-KEY"] = "WPtBjoESTkSKsMoezOjDcY3eQZBz9XPmv3Ftv2jv+rtL4XdhFUB19SGTGZYr1yQjTj0eVbQiv6TJ7mlnKrVGUg==";
-    // request.options.headers["X-CLIENT-ID"] = 3;
-    if (status != -1) {
-      res = await request.get('driver/batchs', queryParameters: {
-        "size": size ?? DEFAULT_SIZE,
-        "page": page ?? 1,
-        "status": status
-      });
+  Future<List<BatchDTO>> getBatches(int status, int role, {int id, int page, int size}) async {
+    String url;
+    if (role == StaffRole.DRIVER) {
+      BatchViewModel.getInstance().batchStatus = [
+        -1,
+        BatchStatus.DRIVER_NOT_COMPLETED,
+        BatchStatus.DRIVER_COMPLETED
+      ];
+      url = "driver/batchs";
     } else {
-      res = await request.get('driver/batchs',
-          queryParameters: {"size": size ?? DEFAULT_SIZE, "page": page ?? 1});
+      BatchViewModel.getInstance().batchStatus = [
+        -1,
+        BatchStatus.BEANER_NEW,
+        BatchStatus.BEANER_COMPLETED
+      ];
+      url = "beaner/batchs";
     }
+    Map<String, dynamic> query = {  "size": size ?? DEFAULT_SIZE,
+      "page": page ?? 1,};
+    if(status != -1){
+      query["status"] = status;
+    }
+    if(id != null){
+      query["routing-batch-id"]= id;
+    }
+
+    Response res = await request.get(url,
+        queryParameters: query);
     //request.options.baseUrl = "https://beanapi.unibean.net/api/";
     var jsonList = res.data["data"] as List;
     if (jsonList != null) {
@@ -34,10 +46,44 @@ class BatchDAO extends BaseDAO {
     return null;
   }
 
-  Future<PackageDTO> getPackage(int batchId, int packageId) async {
+  Future<RouteDTO> getRoutes(int id) async {
+    //request.options.baseUrl = "http://13.212.101.182:8089/api/v1/";
     final res = await request.get(
-      'batchs/${batchId}/packages/${packageId}',
+      'driver/batchs/$id',
     );
-    return PackageDTO.fromJson(res.data["data"]);
+    //request.options.baseUrl = "https://beanapi.unibean.net/api/";
+    var jsonList = res.data["data"]["routes"] as List;
+    if (jsonList != null) {
+      List<PackageDTO> packages = (res.data["data"]['packages'] as List)
+          .map((e) => PackageDTO.fromJson(e))
+          .toList();
+      List<RouteDTO> routes =
+          jsonList.map((e) => RouteDTO.fromJson(e, packages)).toList();
+      return routes[0];
+    }
+    return null;
+  }
+
+  Future<List<PackageDTO>> getPackages(int id) async {
+    //request.options.baseUrl = "http://13.212.101.182:8089/api/v1/";
+    final res = await request.get(
+      'beaner/batchs/$id/packages',
+    );
+    //request.options.baseUrl = "https://beanapi.unibean.net/api/";
+    var jsonList = res.data["data"] as List;
+    if (jsonList != null) {
+      List<PackageDTO> packages =
+          jsonList.map((e) => PackageDTO.fromJson(e)).toList();
+      return packages;
+    }
+    return null;
+  }
+
+  Future<void> putBatch(int batchId, int role) async {
+    if (role == StaffRole.DRIVER) {
+      await request.put('driver/batchs/${batchId}');
+    } else {
+      await request.put('beaner/batchs/${batchId}');
+    }
   }
 }

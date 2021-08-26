@@ -19,7 +19,7 @@ class StartUpView extends StatelessWidget {
         return Scaffold(
           backgroundColor: Colors.white,
           body: Center(
-            child: LoadingScreen(title: " ",),
+            child: LoadingScreen(title: "Bean Express",),
           ),
         );
       }),

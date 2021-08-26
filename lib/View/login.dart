@@ -1,12 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:reactive_forms/reactive_forms.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:uni_express/ViewModel/index.dart';
+import 'package:uni_express/enums/view_status.dart';
 
 import '../constraints.dart';
-import '../route_constraint.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key key}) : super(key: key);
@@ -16,6 +17,17 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final form = FormGroup({
+    'username': FormControl(validators: [
+      Validators.required,
+    ], touched: false),
+    'password': FormControl(validators: [
+      Validators.required,
+      Validators.minLength(6),
+      Validators.maxLength(10)
+      // Validators.number,
+    ], touched: false),
+  });
   @override
   void initState() {
     super.initState();
@@ -30,190 +42,293 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-    return ScopedModel(
-      model: LoginViewModel(),
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        resizeToAvoidBottomPadding: false,
-        body: Stack(
-          children: [
-            Container(
-              height: screenHeight,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-
-                children: [
-                  SizedBox(
-                    height: screenHeight * 0.1,
+    return Scaffold(
+      backgroundColor: Colors.white,
+      resizeToAvoidBottomPadding: true,
+      body: ScopedModel(
+        model: LoginViewModel(),
+        child: ReactiveForm(
+          formGroup: this.form,
+          child: Container(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: Image(
+                      image: AssetImage("assets/images/logo.png"),
+                    ),
                   ),
-                  Expanded(
-                    flex: 1,
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Align(
+                    alignment: Alignment.centerRight,
                     child: Container(
                       // color: Colors.blue,
                       padding: EdgeInsets.only(right: 24),
                       child: Image.asset(
                         'assets/images/bi.png',
-                        alignment: Alignment.bottomRight,
-                        fit: BoxFit.fitHeight,
                         // scale: 0.4,
                       ),
                     ),
                   ),
-                  buildLoginButtons(screenHeight, context),
+                ),
+                Expanded(flex: 3, child: buildLogin()),
+                ReactiveFormConsumer(builder: (context, form, child) {
+                  return AnimatedContainer(
+                    duration: Duration(milliseconds: 2000),
+                    curve: Curves.easeInOut,
+                    child: ScopedModelDescendant<LoginViewModel>(
+                      builder: (context, child, model) => FlatButton(
+                        minWidth: Get.width,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          // side: BorderSide(color: Colors.red),
+                        ),
+
+                        onPressed: () async {
+                          if (model.status == ViewStatus.Completed) if (form
+                              .valid) {
+                            await model.loginForStaff(form.value);
+                          }
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: model.status == ViewStatus.Loading
+                              ? CircularProgressIndicator(
+                              backgroundColor: Color(0xFFFFFFFF))
+                              : Text(
+                            "Đăng nhập",
+                            style: TextStyle(
+                              color: form.valid ? Color(0xFF00d286) : Colors.grey,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                })
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildLogin() {
+    return Container(
+        padding: EdgeInsets.only(left: 16, right: 16, top: 16),
+        decoration: BoxDecoration(
+          color: kPrimary,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(16),
+            topRight: Radius.circular(16),
+          ),
+        ),
+        child: Column(
+          children: [
+            FormItem(
+              "Tên đăng nhập",
+              "",
+              "username",
+              labelStyle: kTitleTextStyle.copyWith(
+                  color: Colors.white, fontSize: 14),
+              borderRadius: 8,
+            ),
+            FormItem(
+              "Mật khẩu",
+              "",
+              "password",
+              labelStyle: kTitleTextStyle.copyWith(
+                  color: Colors.white, fontSize: 14),
+              borderRadius: 8,
+              hideText: true,
+            ),
+          ],
+        ));
+  }
+}
+
+class FormItem extends StatefulWidget {
+  final String label;
+  final String hintText;
+  final String formName;
+  final String keyboardType;
+  final bool isReadOnly;
+  final TextStyle labelStyle;
+  final double borderRadius;
+  bool hideText;
+
+  final List<Map<String, dynamic>> radioGroup;
+
+   FormItem(this.label, this.hintText, this.formName,
+      {Key key,
+      this.keyboardType,
+      this.radioGroup,
+      this.isReadOnly = false,
+      this.labelStyle,
+      this.borderRadius,
+      this.hideText = false})
+      : super(key: key);
+
+
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return _FormItemState();
+  }
+}
+
+class _FormItemState extends State<FormItem>{
+
+  Widget _getFormItemType(FormGroup form) {
+    final formControl = form.control(widget.formName);
+
+    switch (widget.keyboardType) {
+      case "radio":
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            ...widget.radioGroup
+                .map((e) => Flexible(
+              child: Row(
+                children: [
+                  ReactiveRadio(
+                    value: e["value"],
+                    formControlName: widget.formName,
+                  ),
+                  Text(e["title"]),
                 ],
               ),
-            ),
-            // Container(
-            //   margin: EdgeInsets.only(left: 24),
-            //   width: 140,
-            //   child: Column(
-            //     children: [
-            //       Row(
-            //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //         children: [
-            //           Container(
-            //             margin: EdgeInsets.only(left: 24),
-            //             width: 2,
-            //             height: 14,
-            //             color: kPrimary,
-            //           ),
-            //           Container(
-            //             margin: EdgeInsets.only(right: 24),
-            //             width: 2,
-            //             height: 14,
-            //             color: kPrimary,
-            //           ),
-            //         ],
-            //       ),
-            //       Container(
-            //         padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
-            //         decoration: BoxDecoration(
-            //           color: Colors.white,
-            //           borderRadius: BorderRadius.circular(8),
-            //           border: Border.all(
-            //             color: kPrimary,
-            //             width: 3,
-            //           ),
-            //           boxShadow: [
-            //             BoxShadow(
-            //               color: Colors.grey.withOpacity(0.5),
-            //               spreadRadius: 3,
-            //               blurRadius: 10,
-            //               offset: Offset(0, 3), // changes position of shadow
-            //             ),
-            //           ],
-            //         ),
-            //         child: Text(
-            //           'UniDelivery',
-            //           style: TextStyle(
-            //             color: kPrimary,
-            //             letterSpacing: 2,
-            //             fontWeight: FontWeight.bold,
-            //           ),
-            //         ),
-            //       ),
-            //     ],
-            //   ),
-            // ),
-            Align(
-              alignment: Alignment.topLeft,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 8.0),
-                child: Image(
-                  image: AssetImage("assets/images/logo.png"),
-                  width: Get.width * 0.3,
-
+            ))
+                .toList(),
+          ],
+        );
+      case "datetime":
+        return ReactiveDatePicker(
+          firstDate: DateTime(1900),
+          lastDate: DateTime(2030),
+          formControlName: widget.formName,
+          builder: (BuildContext context, ReactiveDatePickerDelegate picker,
+              Widget child) {
+            return GestureDetector(
+              onTap: () {
+                picker.showPicker();
+              },
+              child: Container(
+                padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                height: 72,
+                child: Theme(
+                  data: ThemeData.dark(),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          formControl.value != null
+                              ? DateFormat('dd/MM/yyyy')
+                              .format((formControl.value as DateTime))
+                              : widget.hintText,
+                          style: TextStyle(color: Colors.blue),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            )
-          ],
-        ),
-      ),
-    );
+            );
+          },
+        );
+      default:
+        return ReactiveTextField(
+          validationMessages: {
+            ValidationMessage.email: ':(',
+            ValidationMessage.required: ':(',
+            ValidationMessage.number: ':(',
+            ValidationMessage.pattern: ':(',
+            ValidationMessage.minLength: 'Mật khẩu từ 6 đến 10 ký tự',
+            ValidationMessage.maxLength: 'Mật khẩu từ 6 đến 10 ký tự'
+          },
+          // enableInteractiveSelection: false,
+          style: TextStyle(color: widget.isReadOnly ? Colors.grey : Colors.black),
+          readOnly: widget.isReadOnly,
+          formControlName: widget.formName,
+          textCapitalization: TextCapitalization.words,
+          textAlignVertical: TextAlignVertical.center,
+          textInputAction: widget.label == "Email"
+              ? TextInputAction.done
+              : TextInputAction.next,
+          obscureText: widget.hideText,
+          decoration: InputDecoration(
+
+            filled: true,
+            fillColor: Color(0xFFf4f4f6),
+            suffixIcon: AnimatedOpacity(
+                duration: Duration(milliseconds: 700),
+                opacity: widget.formName != "password" ? (formControl.valid ? 1 : 0) : (formControl.value == null || (formControl.value as String).isEmpty ? 0 : 1),
+                curve: Curves.fastOutSlowIn,
+                child: widget.formName != "password" ? Icon(Icons.check, color: Color(0xff00d286)) : IconButton(icon: Icon(Icons.remove_red_eye, color: widget.hideText ? Colors.grey : Color(0xff00d286)), onPressed: (){setState(() {
+                  widget.hideText = !widget.hideText;
+                });}, splashColor: Color(0xff00d286),)),
+            focusColor: Colors.white,
+            focusedBorder: OutlineInputBorder(
+              borderSide: new BorderSide(
+                  color: widget.isReadOnly ? Colors.transparent : kPrimary),
+              // borderRadius: new BorderRadius.circular(25.7),
+            ),
+            enabledBorder: InputBorder.none,
+            // border: OutlineInputBorder(
+            //   borderSide: BorderSide.none,
+            // ),
+            // focusColor: Colors.red,
+            hintText: widget.hintText,
+            // labelText: label,
+          ),
+        );
+    }
   }
 
-  Widget buildLoginButtons(double screenHeight, BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: kPrimary,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(16),
-          topRight: Radius.circular(16),
-        ),
-      ),
-      padding: EdgeInsets.fromLTRB(48, 24, 48, 16),
-      height: screenHeight * 0.55,
-      child: ButtonTheme(
-        minWidth: 200.0,
-        height: 48,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return ReactiveFormConsumer(builder: (context, form, child) {
+      return Container(
+        margin: EdgeInsets.only(bottom: 15),
+        height: 60,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          // crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            RaisedButton(
-              color: Colors.white,
-              padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
-              elevation: 8,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24.0),
-                // side: BorderSide(color: Colors.red),
-              ),
-              onPressed: () {
-                Get.toNamed(RouteHandler.LOGIN_PHONE);
-              },
-              child: Row(
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(8),
-                    child: Icon(Icons.phone),
-                    decoration: BoxDecoration(
-                      color: Color(0xffffd24d),
-                      borderRadius: BorderRadius.circular(20),
+            Flexible(
+              flex: 2,
+              child: Text(
+                widget.label,
+                style: widget.labelStyle ??
+                    TextStyle(
+                      // fontWeight: FontWeight.bold,
+                      color: Colors.black87,
                     ),
-                  ),
-                  Expanded(
-                    child: Text(
-                      "Đăng nhập bằng số điện thoại",
-                      style: TextStyle(color: kPrimary, fontSize: 16),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ],
               ),
             ),
-            SizedBox(height: 24),
-            RaisedButton(
-              color: Colors.white,
-              padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
-              elevation: 8,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24.0),
-                // side: BorderSide(color: Colors.red),
-              ),
-              onPressed: null,
-              child: Row(
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(8),
-                    child: Icon(FontAwesome.google),
-                    decoration: BoxDecoration(
-                      color: Color(0xffffd24d),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                  ),
-                  Expanded(
-                    child: Text(
-                      "Đăng nhập bằng Gmail",
-                      style: TextStyle(color: kPrimary, fontSize: 16),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ],
+            Flexible(
+              flex: 5,
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(widget.borderRadius ?? 0),
+                  color: Color(0xFFf4f4f6),
+                ),
+                child: _getFormItemType(form),
               ),
             ),
           ],
         ),
-      ),
-    );
+      );
+    });
   }
+
 }

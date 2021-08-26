@@ -17,10 +17,12 @@ class RouteHandler {
   static const String NETWORK_ERROR = "network_error";
   static const String LOADING = "loading";
   static const String CUSTOMER_ORDER_PRE = "customer_order_pre";
-  static const String BATCH = "batch";
+  static const String DRIVE_BATCH = "driver_batch";
   static const String BATCH_HISTORY = "batch_history";
   static const String ROUTE = "route";
   static const String EDGE = "edge";
   static const String PACAKGE = "PACAKGE";
-  static const String HOME = "HOME";
+  static const String HOME = "home";
+  static const String ROLE = "role";
+  static const String BEANER_BATCH = "beaner_batch";
 }

@@ -27,9 +27,10 @@ class OrderDAO {
     return orderDetail;
   }
 
-  Future<List<OrderListDTO>> getCustomerOrders(int storeId,
+  Future<List<OrderListDTO>> getCustomerOrders(int batchId,
       [int orderStatus = ORDER_NEW_STATUS]) async {
-    final res = await request.get('stores/$storeId/orders', queryParameters: {
+    final res =
+        await request.get('beaner/batchs/$batchId/orders', queryParameters: {
       // "from-date": "2020-11-02",
       // "to-date": "2020-12-12",
       "order-status": orderStatus
@@ -42,9 +43,9 @@ class OrderDAO {
     return orderSummaryList;
   }
 
-  Future<OrderDTO> getCustomerOrderDetail(int storeId, int orderId) async {
+  Future<OrderDTO> getCustomerOrderDetail(int batchId, int orderId) async {
     final res = await request.get(
-      'stores/$storeId/orders/$orderId',
+      'beaner/batchs/$batchId/orders/$orderId',
     );
     OrderDTO orderDetail;
     if (res.statusCode == 200) {
@@ -53,7 +54,8 @@ class OrderDAO {
     return orderDetail;
   }
 
-  Future<void> putOrder(int storeId, int orderId, int status) async {
-    await request.put('stores/$storeId/orders/${orderId}', data: status);
+  Future<void> putOrder(int batchId, OrderDTO order, int status) async {
+    await request.put('beaner/batchs/${batchId}/orders/${order.id}',
+        data: {"status": status, "package_ids": order.packageIds});
   }
 }

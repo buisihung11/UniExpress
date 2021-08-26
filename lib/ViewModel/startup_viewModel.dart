@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 import 'package:uni_express/Model/DAO/index.dart';
+import 'package:uni_express/View/layout.dart';
+import 'package:uni_express/services/push_notification_service.dart';
 import 'package:uni_express/utils/shared_pref.dart';
 
 import '../route_constraint.dart';
@@ -25,12 +27,9 @@ class StartUpViewModel extends BaseModel {
 
   Future handleStartUpLogic() async {
     AccountDAO _accountDAO = AccountDAO();
-    // Register for push notifications
-    // await _pushNotificationService.initialise();
-    await Future.delayed(Duration(seconds: 5));
-    var hasLoggedInUser = await _accountDAO.isUserLoggedIn();
-    if (hasLoggedInUser) {
-      Get.offAndToNamed(RouteHandler.HOME);
+    int role = await _accountDAO.isUserLoggedIn();
+    if (role != null) {
+      Get.offAndToNamed(RouteHandler.HOME, arguments: Layout(role: role,));
     } else {
       Get.offAndToNamed(RouteHandler.LOGIN);
     }

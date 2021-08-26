@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uni_express/Model/DTO/StoreDTO.dart';
 
-
 Future<bool> setIsFirstOnboard(bool isFirstOnboard) async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   return prefs.setBool('isFirstOnBoard', isFirstOnboard);
@@ -26,12 +25,12 @@ Future<String> getFCMToken() async {
 
 Future<bool> setToken(String value) async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
-  return prefs.setString('token', value);
+  return prefs.setString('TOKEN', value);
 }
 
 Future<String> getToken() async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
-  return prefs.getString('token');
+  return prefs.getString('TOKEN');
 }
 
 Future<void> setStore(StoreDTO dto) async {
@@ -48,6 +47,16 @@ Future<StoreDTO> getStore() async {
     return StoreDTO.fromJson(jsonDecode(encodedCart));
   }
   return null;
+}
+
+Future<bool> setRole(int value) async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  return prefs.setInt('ROLE', value);
+}
+
+Future<int> getRole() async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  return prefs.getInt('ROLE');
 }
 
 Future<void> removeALL() async {

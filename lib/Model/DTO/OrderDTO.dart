@@ -31,53 +31,52 @@ class OrderDTO {
   final int paymentType;
   final List<OtherAmount> otherAmounts;
   final CustomerInfoDTO customer;
-  final List<StoreDTO> stores;
-  final List<dynamic> notes;
-
+  final List<SupplierNoteDTO> notes;
+  LocationDTO location;
   bool isCompleted;
+  List<int> packageIds;
 
-  OrderDTO(
-    this.id, {
-    this.otherAmounts,
-    this.finalAmount,
-    this.orderTime,
-    this.total,
-    this.itemQuantity,
-    this.status,
-    this.orderItems,
-    this.paymentType,
-    this.invoiceId,
-    this.customer,
-    this.stores,
-    this.isCompleted = false,
-    this.notes,
-  });
+  OrderDTO(this.id,
+      {this.otherAmounts,
+      this.finalAmount,
+      this.orderTime,
+      this.total,
+      this.itemQuantity,
+      this.status,
+      this.orderItems,
+      this.paymentType,
+      this.invoiceId,
+      this.customer,
+      this.isCompleted = false,
+      this.notes,
+      this.location,
+      this.packageIds});
 
-  factory OrderDTO.fromJSON(Map<String, dynamic> map) => OrderDTO(
-        map["order_id"],
-        total: map["total_amount"] ?? 0,
-        invoiceId: map["invoice_id"],
-        finalAmount: map["final_amount"],
-        orderTime: map["check_in_date"],
-        itemQuantity: map["master_product_quantity"],
-        status: (map["order_status"]) == ORDER_NEW_STATUS
-            ? OrderFilter.ORDERING
-            : OrderFilter.DONE,
-        orderItems: map["list_order_details"] != null
-            ? OrderItemDTO.fromList(map["list_order_details"])
-            : null,
-        otherAmounts: (map["other_amounts"] as List)
-            ?.map((otherAmountJSON) => OtherAmount.fromJSON(otherAmountJSON))
-            ?.toList(),
-        customer: map["customer"] != null
-            ? CustomerInfoDTO.fromJSON(map["customer"])
-            : null,
-        stores: map["store_orders"] != null
-            ? StoreDTO.fromList(map["store_orders"])
-            : null,
-        paymentType: map["payment_type"],
-        notes: map["notes"],
-      );
+  factory OrderDTO.fromJSON(Map<String, dynamic> map) =>
+      OrderDTO(map["order_id"],
+          total: map["total_amount"] ?? 0,
+          invoiceId: map["invoice_id"],
+          finalAmount: map["final_amount"],
+          orderTime: map["check_in_date"],
+          itemQuantity: map["master_product_quantity"],
+          status: (map["order_status"]) == ORDER_NEW_STATUS
+              ? OrderFilter.ORDERING
+              : OrderFilter.DONE,
+          orderItems: map["list_order_details"] != null
+              ? OrderItemDTO.fromList(map["list_order_details"])
+              : null,
+          otherAmounts: (map["other_amounts"] as List)
+              ?.map((otherAmountJSON) => OtherAmount.fromJSON(otherAmountJSON))
+              ?.toList(),
+          customer: map["customer"] != null
+              ? CustomerInfoDTO.fromJSON(map["customer"])
+              : null,
+          paymentType: map["payment_type"],
+          notes: (map["supplier_notes"] as List)
+              ?.map((e) => SupplierNoteDTO.fromJson(e))
+              ?.toList(),
+          location: map['location'] != null ? LocationDTO.fromJson(map['location']) : null,
+          packageIds: (map['package_ids'] as List)?.cast<int>());
 
   static List<OrderDTO> fromList(List list) =>
       list?.map((e) => OrderDTO.fromJSON(e))?.toList();
@@ -89,7 +88,9 @@ class OrderItemDTO {
   final double amount;
   final int quantity;
   final List<OrderItemDTO> productChilds;
-  final String supplier_store_name;
+  final String supplierStoreName;
+  final int supplierStoreId;
+  final int supplierId;
   final int type;
 
   OrderItemDTO(
@@ -98,7 +99,9 @@ class OrderItemDTO {
       this.amount,
       this.productChilds,
       this.quantity,
-      this.supplier_store_name,
+      this.supplierStoreName,
+      this.supplierStoreId,
+      this.supplierId,
       this.type});
 
   factory OrderItemDTO.fromJSON(Map<String, dynamic> map) => OrderItemDTO(
@@ -106,7 +109,7 @@ class OrderItemDTO {
       quantity: map["quantity"],
       amount: map["final_amount"] ?? map['final_cost'],
       productChilds: OrderItemDTO.fromList(map["list_of_childs"]),
-      supplier_store_name: map["supplier_store_name"],
+      supplierStoreName: map["supplier_store_name"],
       type: map['product_type']);
 
   static List<OrderItemDTO> fromList(List list) =>

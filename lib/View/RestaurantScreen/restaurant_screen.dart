@@ -448,7 +448,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                 ),
                                 currentOrder.notes != null
                                     ? Text(
-                                        currentOrder.notes?.first['content'] ??
+                                        currentOrder.notes?.first?.content ??
                                             '-')
                                     : Text('-')
                               ],

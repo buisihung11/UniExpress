@@ -6,7 +6,6 @@ import 'package:shimmer/shimmer.dart';
 import 'package:uni_express/Model/DTO/BatchDTO.dart';
 import 'package:uni_express/ViewModel/account_viewModel.dart';
 import 'package:uni_express/ViewModel/batch_viewModel.dart';
-import 'package:uni_express/ViewModel/index.dart';
 import 'package:intl/intl.dart';
 import 'package:uni_express/acessories/separator.dart';
 import 'package:uni_express/acessories/shimmer_block.dart';
@@ -17,8 +16,8 @@ import '../../constraints.dart';
 import 'package:get/get.dart';
 
 class BatchScreen extends StatefulWidget {
-  final String title;
-  BatchScreen({Key key, this.title}) : super(key: key);
+  final int batchId;
+  BatchScreen({Key key, this.batchId}) : super(key: key);
 
   @override
   _BatchScreenState createState() => _BatchScreenState();
@@ -32,21 +31,16 @@ class _BatchScreenState extends State<BatchScreen> {
   @override
   void initState() {
     super.initState();
-    model = BatchViewModel();
-    model.getBatches();
+    model = BatchViewModel.getInstance();
+    model.getIncomingBatch(id: widget.batchId);
   }
 
   Future<void> refreshFetchOrder() async {
-    await model.getBatches();
+    await model.getIncomingBatch(id: widget.batchId);
   }
 
   @override
   Widget build(BuildContext context) {
-    List<String> messages = [
-      "Cuộc đời là những chuyến đi phải không bạn hiền ",
-      ""
-    ];
-
     return ScopedModel<BatchViewModel>(
         model: model,
         child: Scaffold(
@@ -95,7 +89,10 @@ class _BatchScreenState extends State<BatchScreen> {
                       children: <Widget>[
                         Padding(
                           padding: const EdgeInsets.fromLTRB(30, 15, 30, 0),
-                          child: IncomingBatchCard(),
+                          child: RefreshIndicator(
+                              key: _refreshIndicatorKey,
+                              onRefresh: refreshFetchOrder,
+                              child: IncomingBatchCard()),
                         ),
                       ],
                     ),
@@ -129,17 +126,21 @@ class _BatchScreenState extends State<BatchScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Chào buổi sáng 👋',
+              'Chào 👋',
               style: kSubtitleTextStyle,
             ),
-            Text(user.name, style: kHeadingextStyle),
+            InkWell(
+                onTap: () {
+                  model.fetchUser();
+                },
+                child: Text(user.name, style: kHeadingextStyle)),
             ClipPath(
               clipper: BestSellerClipper(),
               child: Container(
                 color: kBestSellerColor,
                 padding:
                     EdgeInsets.only(left: 10, top: 5, right: 20, bottom: 5),
-                child: Text("Chỉ số tuần này".toUpperCase(),
+                child: Text("Chỉ số hôm nay".toUpperCase(),
                     style: kHeadingextStyle.copyWith(fontSize: 16)),
               ),
             ),
@@ -163,7 +164,6 @@ class _BatchScreenState extends State<BatchScreen> {
             children: [
               DriverStatistic(isLoading: true),
               DriverStatistic(isLoading: true),
-              DriverStatistic(isLoading: true),
             ],
           ),
         );
@@ -177,20 +177,14 @@ class _BatchScreenState extends State<BatchScreen> {
           children: [
             DriverStatistic(
               iconPath: "assets/icons/package.png",
-              contentTxt: '12',
+              contentTxt: '${model.currentUser?.report?.package ?? "-"}',
               labelTxt: 'Túi đã giao',
             ),
             DriverStatistic(
               iconPath: "assets/icons/path.png",
-              contentTxt: '12.000 m',
+              contentTxt:
+                  '${model.currentUser?.report?.distance != null ? NumberFormat("###.#").format(model.currentUser.report.distance) : "-"} m',
               labelTxt: 'Quãng đường',
-            ),
-            Center(
-              child: Container(
-                width: 120,
-                child: Text('Chi tiết 👉',
-                    textAlign: TextAlign.left, style: kTitleTextStyle),
-              ),
             ),
           ],
         ),
@@ -234,7 +228,7 @@ class IncomingBatchCard extends StatelessWidget {
                       children: [
                         ShimmerBlock(width: 80, height: 24),
                         SizedBox(width: 8),
-                        ShimmerBlock(width: 120, height: 24),
+                        //ShimmerBlock(width: 120, height: 24),
                       ],
                     ),
                     SizedBox(height: 16),
@@ -279,19 +273,31 @@ class IncomingBatchCard extends StatelessWidget {
             ],
           ),
         );
+      if (status == ViewStatus.Error || model.incomingBatch == null) {
+        return ListView(
+          shrinkWrap: true,
+          children: [
+            Image.asset(
+              "assets/images/backgroundForBatchs.jpg",
+              width: Get.width,
+              fit: BoxFit.fill,
+            ),
+            Text(
+              "Chưa có chuyến hàng nào, vui lòng quay lại sau",
+              style: kDescriptionTextSyle.copyWith(fontSize: 16),
+            )
+          ],
+        );
+      }
+      BatchDTO batch = model.incomingBatch;
+      List<String> timeSlot = batch.timeSlot.split(";");
       return Column(
         children: [
-          Text("Hôm nay bạn có ${model.listBatch.length} chuyến hàng cần giao",
-              style: kTitleTextStyle),
+          Text("Chuyến hàng sắp tới", style: kTitleTextStyle),
           Expanded(
-            child: ListView.separated(
-              separatorBuilder: (context, index) => Container(
-                height: 16,
-              ),
-              itemCount: model.listBatch.length,
-              itemBuilder: (context, index) {
-                BatchDTO batch = model.listBatch[index];
-                return Container(
+            child: ListView(
+              children: [
+                Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -333,111 +339,118 @@ class IncomingBatchCard extends StatelessWidget {
                           Flexible(
                             child: Text.rich(
                               TextSpan(text: 'Từ ', children: [
-                                TextSpan(text: "${DateFormat("HH:mm").format(batch.startTime)} ", style: kTitleTextStyle.copyWith(fontSize: 14)),
-                                TextSpan(text: "đến ",),
-                                TextSpan(text: "${DateFormat("HH:mm").format(batch.endTime)} ", style: kTitleTextStyle.copyWith(fontSize: 14)),
+                                TextSpan(
+                                    text: "${timeSlot[0].substring(0, 5)} ",
+                                    style:
+                                        kTitleTextStyle.copyWith(fontSize: 14)),
+                                TextSpan(
+                                  text: "đến ",
+                                ),
+                                TextSpan(
+                                    text: "${timeSlot[1].substring(0, 5)} ",
+                                    style:
+                                        kTitleTextStyle.copyWith(fontSize: 14)),
                               ]),
-                              style: kDescriptionTextSyle.copyWith(fontSize: 12),
+                              style:
+                                  kDescriptionTextSyle.copyWith(fontSize: 12),
                             ),
                           )
                         ],
                       ),
-                      SizedBox(height: 16),
+                      SizedBox(height: 32),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            '🚩 Bắt đầu',
+                            '🚩 Bắt đầu:',
                             style: kDescriptionTextSyle,
                           ),
+                          SizedBox(width: 8),
                           Text(
-                            '🎌 Kết thúc',
-                            textAlign: TextAlign.right,
-                            style: kDescriptionTextSyle,
+                            '${batch.startDepot}',
+                            textAlign: TextAlign.left,
+                            maxLines: 2,
+                            overflow: TextOverflow.visible,
+                            style: kTitleTextStyle.copyWith(fontSize: 14),
                           ),
                         ],
                       ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          SizedBox(
-                            width: 65,
-                            child: Text(
-                              '${batch.route.listPaths.first.name}',
-                              textAlign: TextAlign.left,
-                              maxLines: 2,
-                              overflow: TextOverflow.visible,
-                              style: kTitleTextStyle.copyWith(fontSize: 14),
-                            ),
-                          ),
-                          SizedBox(width: 5),
-                          Expanded(
-                            child: MySeparator(color: Colors.blueAccent),
-                          ),
-                          Column(
-                            children: [
-                              Image(
-                                width: 40,
-                                height: 40,
-                                image: AssetImage(
-                                    "assets/icons/shipper_motorbike.png"),
-                              ),
-                              Text(
-                                '~ ${batch.totalDistance} m',
-                                style: kTitleTextStyle.copyWith(fontSize: 12),
-                              )
-                            ],
-                          ),
-                          Expanded(
-                            child: MySeparator(color: Colors.blueAccent),
-                          ),
-                          SizedBox(width: 5),
-                          SizedBox(
-                            width: 65,
-                            child: Text(
-                              '${batch.route.listPaths.last.name}',
-                              textAlign: TextAlign.left,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: kTitleTextStyle.copyWith(fontSize: 14),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(
-                          top: 16,
-                          bottom: 16,
-                        ),
-                        child: MySeparator(
-                          color: Colors.grey,
-                          dashWidth: 8,
-                        ),
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text("Các điểm đi qua: (${batch.route.listPaths.length} điểm)", style: kSubtitleTextStyle.copyWith(fontSize: 16, fontWeight: FontWeight.bold),),
-                          SizedBox(height: 4,),
-                          Container(
-                            height: 35,
-                            child: ListView.separated(
-                              shrinkWrap: true,
-                              scrollDirection: Axis.horizontal,
-                              itemCount: batch.route.listPaths.length,
-                              itemBuilder: (context, index) => Container(
-                                padding: EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                    color: Colors.grey[300],
-                                    borderRadius: BorderRadius.circular(8)
-                                ),
-                                child: Text(batch.route.listPaths[index].name, style: TextStyle(color: Colors.black),),
-                              ),
-                              separatorBuilder: (context, index) => SizedBox(width: 8,),
-                            ),
-                          ),
-                        ],
+
+                      // Row(
+                      //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      //   children: [
+
+                      //     Text(
+                      //       '🎌 Kết thúc',
+                      //       textAlign: TextAlign.right,
+                      //       style: kDescriptionTextSyle,
+                      //     ),
+                      //   ],
+                      // ),
+                      // Row(
+                      //   crossAxisAlignment: CrossAxisAlignment.center,
+                      //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      //   children: [
+                      //     SizedBox(
+                      //       width: 65,
+                      //       child: Text(
+                      //         '${batch.startDepot}',
+                      //         textAlign: TextAlign.left,
+                      //         maxLines: 2,
+                      //         overflow: TextOverflow.visible,
+                      //         style: kTitleTextStyle.copyWith(fontSize: 14),
+                      //       ),
+                      //     ),
+                      //     SizedBox(width: 5),
+                      //     Expanded(
+                      //       child: MySeparator(color: Colors.blueAccent),
+                      //     ),
+                      //     Column(
+                      //       children: [
+                      //         Image(
+                      //           width: 40,
+                      //           height: 40,
+                      //           image: AssetImage(
+                      //               "assets/icons/shipper_motorbike.png"),
+                      //         ),
+                      //         // Text(
+                      //         //   '~ ${batch.totalLoad} trạm',
+                      //         //   style: kTitleTextStyle.copyWith(fontSize: 12),
+                      //         // )
+                      //       ],
+                      //     ),
+                      //     Expanded(
+                      //       child: MySeparator(color: Colors.blueAccent),
+                      //     ),
+                      //     SizedBox(width: 5),
+                      //     SizedBox(
+                      //       width: 65,
+                      //       child: Text(
+                      //         'Khu cờ vua',
+                      //         textAlign: TextAlign.left,
+                      //         maxLines: 2,
+                      //         overflow: TextOverflow.ellipsis,
+                      //         style: kTitleTextStyle.copyWith(fontSize: 14),
+                      //       ),
+                      //     ),
+                      //   ],
+                      // ),
+                      // Container(
+                      //   margin: EdgeInsets.only(
+                      //     top: 16,
+                      //     bottom: 16,
+                      //   ),
+                      //   child: MySeparator(
+                      //     color: Colors.grey,
+                      //     dashWidth: 8,
+                      //   ),
+                      // ),
+                      // Text(
+                      //   "Các điểm đi qua: (${batch.totalLoad} điểm)",
+                      //   style: kSubtitleTextStyle.copyWith(
+                      //       fontSize: 16, fontWeight: FontWeight.bold),
+                      // ),
+                      SizedBox(
+                        height: 4,
                       ),
                       Container(
                         width: Get.width,
@@ -458,9 +471,14 @@ class IncomingBatchCard extends StatelessWidget {
                         child: Material(
                           color: Colors.transparent,
                           child: InkWell(
-                            onTap: () {
+                            onTap: () async {
                               print('Khởi hành 🔥');
-                              Get.toNamed(RouteHandler.ROUTE, arguments: batch);
+                              bool result = await Get.toNamed(
+                                  RouteHandler.ROUTE,
+                                  arguments: batch);
+                              if (result != null && result) {
+                                model.getIncomingBatch();
+                              }
                             },
                             child: Text(
                               'Khởi hành 🔥',
@@ -475,8 +493,8 @@ class IncomingBatchCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                );
-              },
+                )
+              ],
               // crossAxisAlignment: CrossAxisAlignment.start,
             ),
           ),

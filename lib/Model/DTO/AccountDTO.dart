@@ -1,52 +1,52 @@
 class AccountDTO {
-  final int uid;
-  final String name, gender, email;
-  String phone;
+  final String name;
+  final String phone;
   final DateTime birthdate;
-  final double balance;
-  final double point;
-  // balance. point;
-  final bool isFirstLogin;
+  final int role;
+  ReportDTO report;
   AccountDTO({
-    this.uid,
     this.name,
     this.phone,
-    this.gender,
-    this.email,
     this.birthdate,
-    this.isFirstLogin = true,
-    this.balance,
-    this.point,
+    this.role,
+    this.report
   });
 
   factory AccountDTO.fromJson(dynamic json) => AccountDTO(
-        uid: json["customer_id"],
         name: json['name'] as String ?? "Bean",
-        email: json['email'] as String,
         phone: json['phone'] as String,
-        gender: (json['gender'] as bool) == true ? 'nam' : 'nữ',
-        balance: json['balance'],
-        point: json['point'],
-        isFirstLogin: (json['is_first_login'] as bool) ?? false,
         birthdate: json['birth_day'] as String != null
             ? DateTime.parse(json['birth_day'] as String)
             : null,
+    role: (json['roles'] as List).first
       );
 
-  @override
-  String toString() {
-    return 'AccountDTO{uid: $uid, name: $name, phone: $phone, gender: $gender, email: $email, birthdate: $birthdate, balance: $balance, point: $point, isFirstLogin: $isFirstLogin}';
-  }
+
 
   Map<String, dynamic> toJson() {
     return {
-      "userId": uid.toString(),
       "name": name,
-      "email": email,
       "phone": phone,
-      "gender": gender == 'nam',
       "birth_day": birthdate.toString(),
-      "pic_url": "https://randomuser.me/api/portraits/women/28.jpg",
+    };
+  }
+}
+
+class ReportDTO{
+  int package;
+  int distance;
+
+  ReportDTO({this.package, this.distance});
+
+  factory ReportDTO.fromJson(dynamic json) => ReportDTO(
+    package: json['total_package'],
+    distance: json['total_distance_travel']
+  );
+
+  Map<String, dynamic> toJson(){
+    return {
+      'total_package' : package,
+      'total_distance_travel' : distance,
     };
   }
 }

@@ -30,27 +30,26 @@ Future<void> showStatusDialog(
               width: 96,
               height: 96,
             ),
-            SizedBox(
-              height: 8,
-            ),
-            Text(
-              status,
-              style: TextStyle(
-                  fontWeight: FontWeight.bold, fontSize: 18, color: kPrimary),
-            ),
-            SizedBox(
-              height: 8,
-            ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                content,
-                style: TextStyle(fontSize: 16, color: kPrimary),
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.left,
-                maxLines: 2,
+                status,
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, fontSize: 18, color: kPrimary),
               ),
             ),
+            content.isNotEmpty
+                ? Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      content,
+                      style: TextStyle(fontSize: 16, color: kPrimary),
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.left,
+                      maxLines: 2,
+                    ),
+                  )
+                : SizedBox.shrink(),
             SizedBox(
               height: 16,
             ),
@@ -423,17 +422,14 @@ Future<String> inputDialog(String title, String buttonTitle,
   return controller.text;
 }
 
-Future<bool> selectDateDialog(BatchViewModel model, String title, String buttonTitle) async {
+Future<bool> selectDateDialog(
+    BatchViewModel model, String title, String buttonTitle) async {
   hideDialog();
   FormGroup form = FormGroup({
-    'start': FormControl(validators: [
-    ], touched: false),
-    'end': FormControl(validators: [
-    ], touched: false),});
-  form.value = {
-    'start': model.start,
-    'end': model.end
-  };
+    'start': FormControl(validators: [], touched: false),
+    'end': FormControl(validators: [], touched: false),
+  });
+  form.value = {'start': model.start, 'end': model.end};
 
   bool result = true;
   await Get.dialog(
@@ -484,7 +480,7 @@ Future<bool> selectDateDialog(BatchViewModel model, String title, String buttonT
                         padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                         child: FormItem(
                           "Bắt đầu",
-                          "",
+                          "__/__/____",
                           "start",
                           keyboardType: "datetime",
                         ),
@@ -493,12 +489,14 @@ Future<bool> selectDateDialog(BatchViewModel model, String title, String buttonT
                         padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                         child: FormItem(
                           "Kết thúc",
-                          "",
+                          "__/__/____",
                           "end",
                           keyboardType: "datetime",
                         ),
                       ),
-                      SizedBox(height: 8,),
+                      SizedBox(
+                        height: 8,
+                      ),
                       Container(
                         width: double.infinity,
                         child: FlatButton(
@@ -530,4 +528,74 @@ Future<bool> selectDateDialog(BatchViewModel model, String title, String buttonT
       ),
       barrierDismissible: false);
   return result;
+}
+
+Future<void> showWidgetDialog(Widget component,
+    {String title, String content}) async {
+  hideDialog();
+  await Get.dialog(WillPopScope(
+    onWillPop: () {},
+    child: Dialog(
+      backgroundColor: Colors.white,
+      elevation: 8.0,
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(16.0))),
+      child: Container(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Flexible(
+                    child: Text(
+                      title ?? "",
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: kPrimary,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      AntDesign.closecircleo,
+                      color: Colors.red,
+                    ),
+                    onPressed: () {
+                      hideDialog();
+                    },
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 8,
+            ),
+            component,
+            SizedBox(
+              height: 8,
+            ),
+            content != null
+                ? Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      content,
+                      style: TextStyle(fontSize: 16, color: kPrimary),
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.left,
+                      maxLines: 2,
+                    ),
+                  )
+                : SizedBox.shrink(),
+            SizedBox(
+              height: 16,
+            ),
+          ],
+        ),
+      ),
+    ),
+  ));
 }

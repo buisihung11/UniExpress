@@ -9,7 +9,6 @@ import 'package:uni_express/acessories/drawer.dart';
 import 'package:uni_express/enums/view_status.dart';
 import 'package:uni_express/route_constraint.dart';
 
-
 // STORE = SUPPLIER
 class StoreOrderScreen extends StatefulWidget {
   final StoreDTO store;
@@ -21,7 +20,7 @@ class StoreOrderScreen extends StatefulWidget {
 
 class _StoreOrderScreenState extends State<StoreOrderScreen> {
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
-  new GlobalKey<RefreshIndicatorState>();
+      new GlobalKey<RefreshIndicatorState>();
 
   @override
   void initState() {
@@ -37,27 +36,25 @@ class _StoreOrderScreenState extends State<StoreOrderScreen> {
   Widget build(BuildContext context) {
     return ScopedModel<RootViewModel>(
       model: RootViewModel.getInstance(),
-      child: Scaffold(
-        appBar: DefaultAppBar(
-          title: widget.store.name,
-        ),
-        body: Container(
-          margin: EdgeInsets.only(left: 16, right: 16),
-          child: ListView(
-            shrinkWrap: true,
-            children: [
-              SizedBox(
-                height: 16,
-              ),
-              Text(
-                "Danh sách nhà cung cấp",
-                style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.deepOrange,
-                    fontWeight: FontWeight.bold),
-              ),
-              _buildSupplier()
-            ],
+      child: SafeArea(
+        child: Scaffold(
+          body: Container(
+            margin: EdgeInsets.only(left: 16, right: 16),
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 16,
+                ),
+                Text(
+                  "Danh sách nhà cung cấp",
+                  style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.deepOrange,
+                      fontWeight: FontWeight.bold),
+                ),
+                Expanded(child: _buildSupplier())
+              ],
+            ),
           ),
         ),
       ),
@@ -139,7 +136,8 @@ class _StoreOrderScreenState extends State<StoreOrderScreen> {
           return RefreshIndicator(
             key: _refreshIndicatorKey,
             onRefresh: refreshFetchOrder,
-            child: Column(
+            child: ListView(
+              shrinkWrap: true,
               children: [...list],
             ),
           );
@@ -152,10 +150,11 @@ class _StoreOrderScreenState extends State<StoreOrderScreen> {
   Future<void> _settingModalBottomSheet(SupplierDTO supplierDTO) async {
     // get orderDetail
 
-    bool result = await Get.toNamed(
-        RouteHandler.STORE_ORDER_DETAIL,
-        arguments: StoreOrderDetailScreen(supplier: supplierDTO, storeId: widget.store.id,)
-    );
+    bool result = await Get.toNamed(RouteHandler.STORE_ORDER_DETAIL,
+        arguments: StoreOrderDetailScreen(
+          supplier: supplierDTO,
+          storeId: widget.store.id,
+        ));
     if (result != null && result) {
       await refreshFetchOrder();
     }

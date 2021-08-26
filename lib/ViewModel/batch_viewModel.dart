@@ -1,35 +1,40 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:uni_express/Model/DAO/index.dart';
 import 'package:uni_express/Model/DTO/index.dart';
 import 'package:uni_express/ViewModel/base_model.dart';
+import 'package:uni_express/ViewModel/beaner_package_viewModel.dart';
+import 'package:uni_express/ViewModel/index.dart';
 import 'package:uni_express/acessories/dialog.dart';
 import 'package:uni_express/constraints.dart';
 import 'package:uni_express/enums/view_status.dart';
 import 'package:get/get.dart';
 import 'package:uni_express/route_constraint.dart';
+import 'package:uni_express/utils/shared_pref.dart';
 
-class BatchViewModel extends BaseModel{
-
-  // static BatchViewModel _instance;
-  // static BatchViewModel getInstance() {
-  //   if (_instance == null) {
-  //     _instance = BatchViewModel();
-  //   }
-  //   return _instance;
-  // }
-  //
-  // static void destroyInstance() {
-  //   _instance = null;
-  // }
+class BatchViewModel extends BaseModel {
   List<BatchDTO> listBatch;
   ScrollController scrollController;
   BatchDAO _batchDAO;
   int selectedStatus;
-  List<int> batchStatus = [-1, BatchStatus.PROCESSING, BatchStatus.SUCCESS];
+  List<int> batchStatus;
   DateTimeRange timeRange;
   DateTime start, end;
+  BatchDTO incomingBatch;
+  static BatchViewModel _instance;
 
-  BatchViewModel(){
+  static BatchViewModel getInstance() {
+    if (_instance == null) {
+      _instance = BatchViewModel();
+    }
+    return _instance;
+  }
+
+  static void destroyInstance() {
+    _instance = null;
+  }
+
+  BatchViewModel() {
     _batchDAO = new BatchDAO();
     selectedStatus = -1;
     scrollController = ScrollController();
@@ -47,25 +52,22 @@ class BatchViewModel extends BaseModel{
   Future<void> getBatches() async {
     try {
       setState(ViewStatus.Loading);
-      listBatch = await _batchDAO.getBatches(selectedStatus);
+      int role = await getRole();
+      listBatch = (await _batchDAO.getBatches(selectedStatus, role));
       setState(ViewStatus.Completed);
-
     } catch (e, stacktrace) {
-      print(stacktrace);
-      bool result = await showErrorDialog();
-      if (result) {
-        await getBatches();
-      } else
-        setState(ViewStatus.Error);
+      setState(ViewStatus.Error);
     }
   }
 
   Future<void> getMoreBatches() async {
     try {
       setState(ViewStatus.LoadMore);
-      listBatch += await _batchDAO.getBatches(selectedStatus, page: _batchDAO.metaDataDTO.page + 1);
+      int role = await getRole();
+      listBatch += await _batchDAO.getBatches(selectedStatus, role,
+          page: _batchDAO.metaDataDTO.page + 1);
+      listBatch.removeWhere((element) => element.route == null);
       setState(ViewStatus.Completed);
-
     } catch (e) {
       bool result = await showErrorDialog();
       if (result) {
@@ -75,11 +77,54 @@ class BatchViewModel extends BaseModel{
     }
   }
 
-  void processBatch(BatchDTO batchDTO){
-    if(batchDTO.status != BatchStatus.SUCCESS){
-      showStatusDialog("assets/images/global_error.png", "ERROR", "Lô hàng chưa hoàn thành");
-    }else{
-      Get.toNamed(RouteHandler.ROUTE, arguments: batchDTO);
+  Future<void> getIncomingBatch({int id}) async {
+    try {
+      setState(ViewStatus.Loading);
+      int role = await getRole();
+      int status;
+      if (role == StaffRole.DRIVER) {
+        status = BatchStatus.DRIVER_NOT_COMPLETED;
+      } else {
+        status = BatchStatus.BEANER_NEW;
+      }
+      List<BatchDTO> list = await _batchDAO.getBatches(status, role, id: id);
+      if(list != null && list.isNotEmpty){
+        incomingBatch = (await _batchDAO.getBatches(status, role, id: id))[0];
+        setState(ViewStatus.Completed);
+      }else{
+        incomingBatch = null;
+        setState(ViewStatus.Empty);
+      }
+    } catch (e, stacktrace) {
+      setState(ViewStatus.Error);
+      print(e.toString() + stacktrace.toString());
+    }
+  }
+
+  Future<void> updateBatch() async {
+    try {
+      int result = await showOptionDialog("Xác nhận hoàn tất chuyến hàng?");
+      if (result != 1) {
+        return;
+      }
+      showLoadingDialog();
+      int role = await getRole();
+      await _batchDAO.putBatch(incomingBatch.routingBatchId, role);
+      await showStatusDialog(
+          "assets/images/global_sucsess.png", "Xác nhận thành công", "");
+      Get.back(result: true);
+    } on DioError catch (e) {
+      if (e.response != null && e.response.statusCode == 400) {
+        await showStatusDialog("assets/images/global_error.png",
+            "${e.response.data['message']}", "");
+        return;
+      }
+      bool result = await showErrorDialog();
+      if (result) {
+        await updateBatch();
+      } else {
+        setState(ViewStatus.Error);
+      }
     }
   }
 
@@ -89,32 +134,30 @@ class BatchViewModel extends BaseModel{
   }
 
   Future<void> changeFilterTime() async {
-    if(timeRange != null){
+    if (timeRange != null) {
       start = timeRange.start;
       end = timeRange.end;
     }
     bool result = await selectDateDialog(this, "Lọc theo ngày", "Xác nhận");
-    if(result){
-      if(start == null){
+    if (result) {
+      if (start == null) {
         timeRange = null;
-      }else{
-        if(end == null){
+      } else {
+        if (end == null) {
           end = DateTime.now();
         }
-        if(start.compareTo(end) > 0){
+        if (start.compareTo(end) > 0) {
           timeRange = DateTimeRange(start: end, end: start);
-        }else{
+        } else {
           timeRange = DateTimeRange(start: start, end: end);
         }
-
       }
       getBatches();
     }
   }
 
-  void setDate(Map<String, dynamic> form){
+  void setDate(Map<String, dynamic> form) {
     start = form['start'];
     end = form['end'];
   }
-
 }

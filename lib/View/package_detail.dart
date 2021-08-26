@@ -3,20 +3,20 @@ import 'package:get/get.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:uni_express/Model/DTO/index.dart';
 import 'package:uni_express/ViewModel/index.dart';
-import 'package:uni_express/ViewModel/package_viewModel.dart';
 import 'package:uni_express/acessories/appbar.dart';
 import 'package:uni_express/acessories/loading.dart';
 import 'package:uni_express/enums/view_status.dart';
-import 'package:uni_express/utils/index.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../constraints.dart';
+import '../constraints.dart';
 
 class PackageDetailScreen extends StatefulWidget {
-  PackageDetailScreen({Key key, @required this.package, this.batchId})
+  PackageDetailScreen(
+      {Key key, @required this.packageId, this.batchId, this.driver})
       : super(key: key);
-  PackageDTO package;
+  int packageId;
   int batchId;
+  String driver;
 
   @override
   _PackageDetailScreenState createState() => _PackageDetailScreenState();
@@ -30,30 +30,25 @@ class _PackageDetailScreenState extends State<PackageDetailScreen> {
   @override
   void initState() {
     super.initState();
-    model.getPackageDetail(widget.batchId, widget.package.packageId);
+    model.getPackageDetail(widget.batchId, widget.packageId);
   }
 
   Future<void> refreshFetchOrder() async {
-    await model.getPackageDetail(widget.batchId, widget.package.packageId);
+    await model.getPackageDetail(widget.batchId, widget.packageId);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: DefaultAppBar(
-        title: "Túi #${widget.package.packageId}",
-      ),
-      body: RefreshIndicator(
-        key: _refreshIndicatorKey,
-        onRefresh: refreshFetchOrder,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            ScopedModel<PackageViewModel>(
-              model: model,
-              child: Expanded(child: _buildOrders()),
-            ),
-          ],
+    return ScopedModel(
+      model: model,
+      child: Scaffold(
+        appBar: DefaultAppBar(
+          title: "Túi #${widget.packageId}",
+        ),
+        body: RefreshIndicator(
+          key: _refreshIndicatorKey,
+          onRefresh: refreshFetchOrder,
+          child: _buildOrders()
         ),
       ),
     );
@@ -62,55 +57,111 @@ class _PackageDetailScreenState extends State<PackageDetailScreen> {
   Widget _buildOrders() {
     return ScopedModelDescendant<PackageViewModel>(
         builder: (context, child, model) {
-      final status = model.status;
-      if (status == ViewStatus.Loading)
-        return Padding(
-          padding: const EdgeInsets.only(top: 32.0),
-          child: Center(
-            child: LoadingBean(),
-          ),
+      if (model.status == ViewStatus.Loading)
+        return ListView(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 32.0),
+              child: Center(
+                child: LoadingBean(),
+              ),
+            ),
+          ],
         );
       else if (model.package == null)
-        return Container(
-          child: SvgPicture.asset(
-            'assets/images/order_history.svg',
-            semanticsLabel: 'Acme Logo',
-            fit: BoxFit.cover,
-          ),
+        return ListView(
+          children: [
+            Container(
+              child: SvgPicture.asset(
+                'assets/images/order_history.svg',
+                semanticsLabel: 'Acme Logo',
+                fit: BoxFit.cover,
+              ),
+            )
+          ],
         );
-      if (status == ViewStatus.Error)
-        return Center(
-          child: AspectRatio(
-            aspectRatio: 1 / 4,
-            child: Image.asset(
-              'assets/images/error.png',
-              width: 24,
+      if (model.status == ViewStatus.Error)
+        return ListView(
+          children: [
+            Center(
+              child: AspectRatio(
+                aspectRatio: 1 / 4,
+                child: Image.asset(
+                  'assets/images/error.png',
+                  width: 24,
+                ),
+              ),
             ),
-          ),
+          ],
         );
+      String status;
+      Color color, backgroundColor;
 
-      return ListView(
-        shrinkWrap: true,
+      switch(model.package.status){
+        case PackageStatus.NEW:
+          status = "Tài xế chưa lấy";
+          color = Colors.orange;
+          backgroundColor = Colors.yellow[100];
+          break;
+        case PackageStatus.PICKEDUP:
+          status = "Tài xế đang giao";
+          color = Colors.blue;
+          backgroundColor = Colors.blue[100];
+          break;
+        case PackageStatus.DELIVERIED:
+          status = "Đã nhận";
+          color = Colors.green;
+          backgroundColor = Colors.green[100];
+          break;
+        default:
+          status = "";
+          color = Colors.red;
+          backgroundColor = Colors.red[100];
+      }
+      return Column(
         children: [
           Container(
             padding: EdgeInsets.all(8),
             width: Get.width,
-            child: Text(
-              "Tổng số đơn: ${model.package.items.length.toString()}",
-              style: TextStyle(
-                  color: kPrimary, fontWeight: FontWeight.bold, fontSize: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Tổng số đơn: ${model.package.items.length}",
+                  style: TextStyle(
+                      color: kPrimary,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16),
+                ),
+                Container(
+                    padding: EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                        color: backgroundColor,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: color)),
+                    child: Text(
+                      status,
+                      style:
+                      TextStyle(color: color, fontSize: 12),
+                    )),
+              ],
             ),
           ),
-          ...model.package.items
-              .map((item) => _buildOrderItem(item))
-              .toList(),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Center(
-              child: Text(
-                "Bạn đã xem hết rồi đây :)",
-                style: TextStyle(color: Colors.grey),
-              ),
+          Expanded(
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                ...model.package.items.map((item) => _buildOrderItem(item)).toList(),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Center(
+                    child: Text(
+                      "Bạn đã xem hết rồi đây :)",
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -141,7 +192,7 @@ class _PackageDetailScreenState extends State<PackageDetailScreen> {
                 Column(
                   children: [
                     Text(
-                      '${item.code} - ${item.orders.length} món',
+                      '${item.code} - ${item.details.length} món',
                       style: TextStyle(color: kPrimary),
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.center,
@@ -162,40 +213,40 @@ class _PackageDetailScreenState extends State<PackageDetailScreen> {
             child: buildOrderSummaryList(item),
           ),
           layoutSubtotal(item),
-          _buildBottomBar(),
+          //_buildBottomBar(),
         ],
       ),
     );
   }
 
-  Container _buildBottomBar() {
-    return Container(
-      width: Get.width,
-      padding: const EdgeInsets.only(left: 8, right: 8),
-      child: FlatButton(
-        onPressed: () async {
-          // if (!isOrderDone) await model.putOrder(widget.storeId);
-        },
-        padding: EdgeInsets.only(left: 8.0, right: 8.0),
-        textColor: Colors.white,
-        color: kPrimary,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(8))),
-        child: Column(
-          children: [
-            SizedBox(
-              height: 8,
-            ),
-            Text("${!false ? 'Đã nhận đơn' : 'Đã hoàn thành'}",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-            SizedBox(
-              height: 8,
-            )
-          ],
-        ),
-      ),
-    );
-  }
+  // Container _buildBottomBar() {
+  //   return Container(
+  //     width: Get.width,
+  //     padding: const EdgeInsets.only(left: 8, right: 8),
+  //     child: FlatButton(
+  //       onPressed: () async {
+  //         // if (!isOrderDone) await model.putOrder(widget.storeId);
+  //       },
+  //       padding: EdgeInsets.only(left: 8.0, right: 8.0),
+  //       textColor: Colors.white,
+  //       color: kPrimary,
+  //       shape: RoundedRectangleBorder(
+  //           borderRadius: BorderRadius.all(Radius.circular(8))),
+  //       child: Column(
+  //         children: [
+  //           SizedBox(
+  //             height: 8,
+  //           ),
+  //           Text("${!false ? 'Đã nhận đơn' : 'Đã hoàn thành'}",
+  //               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+  //           SizedBox(
+  //             height: 8,
+  //           )
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget buildOrderSummaryList(ItemDTO item) {
     return Container(
@@ -207,80 +258,37 @@ class _PackageDetailScreenState extends State<PackageDetailScreen> {
         shrinkWrap: true,
         physics: NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
-          final orderMaster = item.orders[index];
-          final orderChilds = orderMaster.productChilds;
-
-          double orderItemPrice = orderMaster.amount;
-          orderChilds?.forEach((element) {
-            orderItemPrice += element.amount;
-          });
           // orderItemPrice *= orderMaster.quantity;
           Widget displayName = Flexible(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  orderMaster.masterProductName.contains("Extra")
-                      ? orderMaster.masterProductName.replaceAll("Extra", "+")
-                      : orderMaster.masterProductName,
-                  textAlign: TextAlign.start,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                ...orderChilds
-                    .map(
-                      (child) => Text(
-                        child.masterProductName.contains("Extra")
-                            ? child.masterProductName.replaceAll("Extra", "+")
-                            : child.masterProductName,
-                        style: TextStyle(fontSize: 12),
-                      ),
-                    )
-                    .toList(),
-              ],
+            child: Text(item.details[index].productName,
+              textAlign: TextAlign.start,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           );
 
-          if (orderMaster.type == ProductType.GIFT_PRODUCT) {
-            displayName = Flexible(
-              child: Text(
-                "🎁 ${orderMaster.masterProductName} 🎁",
-                textAlign: TextAlign.start,
-                style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.orange),
-              ),
-            );
-          }
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  displayName,
                   Flexible(
-                    child: Row(
-                      children: [
-                        Text(
-                          "${orderMaster.quantity}x",
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                        SizedBox(width: 4),
-                        displayName,
-                      ],
+                    child: Text(
+                      "x${item.details[index].quantity}",
+                      style: TextStyle(color: Colors.grey),
                     ),
                   ),
-                  Flexible(child: Text("${formatPrice(orderItemPrice)}")),
                 ],
               ),
             ],
           );
         },
         separatorBuilder: (context, index) => Divider(),
-        itemCount: item.orders.length,
+        itemCount: item.details.length,
       ),
     );
   }
