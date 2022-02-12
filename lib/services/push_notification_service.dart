@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:uni_express/Model/DAO/index.dart';
@@ -28,16 +29,21 @@ class PushNotificationService {
     _instance = null;
   }
 
-  final FirebaseMessaging _fcm = FirebaseMessaging();
+  final FirebaseMessaging _fcm = FirebaseMessaging.instance;
   bool _initialized = false;
 
   Future init() async {
     if (!_initialized) {
-      if (Platform.isIOS) {
-        _fcm.requestNotificationPermissions(IosNotificationSettings());
-      } else {
-        _fcm.requestNotificationPermissions();
+      if ((defaultTargetPlatform == TargetPlatform.iOS)) {
+        await _fcm.requestPermission();
+        _fcm.setForegroundNotificationPresentationOptions(
+            alert: true, badge: true, sound: true);
       }
+      // TODO: Fix this
+      FirebaseMessaging.onMessage.listen((event) {
+        RemoteNotification notification = event.notification;
+        handleNotificationDisplay(message);
+      });
       _fcm.configure(
         //Called when the app is in the foreground and we receive a push notification
         onMessage: (Map<String, dynamic> message) async {
@@ -48,8 +54,7 @@ class PushNotificationService {
         onLaunch: (Map<String, dynamic> message) async {
           print('onLaunch: $message');
           Timer.periodic(Duration(milliseconds: 500), (timer) {
-            if(Get.key.currentState == null)
-              return;
+            if (Get.key.currentState == null) return;
             handelNoti(message);
             timer.cancel();
           });
@@ -68,14 +73,17 @@ class PushNotificationService {
   Future<void> handleNotificationDisplay(Map<String, dynamic> message) async {
     hideDialog();
     hideSnackbar();
-    switch(message["data"]["Action"]){
+    switch (message["data"]["Action"]) {
       case RouteHandler.PACAKGE:
       case RouteHandler.HOME:
-        await showStatusDialog("assets/images/global_sucsess.png", Platform.isIOS
-            ? message['aps']['alert']['title']
-            : message['notification']['title'],Platform.isIOS
-            ? message['aps']['alert']['body']
-            : message['notification']['body']);
+        await showStatusDialog(
+            "assets/images/global_sucsess.png",
+            Platform.isIOS
+                ? message['aps']['alert']['title']
+                : message['notification']['title'],
+            Platform.isIOS
+                ? message['aps']['alert']['body']
+                : message['notification']['body']);
         handelNoti(message);
         break;
       default:
@@ -101,42 +109,44 @@ class PushNotificationService {
               },
             ));
     }
-
   }
-
 
   Future<void> handelNoti(Map<String, dynamic> message) async {
     hideDialog();
-      switch(message["data"]["Action"]){
-        case RouteHandler.PACAKGE:
-          switch(Get.currentRoute){
-            case RouteHandler.EDGE:
-              Get.back(result: true);
-              break;
-            case RouteHandler.PACAKGE:
-              Get.back();
-              Get.back(result: true);
-              break;
-            case RouteHandler.ROUTE:
-              Map<String, dynamic> map = jsonDecode(message["data"]["Argument"]);
-              Get.offNamed(RouteHandler.ROUTE, arguments: BatchDTO.fromJson(map["bean_batch_model"]));
-              break;
-            default:
-              Map<String, dynamic> map = jsonDecode(message["data"]["Argument"]);
-              Get.toNamed(RouteHandler.ROUTE, arguments: BatchDTO.fromJson(map["bean_batch_model"]));
-          }
-          break;
-        case RouteHandler.HOME:
-          Map<String, dynamic> map = jsonDecode(message["data"]["Argument"]);
-          int role = await getRole();
-          if(role != null){
-            Get.offAllNamed(RouteHandler.HOME, arguments: Layout(role: role, batchId: map["routing_batch_id"],));
-          }
-          break;
-      }
+    switch (message["data"]["Action"]) {
+      case RouteHandler.PACAKGE:
+        switch (Get.currentRoute) {
+          case RouteHandler.EDGE:
+            Get.back(result: true);
+            break;
+          case RouteHandler.PACAKGE:
+            Get.back();
+            Get.back(result: true);
+            break;
+          case RouteHandler.ROUTE:
+            Map<String, dynamic> map = jsonDecode(message["data"]["Argument"]);
+            Get.offNamed(RouteHandler.ROUTE,
+                arguments: BatchDTO.fromJson(map["bean_batch_model"]));
+            break;
+          default:
+            Map<String, dynamic> map = jsonDecode(message["data"]["Argument"]);
+            Get.toNamed(RouteHandler.ROUTE,
+                arguments: BatchDTO.fromJson(map["bean_batch_model"]));
+        }
+        break;
+      case RouteHandler.HOME:
+        Map<String, dynamic> map = jsonDecode(message["data"]["Argument"]);
+        int role = await getRole();
+        if (role != null) {
+          Get.offAllNamed(RouteHandler.HOME,
+              arguments: Layout(
+                role: role,
+                batchId: map["routing_batch_id"],
+              ));
+        }
+        break;
+    }
   }
-
-
 
   Future<String> getFcmToken() async {
     String token = await _fcm.getToken();
