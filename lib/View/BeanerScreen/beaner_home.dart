@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:uni_express/Model/DTO/index.dart';
-import 'file:///D:/FPTU/Fall2020/Uni_Delivery/uni_express/lib/View/package_detail.dart';
 import 'package:uni_express/ViewModel/batch_viewModel.dart';
 import 'package:uni_express/ViewModel/beaner_package_viewModel.dart';
 import 'package:uni_express/acessories/loading.dart';
@@ -14,6 +13,7 @@ import 'package:get/get.dart';
 import 'package:uni_express/acessories/appbar.dart';
 
 import '../../route_constraint.dart';
+import '../package_detail.dart';
 
 class BeanerHomeScreen extends StatefulWidget {
   final int batchId;
@@ -108,8 +108,8 @@ class _BeanerHomeScreenState extends State<BeanerHomeScreen> {
                         children: [
                           Text(
                             "Chuyến hàng hiện tại:",
-                            style:
-                            kTitleTextStyle.copyWith(fontSize: 22, color: kPrimary),
+                            style: kTitleTextStyle.copyWith(
+                                fontSize: 22, color: kPrimary),
                           ),
                           Image.asset(
                             "assets/images/backgroundForBatchs.jpg",
@@ -120,7 +120,7 @@ class _BeanerHomeScreenState extends State<BeanerHomeScreen> {
                             child: Text(
                               "Chưa có chuyến hàng nào, vui lòng quay lại sau",
                               style:
-                              kDescriptionTextSyle.copyWith(fontSize: 16),
+                                  kDescriptionTextSyle.copyWith(fontSize: 16),
                             ),
                           )
                         ],
@@ -182,9 +182,8 @@ class _BeanerHomeScreenState extends State<BeanerHomeScreen> {
           Get.toNamed(RouteHandler.PACAKGE,
               arguments: PackageDetailScreen(
                 packageId: dto.packageId,
-                batchId: BatchViewModel.getInstance()
-                    .incomingBatch
-                    .routingBatchId,
+                batchId:
+                    BatchViewModel.getInstance().incomingBatch.routingBatchId,
               ));
         },
         child: Row(

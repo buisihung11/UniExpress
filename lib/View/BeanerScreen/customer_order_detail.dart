@@ -1,7 +1,6 @@
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:uni_express/Model/DTO/index.dart';
-import 'file:///D:/FPTU/Fall2020/Uni_Delivery/uni_express/lib/View/package_detail.dart';
 import 'package:uni_express/ViewModel/batch_viewModel.dart';
 import 'package:uni_express/ViewModel/index.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -15,6 +14,7 @@ import 'package:url_launcher/url_launcher.dart';
 import "package:collection/collection.dart";
 import '../../constraints.dart';
 import '../../route_constraint.dart';
+import '../package_detail.dart';
 
 class CustomerOrderDetail extends StatefulWidget {
   final OrderDTO order;

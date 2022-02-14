@@ -29,10 +29,10 @@ class RouteViewModel extends BaseModel {
     _batchDAO = BatchDAO();
     initialLocation = CameraPosition(target: LatLng(0.0, 0.0));
     locationController = Location();
-    locationController.onLocationChanged().listen((LocationData cLoc) {
-      currentLocation = cLoc;
-      notifyListeners();
-    });
+    // locationController.onLocationChanged().listen((LocationData cLoc) {
+    //   currentLocation = cLoc;
+    //   notifyListeners();
+    // });
   }
 
   Future<void> getRoutes(int id, {bool routeOnly = false}) async {
@@ -57,29 +57,30 @@ class RouteViewModel extends BaseModel {
   }
 
   Future<void> setMarkers() async {
-    try{
-    if (markers.isNotEmpty) {
-      markers.clear();
-    }
-    for (int i = 0; i < route.listPaths.length; i++) {
-      BitmapDescriptor bitmap = await BitmapDescriptor.fromAssetImage(
-          ImageConfiguration(
-            size: Size(16, 16),
-          ),
-          "assets/icons/location.png");
+    try {
+      if (markers.isNotEmpty) {
+        markers.clear();
+      }
+      for (int i = 0; i < route.listPaths.length; i++) {
+        BitmapDescriptor bitmap = await BitmapDescriptor.fromAssetImage(
+            ImageConfiguration(
+              size: Size(16, 16),
+            ),
+            "assets/icons/location.png");
 
-      markers.add(Marker(
-        infoWindow: InfoWindow(
-          title: '${i+1}. ${route.listPaths[i].name}',
-        ),
-        markerId: MarkerId("store: ${i + 1}"),
-        position: LatLng(route.listPaths[i].lat, route.listPaths[i].long),
-        icon: bitmap,
-        onTap: () {
-          tapPath(route.listPaths[i]);
-        },
-      ));
-    }}catch(e, stacktrace){
+        markers.add(Marker(
+          infoWindow: InfoWindow(
+            title: '${i + 1}. ${route.listPaths[i].name}',
+          ),
+          markerId: MarkerId("store: ${i + 1}"),
+          position: LatLng(route.listPaths[i].lat, route.listPaths[i].long),
+          icon: bitmap,
+          onTap: () {
+            tapPath(route.listPaths[i]);
+          },
+        ));
+      }
+    } catch (e, stacktrace) {
       print("Error: " + e.toString() + stacktrace.toString());
     }
   }
@@ -105,7 +106,6 @@ class RouteViewModel extends BaseModel {
                   location: "${e.lat},${e.long}", stopOver: true),
             )
             .toList());
-
 
     Polyline polyLine = Polyline(
       polylineId: PolylineId("POLYLINE"),
@@ -158,7 +158,7 @@ class RouteViewModel extends BaseModel {
     animateToLocation(path.lat, path.long);
   }
 
-  void animateToLocation(double lat, double long){
+  void animateToLocation(double lat, double long) {
     mapController.animateCamera(
       CameraUpdate.newCameraPosition(
         CameraPosition(

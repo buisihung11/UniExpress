@@ -42,30 +42,24 @@ class PushNotificationService {
       // TODO: Fix this
       FirebaseMessaging.onMessage.listen((event) {
         RemoteNotification notification = event.notification;
-        handleNotificationDisplay(message);
+        handleNotificationDisplay(event.data);
       });
-      _fcm.configure(
-        //Called when the app is in the foreground and we receive a push notification
-        onMessage: (Map<String, dynamic> message) async {
-          print('onMessage: $message');
-          handleNotificationDisplay(message);
-        },
-        //Called when the app has been closed completely and its opened
-        onLaunch: (Map<String, dynamic> message) async {
-          print('onLaunch: $message');
-          Timer.periodic(Duration(milliseconds: 500), (timer) {
-            if (Get.key.currentState == null) return;
-            handelNoti(message);
-            timer.cancel();
-          });
-          handelNoti(message);
-        },
-        //Called when the app is in the background
-        onResume: (Map<String, dynamic> message) async {
-          print('onResume: $message');
-          handelNoti(message);
-        },
-      );
+      FirebaseMessaging.onMessageOpenedApp.listen((event) {
+        RemoteNotification notification = event.notification;
+        Timer.periodic(Duration(milliseconds: 500), (timer) {
+          if (Get.key.currentState == null) return;
+          handelNoti(event.data);
+          timer.cancel();
+        });
+        handelNoti(event.data);
+      });
+      // _fcm.configure(
+      //   //Called when the app is in the background
+      //   onResume: (Map<String, dynamic> message) async {
+      //     print('onResume: $message');
+      //     handelNoti(message);
+      //   },
+      // );
       _initialized = true;
     }
   }

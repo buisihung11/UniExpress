@@ -44,7 +44,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      resizeToAvoidBottomPadding: true,
+      resizeToAvoidBottomInset: true,
       body: ScopedModel(
         model: LoginViewModel(),
         child: ReactiveForm(
@@ -88,7 +88,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           borderRadius: BorderRadius.circular(8.0),
                           // side: BorderSide(color: Colors.red),
                         ),
-
                         onPressed: () async {
                           if (model.status == ViewStatus.Completed) if (form
                               .valid) {
@@ -99,15 +98,17 @@ class _LoginScreenState extends State<LoginScreen> {
                           padding: const EdgeInsets.all(8.0),
                           child: model.status == ViewStatus.Loading
                               ? CircularProgressIndicator(
-                              backgroundColor: Color(0xFFFFFFFF))
+                                  backgroundColor: Color(0xFFFFFFFF))
                               : Text(
-                            "Đăng nhập",
-                            style: TextStyle(
-                              color: form.valid ? Color(0xFF00d286) : Colors.grey,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                                  "Đăng nhập",
+                                  style: TextStyle(
+                                    color: form.valid
+                                        ? Color(0xFF00d286)
+                                        : Colors.grey,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                         ),
                       ),
                     ),
@@ -137,16 +138,16 @@ class _LoginScreenState extends State<LoginScreen> {
               "Tên đăng nhập",
               "",
               "username",
-              labelStyle: kTitleTextStyle.copyWith(
-                  color: Colors.white, fontSize: 14),
+              labelStyle:
+                  kTitleTextStyle.copyWith(color: Colors.white, fontSize: 14),
               borderRadius: 8,
             ),
             FormItem(
               "Mật khẩu",
               "",
               "password",
-              labelStyle: kTitleTextStyle.copyWith(
-                  color: Colors.white, fontSize: 14),
+              labelStyle:
+                  kTitleTextStyle.copyWith(color: Colors.white, fontSize: 14),
               borderRadius: 8,
               hideText: true,
             ),
@@ -167,7 +168,7 @@ class FormItem extends StatefulWidget {
 
   final List<Map<String, dynamic>> radioGroup;
 
-   FormItem(this.label, this.hintText, this.formName,
+  FormItem(this.label, this.hintText, this.formName,
       {Key key,
       this.keyboardType,
       this.radioGroup,
@@ -177,7 +178,6 @@ class FormItem extends StatefulWidget {
       this.hideText = false})
       : super(key: key);
 
-
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -185,8 +185,7 @@ class FormItem extends StatefulWidget {
   }
 }
 
-class _FormItemState extends State<FormItem>{
-
+class _FormItemState extends State<FormItem> {
   Widget _getFormItemType(FormGroup form) {
     final formControl = form.control(widget.formName);
 
@@ -197,16 +196,16 @@ class _FormItemState extends State<FormItem>{
           children: [
             ...widget.radioGroup
                 .map((e) => Flexible(
-              child: Row(
-                children: [
-                  ReactiveRadio(
-                    value: e["value"],
-                    formControlName: widget.formName,
-                  ),
-                  Text(e["title"]),
-                ],
-              ),
-            ))
+                      child: Row(
+                        children: [
+                          ReactiveRadio(
+                            value: e["value"],
+                            formControlName: widget.formName,
+                          ),
+                          Text(e["title"]),
+                        ],
+                      ),
+                    ))
                 .toList(),
           ],
         );
@@ -232,7 +231,7 @@ class _FormItemState extends State<FormItem>{
                         child: Text(
                           formControl.value != null
                               ? DateFormat('dd/MM/yyyy')
-                              .format((formControl.value as DateTime))
+                                  .format((formControl.value as DateTime))
                               : widget.hintText,
                           style: TextStyle(color: Colors.blue),
                         ),
@@ -246,7 +245,7 @@ class _FormItemState extends State<FormItem>{
         );
       default:
         return ReactiveTextField(
-          validationMessages: {
+          validationMessages: (control) => {
             ValidationMessage.email: ':(',
             ValidationMessage.required: ':(',
             ValidationMessage.number: ':(',
@@ -255,7 +254,8 @@ class _FormItemState extends State<FormItem>{
             ValidationMessage.maxLength: 'Mật khẩu từ 6 đến 10 ký tự'
           },
           // enableInteractiveSelection: false,
-          style: TextStyle(color: widget.isReadOnly ? Colors.grey : Colors.black),
+          style:
+              TextStyle(color: widget.isReadOnly ? Colors.grey : Colors.black),
           readOnly: widget.isReadOnly,
           formControlName: widget.formName,
           textCapitalization: TextCapitalization.words,
@@ -265,16 +265,31 @@ class _FormItemState extends State<FormItem>{
               : TextInputAction.next,
           obscureText: widget.hideText,
           decoration: InputDecoration(
-
             filled: true,
             fillColor: Color(0xFFf4f4f6),
             suffixIcon: AnimatedOpacity(
                 duration: Duration(milliseconds: 700),
-                opacity: widget.formName != "password" ? (formControl.valid ? 1 : 0) : (formControl.value == null || (formControl.value as String).isEmpty ? 0 : 1),
+                opacity: widget.formName != "password"
+                    ? (formControl.valid ? 1 : 0)
+                    : (formControl.value == null ||
+                            (formControl.value as String).isEmpty
+                        ? 0
+                        : 1),
                 curve: Curves.fastOutSlowIn,
-                child: widget.formName != "password" ? Icon(Icons.check, color: Color(0xff00d286)) : IconButton(icon: Icon(Icons.remove_red_eye, color: widget.hideText ? Colors.grey : Color(0xff00d286)), onPressed: (){setState(() {
-                  widget.hideText = !widget.hideText;
-                });}, splashColor: Color(0xff00d286),)),
+                child: widget.formName != "password"
+                    ? Icon(Icons.check, color: Color(0xff00d286))
+                    : IconButton(
+                        icon: Icon(Icons.remove_red_eye,
+                            color: widget.hideText
+                                ? Colors.grey
+                                : Color(0xff00d286)),
+                        onPressed: () {
+                          setState(() {
+                            widget.hideText = !widget.hideText;
+                          });
+                        },
+                        splashColor: Color(0xff00d286),
+                      )),
             focusColor: Colors.white,
             focusedBorder: OutlineInputBorder(
               borderSide: new BorderSide(
@@ -330,5 +345,4 @@ class _FormItemState extends State<FormItem>{
       );
     });
   }
-
 }

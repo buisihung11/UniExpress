@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import '../constraints.dart';
@@ -36,24 +34,22 @@ class GiftScreen extends StatelessWidget {
                 width: 250.0,
                 height: 100,
                 child: FadeAnimatedTextKit(
-                    duration: Duration(seconds: 3),
-                    // isRepeatingAnimation: true,
-                    repeatForever: true,
-                    onTap: () {
-                      print("Tap Event");
-                    },
-                    text: [
-                      "Tính năng đổi quà đang được phát triển",
-                      "Hãy thu thập thật nhiều Bean coin nhé",
-                    ],
-                    textStyle: TextStyle(
-                      fontSize: 20.0,
-                      color: kPrimary,
-                    ),
-                    textAlign: TextAlign.center,
-                    alignment:
-                        AlignmentDirectional.topStart // or Alignment.topLeft
-                    ),
+                  duration: Duration(seconds: 3),
+                  // isRepeatingAnimation: true,
+                  repeatForever: true,
+                  onTap: () {
+                    print("Tap Event");
+                  },
+                  text: [
+                    "Tính năng đổi quà đang được phát triển",
+                    "Hãy thu thập thật nhiều Bean coin nhé",
+                  ],
+                  textStyle: TextStyle(
+                    fontSize: 20.0,
+                    color: kPrimary,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
               ),
               Container(
                 // color: Colors.amber,

@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
-import 'package:get/get.dart' as G;
+import 'package:get/get.dart' as Get;
 import 'package:uni_express/acessories/dialog.dart';
 import '../route_constraint.dart';
 
@@ -36,27 +36,30 @@ class ExpiredException extends AppException {
   ExpiredException([String message]) : super(message, "Token Expired: ");
 }
 
-class CustomInterceptors extends InterceptorsWrapper {
+class CustomInterceptors extends Interceptor {
   @override
-  Future onRequest(RequestOptions options) {
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     print(
-        "REQUEST[${options?.method}] => PATH: ${options?.path} HEADER: ${options.headers.toString()}");
-    return super.onRequest(options);
+        'REQUEST[${options.method}] => PATH: ${options.path} HEADER: ${options.headers.toString()}');
+    return super.onRequest(options, handler);
   }
 
   @override
-  Future onResponse(Response response) async {
+  void onResponse(Response response, ResponseInterceptorHandler handler) {
     print(
-        "RESPONSE[${response?.statusCode}] => PATH: ${response?.request?.path}");
-    return super.onResponse(response);
+        'RESPONSE[${response.statusCode}] => PATH: ${response.requestOptions?.path}');
+    print('DATA: ${response.data}');
+    return super.onResponse(response, handler);
   }
 
   @override
-  Future onError(DioError err) {
-    print("ERROR[${err?.response?.statusCode}] => PATH: ${err?.request?.path}");
-    return super.onError(err);
+  void onError(DioError err, ErrorInterceptorHandler handler) {
+    print(
+        'ERROR[${err.response?.statusCode}] => PATH: ${err.requestOptions.path}');
+    return super.onError(err, handler);
   }
 }
+// or new Dio with a BaseOptions instance.
 
 // or new Dio with a BaseOptions instance.
 
@@ -73,21 +76,18 @@ class MyRequest {
     _inner = new Dio(options);
     _inner.interceptors.add(CustomInterceptors());
     _inner.interceptors.add(InterceptorsWrapper(
-      onResponse: (Response response) async {
-        // Do something with response data
-        return response; // continue
+      onResponse: (e, handler) {
+        return handler.next(e); // continue
       },
-      onError: (DioError e) async {
-        print(e.response.data.toString());
-        // Do something with response error
-        if (e.response.statusCode == 401) {
+      onError: (e, handler) async {
+        print(e.response.toString());
+        if (e.response?.statusCode == 401) {
           await showStatusDialog("assets/images/global_error.png", "Lỗi",
-              "Vui lòng đang nhập lại");
-          G.Get.offAllNamed(RouteHandler.LOGIN);
+              "Vui lòng đăng nhập lại");
+          Get.Get.offAllNamed(RouteHandler.LOGIN);
         } else {
           throw e;
         }
-        //continue
       },
     ));
   }
